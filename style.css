@@ -1163,9 +1163,8 @@ select.form-control {
     justify-content: space-between;
     align-items: center;
     font-weight: var(--font-weight-medium);
-    color: White;
+    color: white;
 }
-
 .faq__question:hover {
     background: var(--color-secondary);
 }
