@@ -1163,6 +1163,7 @@ select.form-control {
     justify-content: space-between;
     align-items: center;
     font-weight: var(--font-weight-medium);
+    color: White;
 }
 
 .faq__question:hover {
