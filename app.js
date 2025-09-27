@@ -323,37 +323,106 @@ function initializeScrollEffects() {
 // ==================== FEE CALCULATION ====================
 function calculateFees() {
     const baseFee = 50;
-    let additionalEventFee = 0;
+    let technicalEventFee = 0;
+    let nonTechnicalEventFee = 0;
 
-    const additionalEvent = document.getElementById('additional_event');
-    if (additionalEvent && additionalEvent.value) {
-        additionalEventFee = 30; // Additional event fee
+    // Technical event fees
+    const technicalEvent = document.getElementById('main_event');
+    if (technicalEvent && technicalEvent.value) {
+        // Different fees for different technical events
+        const technicalFees = {
+            'Paper Presentation': 30,
+            'Line Follower Robot': 50,
+            'CAD Designing': 40,
+            'Drag Race': 60,
+            'Robo Soccer': 70,
+            'Technical Quiz': 25,
+            'CTF': 45,
+            'Pit Stop Challenge': 55
+        };
+        technicalEventFee = technicalFees[technicalEvent.value] || 30;
     }
 
-    const totalFee = baseFee + additionalEventFee;
+    // Non-technical event fee (only Free Fire has additional cost)
+    const nonTechnicalEvent = document.getElementById('additional_event');
+    if (nonTechnicalEvent && nonTechnicalEvent.value === 'Free Fire') {
+        nonTechnicalEventFee = 30;
+    }
+    // Other non-technical events are free (no additional cost)
+
+    const totalFee = baseFee + technicalEventFee + nonTechnicalEventFee;
 
     // Update fee display
     const baseFeeElement = document.getElementById('baseFee');
+    const technicalFeeElement = document.getElementById('technicalFee');
+    const technicalFeeRow = document.getElementById('technicalFeeRow');
     const additionalFeeElement = document.getElementById('additionalFee');
     const additionalFeeRow = document.getElementById('additionalFeeRow');
     const totalFeeElement = document.getElementById('totalFee');
 
     if (baseFeeElement) baseFeeElement.textContent = `₹${baseFee}`;
-    if (additionalFeeElement) additionalFeeElement.textContent = `₹${additionalEventFee}`;
-    if (totalFeeElement) totalFeeElement.textContent = `₹${totalFee}`;
+    
+    // Technical event fee display
+    if (technicalFeeElement) technicalFeeElement.textContent = `₹${technicalEventFee}`;
+    if (technicalFeeRow) {
+        if (technicalEventFee > 0) {
+            technicalFeeRow.style.display = 'flex';
+        } else {
+            technicalFeeRow.style.display = 'none';
+        }
+    }
 
+    // Non-technical event fee display (Free Fire only)
+    if (additionalFeeElement) additionalFeeElement.textContent = `₹${nonTechnicalEventFee}`;
     if (additionalFeeRow) {
-        if (additionalEventFee > 0) {
+        if (nonTechnicalEventFee > 0) {
             additionalFeeRow.style.display = 'flex';
         } else {
             additionalFeeRow.style.display = 'none';
         }
     }
 
+    if (totalFeeElement) totalFeeElement.textContent = `₹${totalFee}`;
+
     // Update registration data
-    registrationData.baseFee = baseFee;
-    registrationData.additionalEventFee = additionalEventFee;
+    registrationData.technicalEventFee = technicalEventFee;
+    registrationData.additionalEventFee = nonTechnicalEventFee;
     registrationData.totalFee = totalFee;
+}
+
+// Updated form validation (no mandatory events)
+function validateRegistrationForm() {
+    // Basic validation for member 1 details
+    const member1Name = document.getElementById('member1_name');
+    const member1Email = document.getElementById('member1_email');
+    const member1Phone = document.getElementById('member1_phone');
+
+    if (!member1Name || !member1Name.value.trim()) {
+        alert('Please enter team leader name');
+        return false;
+    }
+
+    if (!member1Email || !member1Email.value.trim()) {
+        alert('Please enter team leader email');
+        return false;
+    }
+
+    if (!member1Phone || !member1Phone.value.trim()) {
+        alert('Please enter team leader phone number');
+        return false;
+    }
+
+    // Check if at least one event is selected
+    const technicalEvent = document.getElementById('main_event');
+    const nonTechnicalEvent = document.getElementById('additional_event');
+    
+    if ((!technicalEvent || !technicalEvent.value) && 
+        (!nonTechnicalEvent || !nonTechnicalEvent.value)) {
+        alert('Please select at least one event to participate in');
+        return false;
+    }
+
+    return true;
 }
 
 // ==================== PAYMENT SYSTEM ====================
