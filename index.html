@@ -547,55 +547,59 @@
 
                     <!-- Event Selection -->
                     <div class="event-selection">
-                        <h3>Event Selection</h3>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="main_event" class="form-label">Main Technical Event (Required)</label>
-                                <select id="main_event" name="main_event" class="form-control" required onchange="calculateFees()">
-                                    <option value="">Select Main Event</option>
-                                    <option value="Paper Presentation">Paper Presentation</option>
-                                    <option value="Line Follower Robot">Line Follower Robot</option>
-                                    <option value="CAD Designing">CAD Designing</option>
-                                    <option value="Drag Race">Drag Race</option>
-                                    <option value="Robo Soccer">Robo Soccer</option>
-                                    <option value="Technical Quiz">Technical Quiz</option>
-                                    <option value="CTF">CTF</option>
-                                    <option value="Pit Stop Challenge">Pit Stop Challenge</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="additional_event" class="form-label">Additional Non-Technical Event (Optional - ₹30 extra)</label>
-                                <select id="additional_event" name="additional_event" class="form-control" onchange="calculateFees()">
-                                    <option value="">Select Additional Event</option>
-                                    <option value="Free Fire">Free Fire</option>
-                                    <option value="Meme Quiz">Meme Quiz</option>
-                                    <option value="Just a Min">Just a Min</option>
-                                    <option value="7th Sense">7th Sense</option>
-                                    <option value="Paper Pyramid">Paper Pyramid</option>
-                                    <option value="Anime Quiz">Anime Quiz</option>
-                                    <option value="Silent Music">Silent Music</option>
-                                    <option value="Five Legs">Five Legs</option>
-                                </select>
-                            </div>
+                     <h3>Event Selection</h3>
+                      <div class="form-row">
+                        <div class="form-group">
+                         <label for="main_event" class="form-label">Technical Events (Optional - Additional fees apply)</label>
+                         <select id="main_event" name="main_event" class="form-control" onchange="calculateFees()">
+                            <option value="">Select Technical Event</option>
+                            <option value="Paper Presentation">Paper Presentation (+₹30)</option>
+                            <option value="Line Follower Robot">Line Follower Robot (+₹50)</option>
+                            <option value="CAD Designing">CAD Designing (+₹40)</option>
+                            <option value="Drag Race">Drag Race (+₹60)</option>
+                            <option value="Robo Soccer">Robo Soccer (+₹70)</option>
+                            <option value="Technical Quiz">Technical Quiz (+₹25)</option>
+                            <option value="CTF">CTF (+₹45)</option>
+                            <option value="Pit Stop Challenge">Pit Stop Challenge (+₹55)</option>
+                         </select>
                         </div>
-                    </div>
+                        <div class="form-group">
+                         <label for="additional_event" class="form-label">Non-Technical Events (Optional)</label>
+                          <select id="additional_event" name="additional_event" class="form-control" onchange="calculateFees()">
+                          <option value="">Select Non-Technical Event</option>
+                          <option value="Free Fire">Free Fire (+₹30)</option>
+                          <option value="Meme Quiz">Meme Quiz (Free)</option>
+                          <option value="Just a Min">Just a Min (Free)</option>
+                          <option value="7th Sense">7th Sense (Free)</option>
+                          <option value="Paper Pyramid">Paper Pyramid (Free)</option>
+                          <option value="Anime Quiz">Anime Quiz (Free)</option>
+                          <option value="Silent Music">Silent Music (Free)</option>
+                          <option value="Five Legs">Five Legs (Free)</option>
+                         </select>
+                        </div>
+    </div>
+</div>
 
                     <!-- Fee Summary -->
                     <div class="fee-summary">
-                        <h3>Fee Summary</h3>
-                        <div class="fee-row">
-                            <span>Base Registration Fee:</span>
-                            <span id="baseFee">₹50</span>
-                        </div>
-                        <div class="fee-row" id="additionalFeeRow" style="display: none;">
-                            <span>Additional Event Fee:</span>
-                            <span id="additionalFee">₹0</span>
-                        </div>
-                        <div class="fee-row fee-total">
-                            <span>Total Amount:</span>
-                            <span id="totalFee">₹50</span>
-                        </div>
-                    </div>
+    <h3>Fee Summary</h3>
+    <div class="fee-row">
+        <span>Base Registration Fee:</span>
+        <span id="baseFee">₹50</span>
+    </div>
+    <div class="fee-row" id="technicalFeeRow" style="display: none;">
+        <span>Technical Event Fee:</span>
+        <span id="technicalFee">₹0</span>
+    </div>
+    <div class="fee-row" id="additionalFeeRow" style="display: none;">
+        <span>Non-Technical Event Fee:</span>
+        <span id="additionalFee">₹0</span>
+    </div>
+    <div class="fee-row fee-total">
+        <span>Total Amount:</span>
+        <span id="totalFee">₹50</span>
+    </div>
+</div>
 
                     <!-- Submit Button -->
                     <button type="button" class="btn btn--primary btn--full-width" onclick="proceedToPayment()">
@@ -763,21 +767,25 @@
             </div>
             <div class="modal__body">
                 <div class="payment-summary">
-                    <h4>Registration Summary</h4>
-                    <div class="fee-row">
-                        <span>Base Registration Fee:</span>
-                        <span id="modalBaseFee">₹50</span>
-                    </div>
-                    <div class="fee-row" id="modalAdditionalFeeRow" style="display: none;">
-                        <span>Additional Event Fee:</span>
-                        <span id="modalAdditionalFee">₹0</span>
-                    </div>
-                    <div class="fee-row fee-total">
-                        <span>Total Amount:</span>
-                        <span id="modalTotalFee">₹50</span>
-                    </div>
+                  <h4>Registration Summary</h4>
+                 <div class="fee-row">
+                  <span>Base Registration Fee:</span>
+                 <span id="modalBaseFee">₹50</span>
                 </div>
-
+                <div class="fee-row" id="modalTechnicalFeeRow" style="display: none;">
+                 <span>Technical Event Fee:</span>
+                 <span id="modalTechnicalFee">₹0</span>
+                </div>
+                <div class="fee-row" id="modalAdditionalFeeRow" style="display: none;">
+                  <span>Non-Technical Event Fee:</span>
+                 <span id="modalAdditionalFee">₹0</span>
+                </div>
+                <div class="fee-row fee-total">
+                  <span>Total Amount:</span>
+                  <span id="modalTotalFee">₹50</span>
+                </div>
+    </div>
+ 
                 <div class="payment-methods">
                     <h4>Payment Method</h4>
                     <div class="upi-options">
