@@ -252,87 +252,112 @@
     </section>
 
     <!-- Events Section -->
-    <section class="section" id="events">
-        <div class="container">
-            <h2 class="section__title">Events</h2>
+<section class="section" id="events">
+    <div class="container">
+        <h2 class="section__title">Events</h2>
 
-            <div class="event-category">
-                <h3 class="category-title">Technical Events</h3>
-                <div class="track__grid">
-                    <div class="track__card">
-                        <h4>📊 Paper Presentation</h4>
-                        <p>Present your innovative research ideas and technical solutions</p>
-                    </div>
-                    <div class="track__card">
-                        <h4>🤖 Line Follower Robot</h4>
-                        <p>Build autonomous robots that can navigate predefined paths</p>
-                    </div>
-                    <div class="track__card">
-                        <h4>🎨 CAD Designing</h4>
-                        <p>Create innovative 3D models and engineering designs</p>
-                    </div>
-                    <div class="track__card">
-                        <h4>🏁 Drag Race</h4>
-                        <p>Design and race high-speed remote-controlled vehicles</p>
-                    </div>
-                    <div class="track__card">
-                        <h4>⚽ Robo Soccer</h4>
-                        <p>Program robots to compete in an exciting soccer tournament</p>
-                    </div>
-                    <div class="track__card">
-                        <h4>🧠 Technical Quiz</h4>
-                        <p>Test your knowledge in various technical domains</p>
-                    </div>
-                    <div class="track__card">
-                        <h4>🚩 CTF</h4>
-                        <p>Capture The Flag - Cybersecurity challenges and puzzles</p>
-                    </div>
-                    <div class="track__card">
-                        <h4>⛳ Pit Stop Challenge</h4>
-                        <p>Fast-paced engineering challenges under time pressure</p>
-                    </div>
+        <div class="event-category">
+            <h3 class="category-title">Technical Events</h3>
+            <div class="track__grid">
+                <div class="track__card" onclick="openEventDetails('paper-presentation')">
+                    <h4>📊 Paper Presentation</h4>
+                    <p>Present your innovative research ideas and technical solutions</p>
                 </div>
-            </div>
-
-            <div class="event-category">
-                <h3 class="category-title">Non-Technical Events</h3>
-                <div class="track__grid">
-                    <div class="track__card">
-                        <h4>🔥 Free Fire</h4>
-                        <p>Battle royale gaming tournament with exciting prizes</p>
-                    </div>
-                    <div class="track__card">
-                        <h4>❓ Meme Quiz</h4>
-                        <p>Test your pop culture and meme knowledge</p>
-                    </div>
-                    <div class="track__card">
-                        <h4>⏱️ Just a Min</h4>
-                        <p>Quick thinking and rapid-fire question rounds</p>
-                    </div>
-                    <div class="track__card">
-                        <h4>🎯 7th Sense</h4>
-                        <p>Intuition and logic-based challenging puzzles</p>
-                    </div>
-                    <div class="track__card">
-                        <h4>📄 Paper Pyramid</h4>
-                        <p>Creative paper folding and construction challenge</p>
-                    </div>
-                    <div class="track__card">
-                        <h4>🎌 Anime Quiz</h4>
-                        <p>Ultimate test for anime enthusiasts and fans</p>
-                    </div>
-                    <div class="track__card">
-                        <h4>🎵 Silent Music</h4>
-                        <p>Music recognition and rhythm-based fun activities</p>
-                    </div>
-                    <div class="track__card">
-                        <h4>🔍 Five Legs</h4>
-                        <p>Team coordination and problem-solving challenges</p>
-                    </div>
+                <div class="track__card" onclick="openEventDetails('line-follower')">
+                    <h4>🤖 Line Follower Robot</h4>
+                    <p>Build autonomous robots that can navigate predefined paths</p>
+                </div>
+                <div class="track__card" onclick="openEventDetails('cad-designing')">
+                    <h4>🎨 CAD Designing</h4>
+                    <p>Create innovative 3D models and engineering designs</p>
+                </div>
+                <div class="track__card" onclick="openEventDetails('drag-race')">
+                    <h4>🏁 Drag Race</h4>
+                    <p>Design and race high-speed remote-controlled vehicles</p>
+                </div>
+                <div class="track__card" onclick="openEventDetails('robo-soccer')">
+                    <h4>⚽ Robo Soccer</h4>
+                    <p>Program robots to compete in an exciting soccer tournament</p>
+                </div>
+                <div class="track__card" onclick="openEventDetails('technical-quiz')">
+                    <h4>🧠 Technical Quiz</h4>
+                    <p>Test your knowledge in various technical domains</p>
+                </div>
+                <div class="track__card" onclick="openEventDetails('ctf')">
+                    <h4>🚩 CTF</h4>
+                    <p>Capture The Flag - Cybersecurity challenges and puzzles</p>
+                </div>
+                <div class="track__card" onclick="openEventDetails('pit-stop-challenge')">
+                    <h4>⛳ Pit Stop Challenge</h4>
+                    <p>Fast-paced engineering challenges under time pressure</p>
                 </div>
             </div>
         </div>
-    </section>
+
+        <div class="event-category">
+            <h3 class="category-title">Non-Technical Events</h3>
+            <div class="track__grid">
+                <div class="track__card" onclick="openEventDetails('free-fire')">
+                    <h4>🔥 Free Fire</h4>
+                    <p>Battle royale gaming tournament with exciting prizes</p>
+                </div>
+                <div class="track__card" onclick="openEventDetails('meme-quiz')">
+                    <h4>❓ Meme Quiz</h4>
+                    <p>Test your pop culture and meme knowledge</p>
+                </div>
+                <div class="track__card" onclick="openEventDetails('just-a-min')">
+                    <h4>⏱️ Just a Min</h4>
+                    <p>Quick thinking and rapid-fire question rounds</p>
+                </div>
+                <div class="track__card" onclick="openEventDetails('7th-sense')">
+                    <h4>🎯 7th Sense</h4>
+                    <p>Intuition and logic-based challenging puzzles</p>
+                </div>
+                <div class="track__card" onclick="openEventDetails('paper-pyramid')">
+                    <h4>📄 Paper Pyramid</h4>
+                    <p>Creative paper folding and construction challenge</p>
+                </div>
+                <div class="track__card" onclick="openEventDetails('anime-quiz')">
+                    <h4>🎌 Anime Quiz</h4>
+                    <p>Ultimate test for anime enthusiasts and fans</p>
+                </div>
+                <div class="track__card" onclick="openEventDetails('silent-music')">
+                    <h4>🎵 Silent Music</h4>
+                    <p>Music recognition and rhythm-based fun activities</p>
+                </div>
+                <div class="track__card" onclick="openEventDetails('five-legs')">
+                    <h4>🔍 Five Legs</h4>
+                    <p>Team coordination and problem-solving challenges</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>  
+
+    <!-- Event Details Modal -->
+<div id="eventDetailsModal" class="event-details-modal hidden">
+    <div class="event-details-card">
+        <div class="event-details-header">
+            <button class="event-close-btn" onclick="closeEventDetails()">x</button>
+            <div class="event-poster-container">
+                <div id="eventPoster" class="event-poster-placeholder">event poster</div>
+            </div>
+        </div>
+        
+        <div class="event-details-content">
+            <h2 id="eventTitle" class="event-title">Event Name</h2>
+            <div id="eventDescription" class="event-description">
+                Description will be shown here
+            </div>
+            <ul id="eventDetailsList" class="event-details-list">
+                <!-- Event details will be populated here -->
+            </ul>
+            <button id="registerEventBtn" class="register-event-btn" onclick="registerForEvent()">
+                Register Now
+            </button>
+        </div>
+    </div>
+</div>
 
     <!-- Prizes Section -->
     <section class="section section--bg" id="prizes">
@@ -766,25 +791,26 @@
                 <button class="modal__close" onclick="closeUPIModal()">&times;</button>
             </div>
             <div class="modal__body">
-                <div class="payment-summary">
+             <div class="payment-summary">
                   <h4>Registration Summary</h4>
-                 <div class="fee-row">
-                  <span>Base Registration Fee:</span>
-                 <span id="modalBaseFee">₹50</span>
+                <div class="fee-row">
+                    <span>Base Registration Fee:</span>
+                   <span id="modalBaseFee">₹50</span>
                 </div>
                 <div class="fee-row" id="modalTechnicalFeeRow" style="display: none;">
-                 <span>Technical Event Fee:</span>
-                 <span id="modalTechnicalFee">₹0</span>
+                  <span>Technical Event Fee:</span>
+                  <span id="modalTechnicalFee">₹0</span>
                 </div>
                 <div class="fee-row" id="modalAdditionalFeeRow" style="display: none;">
-                  <span>Non-Technical Event Fee:</span>
-                 <span id="modalAdditionalFee">₹0</span>
+                   <span>Non-Technical Event Fee:</span>
+                   <span id="modalAdditionalFee">₹0</span>
                 </div>
                 <div class="fee-row fee-total">
-                  <span>Total Amount:</span>
-                  <span id="modalTotalFee">₹50</span>
-                </div>
-    </div>
+                 <span>Total Amount:</span>
+                 <span id="modalTotalFee">₹50</span>
+                 </div>
+            </div>
+        </div>
  
                 <div class="payment-methods">
                     <h4>Payment Method</h4>
@@ -822,20 +848,24 @@
                 <p>Thank you for registering for Autotron Hackathon 2026!</p>
 
                 <div class="success-details">
-                    <h4>Registration Receipt</h4>
-                    <div class="receipt-row">
-                        <span>Registration ID:</span>
-                        <span id="registrationId">AUTO123456</span>
-                    </div>
-                    <div class="receipt-row">
-                        <span>Selected Event:</span>
-                        <span id="selectedEvent">-</span>
-                    </div>
-                    <div class="receipt-row">
-                        <span>Amount Paid:</span>
-                        <span id="paidAmount">₹50</span>
-                    </div>
-                </div>
+    <h4>Registration Receipt</h4>
+    <div class="receipt-row">
+        <span>Registration ID:</span>
+        <span id="registrationId">AUTO123456</span>
+    </div>
+    <div class="receipt-row" id="technicalEventRow" style="display: none;">
+        <span>Technical Event:</span>
+        <span id="selectedTechnicalEvent">-</span>
+    </div>
+    <div class="receipt-row" id="nonTechnicalEventRow" style="display: none;">
+        <span>Non-Technical Event:</span>
+        <span id="selectedNonTechnicalEvent">-</span>
+    </div>
+    <div class="receipt-row">
+        <span>Amount Paid:</span>
+        <span id="paidAmount">₹50</span>
+    </div>
+</div>
 
                 <div class="success-actions">
                     <button class="btn btn--primary" onclick="downloadReceipt()">Download Receipt</button>
