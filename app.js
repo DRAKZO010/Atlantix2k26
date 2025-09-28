@@ -471,14 +471,26 @@ function validateRegistrationForm() {
 function updatePaymentModal() {
     // Update payment modal with current fees
     const modalBaseFee = document.getElementById('modalBaseFee');
+    const modalTechnicalFee = document.getElementById('modalTechnicalFee');
+    const modalTechnicalFeeRow = document.getElementById('modalTechnicalFeeRow');
     const modalAdditionalFee = document.getElementById('modalAdditionalFee');
     const modalAdditionalFeeRow = document.getElementById('modalAdditionalFeeRow');
     const modalTotalFee = document.getElementById('modalTotalFee');
 
     if (modalBaseFee) modalBaseFee.textContent = `₹${registrationData.baseFee}`;
+    
+    // Show technical event fee if it exists
+    if (modalTechnicalFee) modalTechnicalFee.textContent = `₹${registrationData.technicalEventFee}`;
+    if (modalTechnicalFeeRow) {
+        if (registrationData.technicalEventFee > 0) {
+            modalTechnicalFeeRow.style.display = 'flex';
+        } else {
+            modalTechnicalFeeRow.style.display = 'none';
+        }
+    }
+    
+    // Show non-technical event fee if it exists
     if (modalAdditionalFee) modalAdditionalFee.textContent = `₹${registrationData.additionalEventFee}`;
-    if (modalTotalFee) modalTotalFee.textContent = `₹${registrationData.totalFee}`;
-
     if (modalAdditionalFeeRow) {
         if (registrationData.additionalEventFee > 0) {
             modalAdditionalFeeRow.style.display = 'flex';
@@ -486,6 +498,8 @@ function updatePaymentModal() {
             modalAdditionalFeeRow.style.display = 'none';
         }
     }
+
+    if (modalTotalFee) modalTotalFee.textContent = `₹${registrationData.totalFee}`;
 }
 
 function selectUPIMethod(method) {
@@ -513,16 +527,36 @@ function showRegistrationSuccess() {
     const registrationId = 'AUTO' + Math.random().toString(36).substr(2, 9).toUpperCase();
 
     if (successModal) {
-        // Update success message details
+        // Update registration ID
         const regIdElement = document.getElementById('registrationId');
-        const selectedEventElement = document.getElementById('selectedEvent');
-        const paidAmountElement = document.getElementById('paidAmount');
-
         if (regIdElement) regIdElement.textContent = registrationId;
-        if (selectedEventElement) {
-            const mainEvent = document.getElementById('main_event');
-            selectedEventElement.textContent = mainEvent ? mainEvent.value : 'Selected Event';
+
+        // Update technical event
+        const mainEvent = document.getElementById('main_event');
+        const technicalEventRow = document.getElementById('technicalEventRow');
+        const selectedTechnicalEvent = document.getElementById('selectedTechnicalEvent');
+        
+        if (mainEvent && mainEvent.value && technicalEventRow && selectedTechnicalEvent) {
+            selectedTechnicalEvent.textContent = mainEvent.value;
+            technicalEventRow.style.display = 'flex';
+        } else if (technicalEventRow) {
+            technicalEventRow.style.display = 'none';
         }
+
+        // Update non-technical event
+        const additionalEvent = document.getElementById('additional_event');
+        const nonTechnicalEventRow = document.getElementById('nonTechnicalEventRow');
+        const selectedNonTechnicalEvent = document.getElementById('selectedNonTechnicalEvent');
+        
+        if (additionalEvent && additionalEvent.value && nonTechnicalEventRow && selectedNonTechnicalEvent) {
+            selectedNonTechnicalEvent.textContent = additionalEvent.value;
+            nonTechnicalEventRow.style.display = 'flex';
+        } else if (nonTechnicalEventRow) {
+            nonTechnicalEventRow.style.display = 'none';
+        }
+
+        // Update amount paid
+        const paidAmountElement = document.getElementById('paidAmount');
         if (paidAmountElement) paidAmountElement.textContent = `₹${registrationData.totalFee}`;
 
         successModal.classList.remove('hidden');
@@ -572,6 +606,9 @@ function makeGlobalFunctions() {
     window.openCalendar = openCalendar;
     window.closeCalendar = closeCalendar;
     window.selectDate = selectDate;
+    window.openEventDetails = openEventDetails;
+    window.closeEventDetails = closeEventDetails;
+    window.registerForEvent = registerForEvent;
 }
 
 function fixFormElements() {
@@ -585,6 +622,358 @@ function fixFormElements() {
         });
     });
 }
+// ==================== EVENT DETAILS MODAL ====================
+// Event data structure with form mapping
+const eventData = {
+    'paper-presentation': {
+        title: 'Paper Presentation',
+        formValue: 'Paper Presentation',
+        eventType: 'technical',
+        description: 'Present your innovative research ideas and technical solutions to a panel of expert judges. This event encourages participants to showcase their research work, innovative ideas, and technical knowledge through comprehensive presentations.',
+        details: [
+            'Team Size: 1-3 members',
+            'Duration: 10 minutes presentation + 5 minutes Q&A',
+            'Topics: Any technical domain (AI, IoT, Robotics, etc.)',
+            'Registration Fee: ₹30',
+            'Requirements: PowerPoint presentation, Research paper (optional)',
+            'Judging Criteria: Innovation, Technical depth, Presentation skills',
+            'Prizes: Winner gets ₹5000, Runner-up gets ₹3000'
+        ],
+        poster: 'event poster'
+    },
+    'line-follower': {
+        title: 'Line Follower Robot',
+        formValue: 'Line Follower Robot',
+        eventType: 'technical',
+        description: 'Build autonomous robots that can navigate predefined paths using sensors and programming. This challenging robotics event tests your engineering skills, programming knowledge, and robot design capabilities.',
+        details: [
+            'Team Size: 2-4 members',
+            'Robot Specifications: Max dimensions 25cm x 25cm x 25cm',
+            'Sensors: Any type (IR, Camera, Ultrasonic)',
+            'Registration Fee: ₹50',
+            'Track: Black line on white surface with turns and obstacles',
+            'Time Limit: 3 minutes per run',
+            'Scoring: Based on time taken and checkpoints crossed'
+        ],
+        poster: 'event poster'
+    },
+    'cad-designing': {
+        title: 'CAD Designing',
+        formValue: 'CAD Designing',
+        eventType: 'technical',
+        description: 'Create innovative 3D models and engineering designs using professional CAD software. Showcase your creativity, technical skills, and design thinking in this comprehensive design challenge.',
+        details: [
+            'Team Size: 1-2 members',
+            'Software: AutoCAD, SolidWorks, Fusion 360, or similar',
+            'Duration: 3 hours',
+            'Registration Fee: ₹40',
+            'Theme: Will be announced on the event day',
+            'Deliverables: 3D model, 2D drawings, Presentation',
+            'Judging: Innovation, Feasibility, Design aesthetics'
+        ],
+        poster: 'event poster'
+    },
+    'drag-race': {
+        title: 'Drag Race',
+        formValue: 'Drag Race',
+        eventType: 'technical',
+        description: 'Design and race high-speed remote-controlled vehicles in this adrenaline-pumping competition. Test your engineering skills and vehicle design capabilities.',
+        details: [
+            'Team Size: 2-4 members',
+            'Vehicle Type: Remote-controlled cars',
+            'Track Length: 50 meters straight track',
+            'Registration Fee: ₹60',
+            'Power Source: Battery-powered only',
+            'Weight Limit: Maximum 2kg',
+            'Judging: Based on speed and design innovation'
+        ],
+        poster: 'event poster'
+    },
+    'robo-soccer': {
+        title: 'Robo Soccer',
+        formValue: 'Robo Soccer',
+        eventType: 'technical',
+        description: 'Program robots to compete in an exciting soccer tournament. Design, build, and program autonomous robots that can play soccer, demonstrating advanced robotics, AI, and team coordination.',
+        details: [
+            'Team Size: 3-5 members',
+            'Robot Count: 2 robots per team',
+            'Field Size: 4m x 6m with FIFA-proportioned markings',
+            'Registration Fee: ₹70',
+            'Robot Specs: Max 30cm x 30cm x 30cm, Wireless control',
+            'Match Duration: 2 halves of 10 minutes each',
+            'Rules: Modified FIFA rules for robot soccer'
+        ],
+        poster: 'event poster'
+    },
+    'technical-quiz': {
+        title: 'Technical Quiz',
+        formValue: 'Technical Quiz',
+        eventType: 'technical',
+        description: 'Test your knowledge in various technical domains including programming, electronics, mathematics, and general engineering concepts.',
+        details: [
+            'Team Size: 1-3 members',
+            'Rounds: 3 rounds (Preliminary, Semi-final, Final)',
+            'Topics: Programming, Electronics, Mathematics, General Tech',
+            'Registration Fee: ₹25',
+            'Duration: 2 hours total',
+            'Format: Multiple choice and descriptive questions',
+            'Prizes: Winner gets ₹2000, Runner-up gets ₹1000'
+        ],
+        poster: 'event poster'
+    },
+    'ctf': {
+        title: 'Capture The Flag (CTF)',
+        formValue: 'CTF',
+        eventType: 'technical',
+        description: 'Cybersecurity challenges and puzzles designed to test your hacking skills, cryptography knowledge, and problem-solving abilities. Compete in various security domains including web security, forensics, and reverse engineering.',
+        details: [
+            'Team Size: 1-3 members',
+            'Categories: Web, Crypto, Forensics, Reverse Engineering',
+            'Duration: 6 hours',
+            'Registration Fee: ₹45',
+            'Platform: Online CTF platform',
+            'Requirements: Laptop with Kali Linux (recommended)',
+            'Scoring: Points for each solved challenge'
+        ],
+        poster: 'event poster'
+    },
+    'pit-stop-challenge': {
+        title: 'Pit Stop Challenge',
+        formValue: 'Pit Stop Challenge',
+        eventType: 'technical',
+        description: 'Fast-paced engineering challenges under time pressure. Teams will face multiple technical problems that need quick thinking and rapid execution.',
+        details: [
+            'Team Size: 3-4 members',
+            'Challenges: 5 different engineering problems',
+            'Time Limit: 15 minutes per challenge',
+            'Registration Fee: ₹55',
+            'Tools: Basic tools and materials provided',
+            'Skills Tested: Problem-solving, Teamwork, Speed',
+            'Scoring: Based on completion time and accuracy'
+        ],
+        poster: 'event poster'
+    },
+    'free-fire': {
+        title: 'Free Fire Tournament',
+        formValue: 'Free Fire',
+        eventType: 'non-technical',
+        description: 'Battle royale gaming tournament with exciting prizes. Team up with friends or compete solo in this high-energy esports competition featuring multiple rounds and elimination stages.',
+        details: [
+            'Team Size: 4 members (Squad mode)',
+            'Platform: Mobile (Android/iOS)',
+            'Tournament Format: Multiple rounds, Battle Royale',
+            'Registration Fee: ₹30',
+            'Requirements: Own mobile device, Stable internet',
+            'Rules: No hacks, mods, or external assistance allowed',
+            'Prizes: Winner gets ₹3000, Runner-up gets ₹2000'
+        ],
+        poster: 'event poster'
+    },
+    'meme-quiz': {
+        title: 'Meme Quiz',
+        formValue: 'Meme Quiz',
+        eventType: 'non-technical',
+        description: 'Test your pop culture and meme knowledge in this fun and entertaining quiz competition.',
+        details: [
+            'Team Size: 1-2 members',
+            'Rounds: 3 rounds with increasing difficulty',
+            'Topics: Internet memes, Pop culture, Viral trends',
+            'Registration Fee: Free',
+            'Duration: 1.5 hours',
+            'Format: Visual quiz with meme identification',
+            'Prizes: Winner gets ₹1000 + meme merchandise'
+        ],
+        poster: 'event poster'
+    },
+'just-a-min': {
+    title: 'Just a Min',
+    formValue: 'Just a Min',
+    eventType: 'non-technical',
+    description: 'Quick thinking and rapid-fire question rounds.',
+    details: [
+        'Team Size: 1-2 members',
+        'Duration: 1 minute per round',
+        'Registration Fee: Free',
+        'Format: Rapid-fire questions'
+    ],
+    poster: 'event poster'
+},
+'7th-sense': {
+    title: '7th Sense',
+    formValue: '7th Sense',
+    eventType: 'non-technical',
+    description: 'Intuition and logic-based challenging puzzles.',
+    details: [
+        'Team Size: 1-3 members',
+        'Duration: 2 hours',
+        'Registration Fee: Free',
+        'Skills: Logical thinking, Intuition'
+    ],
+    poster: 'event poster'
+},
+'paper-pyramid': {
+    title: 'Paper Pyramid',
+    formValue: 'Paper Pyramid',
+    eventType: 'non-technical',
+    description: 'Creative paper folding and construction challenge.',
+    details: [
+        'Team Size: 2-4 members',
+        'Materials: Newspaper and tape only',
+        'Registration Fee: Free',
+        'Time Limit: 30 minutes'
+    ],
+    poster: 'event poster'
+},
+'anime-quiz': {
+    title: 'Anime Quiz',
+    formValue: 'Anime Quiz',
+    eventType: 'non-technical',
+    description: 'Ultimate test for anime enthusiasts.',
+    details: [
+        'Team Size: 1-2 members',
+        'Registration Fee: Free',
+        'Topics: Popular anime series'
+    ],
+    poster: 'event poster'
+},
+'silent-music': {
+    title: 'Silent Music',
+    formValue: 'Silent Music',
+    eventType: 'non-technical',
+    description: 'Music recognition and rhythm activities.',
+    details: [
+        'Team Size: 1-2 members',
+        'Registration Fee: Free',
+        'Format: Audio clips, Rhythm games'
+    ],
+    poster: 'event poster'
+},
+'five-legs': {
+    title: 'Five Legs',
+    formValue: 'Five Legs',
+    eventType: 'non-technical',
+    description: 'Team coordination challenges.',
+    details: [
+        'Team Size: Exactly 5 members',
+        'Registration Fee: Free',
+        'Skills: Teamwork, Communication'
+    ],
+    poster: 'event poster'
+}
+    // Add more events as needed...
+};
+
+let selectedEventForRegistration = null;
+
+// Function to open event details modal
+function openEventDetails(eventKey) {
+    const modal = document.getElementById('eventDetailsModal');
+    const event = eventData[eventKey];
+    
+    if (!event) return;
+    
+    // Store selected event for registration
+    selectedEventForRegistration = eventKey;
+    
+    // Update modal content
+    document.getElementById('eventTitle').textContent = event.title;
+    document.getElementById('eventDescription').textContent = event.description;
+    
+    // Update event details list
+    const detailsList = document.getElementById('eventDetailsList');
+    detailsList.innerHTML = '';
+    
+    event.details.forEach(detail => {
+        const li = document.createElement('li');
+        li.className = 'event-detail-item';
+        
+        // Split detail by first colon to separate label and value
+        const colonIndex = detail.indexOf(':');
+        if (colonIndex !== -1) {
+            const label = detail.substring(0, colonIndex);
+            const value = detail.substring(colonIndex + 1);
+            li.innerHTML = `<span class="event-detail-label">${label}:</span>${value}`;
+        } else {
+            li.textContent = `• ${detail}`;
+        }
+        
+        detailsList.appendChild(li);
+    });
+    
+    // Update poster (you can replace this with actual image logic)
+    const posterElement = document.getElementById('eventPoster');
+    posterElement.textContent = event.poster;
+    
+    // Show modal
+    modal.classList.remove('hidden');
+}
+
+// Function to close event details modal
+function closeEventDetails() {
+    const modal = document.getElementById('eventDetailsModal');
+    modal.classList.add('hidden');
+}
+
+// Function to register for the selected event
+function registerForEvent() {
+    if (!selectedEventForRegistration) return;
+    
+    const event = eventData[selectedEventForRegistration];
+    
+    // Close the event details modal
+    closeEventDetails();
+    
+    // Scroll to registration section
+    const registrationSection = document.getElementById('registration');
+    if (registrationSection) {
+        registrationSection.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    // Wait for scroll to complete, then pre-select the event
+    setTimeout(() => {
+        if (event.eventType === 'technical') {
+            const technicalSelect = document.getElementById('main_event');
+            if (technicalSelect) {
+                technicalSelect.value = event.formValue;
+                // Trigger change event to update fees
+                const changeEvent = new Event('change');
+                technicalSelect.dispatchEvent(changeEvent);
+            }
+        } else if (event.eventType === 'non-technical') {
+            const nonTechnicalSelect = document.getElementById('additional_event');
+            if (nonTechnicalSelect) {
+                nonTechnicalSelect.value = event.formValue;
+                // Trigger change event to update fees
+                const changeEvent = new Event('change');
+                nonTechnicalSelect.dispatchEvent(changeEvent);
+            }
+        }
+        
+        // Recalculate fees if the function exists
+        if (typeof calculateFees === 'function') {
+            calculateFees();
+        }
+    }, 500);
+}
+
+// Close modal when clicking outside
+document.addEventListener('DOMContentLoaded', function() {
+    const eventModal = document.getElementById('eventDetailsModal');
+    if (eventModal) {
+        eventModal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEventDetails();
+            }
+        });
+    }
+});
+
+// Close modal with escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeEventDetails();
+    }
+});
 
 // Initialize the application
 console.log('🚀 Autotron 2026 - JavaScript loaded');
