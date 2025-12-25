@@ -1,4 +1,7 @@
 // Autotron Hackathon 2026 - Complete JavaScript with All Functionality
+(function() {
+    emailjs.init("yXoInUtWoCeIT20b5"); // Replace with your EmailJS Public Key
+})();
 
 // Calendar-related global variables
 let currentCalendarDate = new Date();
@@ -523,44 +526,53 @@ function closeUPIModal() {
 }
 
 function showRegistrationSuccess() {
-    const successModal = document.getElementById('successMessage');
-    const registrationId = 'AUTO' + Math.random().toString(36).substr(2, 9).toUpperCase();
+    // 1. COLLECT DATA FROM THE FORM (Crucial fix)
+    const m1Name = document.getElementById('member1_name')?.value || "Participant";
+    const m1Email = document.getElementById('member1_email')?.value || "";
+    const techEvent = document.getElementById('main_event')?.value || "None";
+    const addEvent = document.getElementById('additional_event')?.value || "None";
 
-    if (successModal) {
-        // Update registration ID
-        const regIdElement = document.getElementById('registrationId');
-        if (regIdElement) regIdElement.textContent = registrationId;
+    // 2. Update the registration object so Firebase sees it
+    registrationData.members[0] = { name: m1Name, email: m1Email };
+    registrationData.mainEvent = techEvent;
+    registrationData.additionalEvent = addEvent;
 
-        // Update technical event
-        const mainEvent = document.getElementById('main_event');
-        const technicalEventRow = document.getElementById('technicalEventRow');
-        const selectedTechnicalEvent = document.getElementById('selectedTechnicalEvent');
-        
-        if (mainEvent && mainEvent.value && technicalEventRow && selectedTechnicalEvent) {
-            selectedTechnicalEvent.textContent = mainEvent.value;
-            technicalEventRow.style.display = 'flex';
-        } else if (technicalEventRow) {
-            technicalEventRow.style.display = 'none';
-        }
+    // 3. Generate the ID
+    const generatedId = "AUTO" + Math.floor(100000 + Math.random() * 900000);
 
-        // Update non-technical event
-        const additionalEvent = document.getElementById('additional_event');
-        const nonTechnicalEventRow = document.getElementById('nonTechnicalEventRow');
-        const selectedNonTechnicalEvent = document.getElementById('selectedNonTechnicalEvent');
-        
-        if (additionalEvent && additionalEvent.value && nonTechnicalEventRow && selectedNonTechnicalEvent) {
-            selectedNonTechnicalEvent.textContent = additionalEvent.value;
-            nonTechnicalEventRow.style.display = 'flex';
-        } else if (nonTechnicalEventRow) {
-            nonTechnicalEventRow.style.display = 'none';
-        }
-
-        // Update amount paid
-        const paidAmountElement = document.getElementById('paidAmount');
-        if (paidAmountElement) paidAmountElement.textContent = `₹${registrationData.totalFee}`;
-
-        successModal.classList.remove('hidden');
+    // 4. SAVE TO FIREBASE
+    if (window.saveRegistrationToFirebase) {
+        window.saveRegistrationToFirebase(generatedId, registrationData);
     }
+
+    // 5. Update UI and Send Mail
+    document.getElementById('registrationId').textContent = generatedId;
+    sendAutomaticReceipt(generatedId);
+    document.getElementById('successMessage').style.display = 'flex';
+}
+
+function sendAutomaticReceipt(regId) {
+    const lead = registrationData.members[0];
+    if (!lead.email) return;
+
+    // FIXED URL: Detects if you are in a subfolder or local
+    const baseUrl = window.location.href.split('index.html')[0];
+    const passUrl = `${baseUrl}pass.html?id=${regId}&name=${encodeURIComponent(lead.name)}&event=${encodeURIComponent(registrationData.mainEvent)}`;
+
+    const templateParams = {
+        to_email: lead.email,
+        team_lead: lead.name,
+        registration_id: regId,
+        technical_event: registrationData.mainEvent,
+        additional_event: registrationData.additionalEvent,
+        total_amount: "₹" + registrationData.totalFee,
+        pass_link: passUrl // This is the dynamic link for your button
+    };
+
+    // Replace with your actual IDs from EmailJS dashboard
+    emailjs.send('service_p8o9228', 'template_6v98r7q', templateParams)
+        .then(() => console.log("✅ Email sent!"))
+        .catch(err => console.error("❌ Email error:", err));
 }
 
 function closeSuccessMessage() {
@@ -865,6 +877,32 @@ const eventData = {
 
 let selectedEventForRegistration = null;
 
+
+async function sendAutomaticReceipt(regId) {
+    // 1. Identify the Team Lead (First Member in the array)
+    const teamLead = registrationData.members[0]; 
+    const leadEmail = teamLead.email;
+    const leadName = teamLead.name;
+
+    const passUrl = `${window.location.origin}${window.location.pathname.replace('index.html', '')}pass.html?id=${regId}&name=${encodeURIComponent(leadName)}&event=${encodeURIComponent(registrationData.mainEvent)}`;
+
+    const templateParams = {
+        to_email: leadEmail,            // The recipient email
+        team_lead: leadName,            // Used in "Hello {{team_lead}}"
+        registration_id: regId,         // Your AUTO123456 ID
+        technical_event: registrationData.mainEvent,
+        total_amount: "₹" + registrationData.totalFee,
+        pass_link: passUrl 
+    };
+
+    try {
+        const response = await emailjs.send('service_4sge16d', 'template_0vchqqr', templateParams);
+        console.log('✅ Email sent successfully!', response.status);
+    } catch (error) {
+        console.error('❌ Email failed to send:', error);
+    }
+}
+
 // Function to open event details modal
 function openEventDetails(eventKey) {
     const modal = document.getElementById('eventDetailsModal');
@@ -955,6 +993,7 @@ function registerForEvent() {
         }
     }, 500);
 }
+
 
 // Close modal when clicking outside
 document.addEventListener('DOMContentLoaded', function() {

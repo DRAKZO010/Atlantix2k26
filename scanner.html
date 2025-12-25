@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atlantix 2k26 - Gatekeeper</title>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <style>
+        :root { --primary: #00d4ff; --bg: #0a0a0a; --card: #1a1a1a; --success: #00ff88; --error: #ff4d4d; }
+        body { font-family: 'Rajdhani', sans-serif; background: var(--bg); color: white; margin: 0; padding: 20px; text-align: center; }
+        .container { max-width: 500px; margin: auto; }
+        #reader { width: 100%; border-radius: 12px; overflow: hidden; border: 2px solid var(--primary) !important; margin-bottom: 20px; }
+        .status-box { padding: 20px; border-radius: 12px; margin-top: 20px; display: none; border: 1px solid #333; background: var(--card); }
+        .success { border-color: var(--success); color: var(--success); }
+        .error { border-color: var(--error); color: var(--error); }
+        input { background: #222; border: 1px solid #444; color: white; padding: 12px; border-radius: 5px; width: 70%; margin-top: 10px; }
+        button { background: var(--primary); color: black; border: none; padding: 12px 24px; border-radius: 5px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { opacity: 0.8; }
+        .manual-section { margin-top: 40px; border-top: 1px solid #333; padding-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 style="font-family: 'Orbitron'; color: var(--primary);">GATEKEEPER</h1>
+        <p>Scan participant QR code for entry</p>
+        
+        <div id="reader"></div>
+        <div id="statusBox" class="status-box"></div>
+
+        <div class="manual-section">
+            <p>Can't scan? Enter ID manually:</p>
+            <input type="text" id="manualId" placeholder="e.g. AUTO123456">
+            <button onclick="checkManual()">CHECK</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+        // Using your specific config from index.html
+        const firebaseConfig = {
+            apiKey: "AIzaSyCQKLM92UMnSb_ZLd7BZGgH6TNP9ugXffg",
+            authDomain: "atlantix2k26.firebaseapp.com",
+            projectId: "atlantix2k26",
+            storageBucket: "atlantix2k26.firebasestorage.app",
+            messagingSenderId: "988770007742",
+            appId: "1:988770007742:web:742114c6f386a0422fbcef"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function verifyEntry(regId) {
+            const statusBox = document.getElementById('statusBox');
+            statusBox.style.display = "block";
+            statusBox.innerHTML = "Processing...";
+            statusBox.className = "status-box";
+
+            try {
+                const cleanId = regId.trim();
+                const docRef = doc(db, "registrations", cleanId);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if (data.checkedIn) {
+                        statusBox.classList.add('error');
+                        statusBox.innerHTML = `⚠️ ALREADY CHECKED IN<br><b>${data.teamLead}</b><br>ID: ${cleanId}`;
+                    } else {
+                        await updateDoc(docRef, { checkedIn: true });
+                        statusBox.classList.add('success');
+                        statusBox.innerHTML = `✅ ACCESS GRANTED<br><b>${data.teamLead}</b><br>Event: ${data.technicalEvent || 'Event'}`;
+                    }
+                } else {
+                    statusBox.classList.add('error');
+                    statusBox.innerHTML = `❌ INVALID ID<br>Not found in database`;
+                }
+            } catch (err) {
+                console.error(err);
+                statusBox.innerHTML = "Error connecting to database.";
+            }
+        }
+
+        // Scanner initialization
+        const html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
+        html5QrcodeScanner.render((decodedText) => {
+            verifyEntry(decodedText);
+        });
+
+        // Make manual check available globally
+        window.checkManual = () => {
+            const id = document.getElementById('manualId').value;
+            if(id) verifyEntry(id);
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atlantix 2k26 - Digital Pass</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --color-bg: #1f2121; --color-primary: #00d4ff; --color-surface: #262828;
+            --color-text: #fcfcf9; --color-muted: #777c7c;
+        }
+        body { background-color: #121212; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; margin: 0; font-family: 'Rajdhani', sans-serif; color: var(--color-text); padding: 20px; }
+        
+        .receipt-card { 
+            background: var(--color-bg); 
+            width: 100%; 
+            max-width: 380px; 
+            border-radius: 24px; 
+            border: 1px solid rgba(0, 212, 255, 0.2); 
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5); 
+            overflow: hidden; 
+        }
+
+        .header { background: linear-gradient(135deg, #1f2121 0%, #13343b 100%); padding: 25px; text-align: center; border-bottom: 2px dashed #333; }
+        .header h1 { font-family: 'Orbitron'; font-size: 1.1rem; color: var(--color-primary); margin: 0; letter-spacing: 2px; text-transform: uppercase; }
+        
+        .content { padding: 25px; }
+        #disp-event { text-align:center; font-size: 1.4rem; font-weight:700; margin-bottom:15px; color: var(--color-text); }
+        
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
+        .detail-item label { display: block; font-size: 0.7rem; color: var(--color-muted); text-transform: uppercase; margin-bottom: 4px; }
+        .detail-item span { font-weight: 600; font-size: 1rem; }
+
+        .qr-section { background: var(--color-surface); padding: 20px; border-radius: 16px; text-align: center; }
+        .qr-wrapper { background: white; padding: 10px; display: inline-block; border-radius: 10px; line-height: 0; }
+        .qr-wrapper img { width: 180px; height: 180px; }
+
+        .button-group { display: flex; gap: 10px; margin-top: 20px; }
+        .btn { padding: 12px 20px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: 'Rajdhani'; transition: 0.3s; }
+        .btn-download { background: var(--color-primary); color: #121212; }
+        .btn-print { background: transparent; color: var(--color-primary); border: 1px solid var(--color-primary); }
+        .btn:hover { opacity: 0.8; transform: translateY(-2px); }
+
+        @media print {
+            .button-group { display: none; }
+            body { background: white; }
+            .receipt-card { box-shadow: none; border: 1px solid #ccc; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="receipt-card" id="passContent">
+        <div class="header"><h1>Digital Pass Receipt</h1></div>
+        <div class="content">
+            <div id="disp-event">Hackathon Access</div>
+            
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <label>Participant</label>
+                    <span id="disp-name">Loading...</span>
+                </div>
+                <div class="detail-item">
+                    <label>Pass ID</label>
+                    <span id="disp-id" style="color:var(--color-primary)">Loading...</span>
+                </div>
+                <div class="detail-item">
+                    <label>Date</label>
+                    <span id="disp-date">Dec 25, 2025</span>
+                </div>
+                <div class="detail-item">
+                    <label>Status</label>
+                    <span>Verified ✓</span>
+                </div>
+            </div>
+            
+            <div class="qr-section">
+                <div class="qr-wrapper">
+                    <img id="disp-qr" src="" alt="QR">
+                </div>
+                <p style="font-size: 0.7rem; color: var(--color-primary); margin-top: 10px; letter-spacing: 1px;">SCAN AT ENTRY GATE</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="button-group">
+        <button class="btn btn-download" onclick="downloadPass()">Save as Image</button>
+        <button class="btn btn-print" onclick="window.print()">Print PDF</button>
+    </div>
+
+    <script>
+        // Parse URL Parameters
+        const params = new URLSearchParams(window.location.search);
+        const regId = params.get('id') || 'ATL-OFFLINE';
+        const userName = params.get('name') || 'Valued Participant';
+        const eventName = params.get('event') || 'Atlantix 2k26';
+
+        // FIXED: Corrected IDs to match the HTML elements above
+        document.getElementById('disp-name').textContent = userName;
+        document.getElementById('disp-id').textContent = regId;
+        document.getElementById('disp-event').textContent = eventName;
+
+        // Generate QR Code with unique Registration ID
+        const qrImg = document.getElementById('disp-qr');
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${regId}`;
+
+        // Function to download the pass as a PNG image
+        function downloadPass() {
+            const pass = document.getElementById('passContent');
+            html2canvas(pass, {
+                backgroundColor: '#121212',
+                scale: 2 // Higher quality
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `Atlantix_Pass_${regId}.png`;
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+            });
+        }
+    </script>
+</body>
+</html>

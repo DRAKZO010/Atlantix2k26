@@ -12,6 +12,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <!-- Stylesheet -->
     <link rel="stylesheet" href="style.css">
 </head>
@@ -868,7 +869,7 @@
 </div>
 
                 <div class="success-actions">
-                    <button class="btn btn--primary" onclick="downloadReceipt()">Download Receipt</button>
+                    <p style="color: var(--color-primary); margin-bottom: 15px;">📧 A receipt and welcome note have been sent to your registered emails.</p>
                     <button class="btn btn--outline" onclick="resetForm()">Register Another Team</button>
                 </div>
             </div>
@@ -876,6 +877,44 @@
     </div>
 
     <!-- JavaScript -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+        import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCQKLM92UMnSb_ZLd7BZGgH6TNP9ugXffg",
+            authDomain: "atlantix2k26.firebaseapp.com",
+            projectId: "atlantix2k26",
+            storageBucket: "atlantix2k26.firebasestorage.app",
+            messagingSenderId: "988770007742",
+            appId: "1:988770007742:web:742114c6f386a0422fbcef",
+            measurementId: "G-7FS0P2BJV7"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Global function so app.js can save data after payment
+        window.saveRegistrationToFirebase = async (regId, data) => {
+   try {
+       await setDoc(doc(db, "registrations", regId), {
+         registrationId: regId,
+         teamLead: data.members[0].name,
+         leadEmail: data.members[0].email,
+         technicalEvent: data.mainEvent,       // Added
+         additionalEvent: data.additionalEvent, // Added
+         amount: data.totalFee,
+         checkedIn: false,
+         timestamp: serverTimestamp()
+       });
+       console.log("✅ Database updated successfully!");
+   } catch (e) {
+       console.error("❌ Firebase Error: ", e);
+   }
+};
+    </script>
     <script src="app.js"></script>
 </body>
 </html>
