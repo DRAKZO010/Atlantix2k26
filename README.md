@@ -1,4 +1,4 @@
-# Autotron Hackathon 2026 - Complete Source Code
+# Atlantix Hackathon 2026 - Complete Source Code
 
 ## 📁 **COMPLETE FILES FROM LIVE WEBSITE**
 
@@ -179,13 +179,13 @@ https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/031b948c
 ## 📞 **SUPPORT**
 
 For questions about this code:
-- **Event Email:** hello@autotron2026.com
-- **Support Email:** support@autotron2026.com
+- **Event Email:** hello@Atlantix2026.com
+- **Support Email:** support@Atlantix2026.com
 - **Phone:** +91 98765 43210, +91 87654 32109
 
 ---
 
-**🎉 READY TO USE:** This is the complete, production-ready source code for the Autotron Hackathon 2026 website with all features working perfectly!
+**🎉 READY TO USE:** This is the complete, production-ready source code for the Atlantix Hackathon 2026 website with all features working perfectly!
 
 **Organized by:** Park College of Engineering and Technology, Coimbatore  
 **Event Date:** January 15-16, 2026 | 24 Hours | ₹50,000 Prize Pool

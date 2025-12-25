@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Autotron Hackathon 2026</title>
-    <meta name="description" content="Join Autotron Hackathon 2026 - 24 hours of coding, innovation, and competition at Park College of Engineering and Technology, Coimbatore. Win prizes worth ₹50,000!">
+    <title>Atlantix Hackathon 2026</title>
+    <meta name="description" content="Join Atlantix Hackathon 2026 - 24 hours of coding, innovation, and competition at Park College of Engineering and Technology, Coimbatore. Win prizes worth ₹50,000!">
     <meta name="keywords" content="hackathon, coding, programming, innovation, competition, Coimbatore, technology, Park College">
 
     <!-- Google Fonts -->
@@ -12,6 +12,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
+    <script src="config.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <!-- Stylesheet -->
     <link rel="stylesheet" href="style.css">
@@ -22,7 +23,7 @@
         <div class="container">
             <nav class="nav">
                 <div class="nav__brand">
-                    <h2>Autotron <span class="logo-year">2026</span></h2>
+                    <h2>Atlantix <span class="logo-year">2026</span></h2>
                 </div>
 
                 <ul class="nav__menu" id="navMenu">
@@ -62,7 +63,7 @@
     <section class="hero" id="home">
         <div class="container">
             <div class="hero__content">
-                <h1 class="hero__title">Autotron Hackathon 2026</h1>
+                <h1 class="hero__title">Atlantix Hackathon 2026</h1>
                 <p class="hero__tagline">Code. Create. Compete. Drive Innovation Forward</p>
 
                 <div class="hero__details">
@@ -91,7 +92,7 @@
         <!-- About Section -->
     <section class="section" id="about">
         <div class="container">
-            <h2 class="section__title">About Autotron</h2>
+            <h2 class="section__title">About Atlantix</h2>
 
             <div class="about__grid">
                 <div class="about__card">
@@ -417,7 +418,7 @@
             <div class="registration-form-container">
                 <div class="registration-logo">
                     <h1>Register Now</h1>
-                    <p>Join Autotron Hackathon 2026</p>
+                    <p>Join Atlantix Hackathon 2026</p>
                 </div>
 
                 <!-- Member Tabs -->
@@ -645,8 +646,8 @@
                 <div class="contact__info">
                     <div class="contact__item">
                         <h3>📧 Email</h3>
-                        <p>hello@autotron2026.com</p>
-                        <p>support@autotron2026.com</p>
+                        <p>hello@Atlantix2026.com</p>
+                        <p>support@Atlantix2026.com</p>
                     </div>
 
                     <div class="contact__item">
@@ -753,7 +754,7 @@
         <div class="container">
             <div class="footer__content">
                 <div class="footer__brand">
-                    <h3>Autotron 2026</h3>
+                    <h3>Atlantix 2026</h3>
                     <p>Drive Innovation Forward</p>
                 </div>
                 <div class="footer__links">
@@ -764,7 +765,7 @@
                 </div>
             </div>
             <div class="footer__bottom">
-                <p>&copy; 2026 Autotron Hackathon. All rights reserved. Organized by Park College of Engineering and Technology.</p>
+                <p>&copy; 2026 Atlantix Hackathon. All rights reserved. Organized by Park College of Engineering and Technology.</p>
             </div>
         </div>
     </footer>
@@ -846,7 +847,7 @@
                 <button class="modal__close" onclick="closeSuccessMessage()">&times;</button>
             </div>
             <div class="modal__body">
-                <p>Thank you for registering for Autotron Hackathon 2026!</p>
+                <p>Thank you for registering for Atlantix Hackathon 2026!</p>
 
                 <div class="success-details">
     <h4>Registration Receipt</h4>
@@ -883,13 +884,13 @@
 
         // Your Firebase configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyCQKLM92UMnSb_ZLd7BZGgH6TNP9ugXffg",
-            authDomain: "atlantix2k26.firebaseapp.com",
-            projectId: "atlantix2k26",
-            storageBucket: "atlantix2k26.firebasestorage.app",
-            messagingSenderId: "988770007742",
-            appId: "1:988770007742:web:742114c6f386a0422fbcef",
-            measurementId: "G-7FS0P2BJV7"
+          apiKey: window.env.FIREBASE_API_KEY,
+          authDomain: window.env.FIREBASE_AUTH_DOMAIN,
+          projectId: window.env.FIREBASE_PROJECT_ID,
+          storageBucket: window.env.FIREBASE_STORAGE_BUCKET,
+          messagingSenderId: window.env.FIREBASE_MESSAGING_SENDER_ID,
+          appId: window.env.FIREBASE_APP_ID,
+          measurementId: window.env.FIREBASE_MEASUREMENT_ID
         };
 
         // Initialize Firebase

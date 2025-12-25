@@ -1,6 +1,6 @@
-// Autotron Hackathon 2026 - Complete JavaScript with All Functionality
+// Atlantix Hackathon 2026 - Complete JavaScript with All Functionality
 (function() {
-    emailjs.init("yXoInUtWoCeIT20b5"); // Replace with your EmailJS Public Key
+    emailjs.init(window.env.EMAILJS_PUBLIC_KEY); 
 })();
 
 // Calendar-related global variables
@@ -21,7 +21,7 @@ let registrationData = {
 
 // Initialize Application
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Autotron 2026 - Application starting...');
+    console.log('Atlantix 2026 - Application starting...');
     initializeApp();
 });
 
@@ -570,7 +570,7 @@ function sendAutomaticReceipt(regId) {
     };
 
     // Replace with your actual IDs from EmailJS dashboard
-    emailjs.send('service_p8o9228', 'template_6v98r7q', templateParams)
+    emailjs.send(window.env.EMAILJS_SERVICE_ID, window.env.EMAILJS_TEMPLATE_ID, templateParams);
         .then(() => console.log("✅ Email sent!"))
         .catch(err => console.error("❌ Email error:", err));
 }
@@ -1015,4 +1015,4 @@ document.addEventListener('keydown', function(e) {
 });
 
 // Initialize the application
-console.log('🚀 Autotron 2026 - JavaScript loaded');
+console.log('🚀 Atlantix 2026 - JavaScript loaded');
