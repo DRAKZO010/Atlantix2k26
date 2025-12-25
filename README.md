@@ -1,149 +1,92 @@
+<<<<<<< HEAD
 # Atlantix Hackathon 2026 - Complete Source Code
+=======
+# 🚀 Atlantix 2k26 - Event Management System
+>>>>>>> 8f90b90f7524403402cb0c369e404d32f6924538
 
-## 📁 **COMPLETE FILES FROM LIVE WEBSITE**
+Atlantix 2k26 is a full-stack event registration and management platform. It features a modern user interface, automated email ticketing with unique QR codes, and a real-time mobile-ready scanner for gate check-ins.
 
-This package contains the exact source code from the live website:
-https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/031b948cc19ff514d03bc568bd99c9cd/c06b7c58-8fbb-45b9-b1b2-13d04cb2f4ee/index.html
 
-### **✅ FILES INCLUDED:**
 
-#### **1. index.html** (48,901 characters)
-- Complete HTML structure
-- All sections: Hero, About, Schedule, Events, Prizes, Registration, Contact
-- Multi-member registration form (4 members)
-- Modal systems (calendar, payment, success)
-- FAQ section with interactive questions
-- Professional semantic markup
+## ✨ Key Features
 
-#### **2. style.css** (40,927 characters)
-- Complete CSS styling with CSS custom properties
-- Teal color scheme (#218085) with professional design
-- Responsive design for all screen sizes
-- Smooth animations and hover effects
-- Navigation system with proper mobile menu
-- Form styling and modal designs
-- Dark mode support
+* **Multi-Member Registration:** Dynamic form handling for teams of up to 4 members with real-time fee calculation.
+* **Real-time Database:** Integrated with **Firebase Firestore** for instant data synchronization and attendance tracking.
+* **Automated Ticketing:** Uses **EmailJS** to send professional HTML receipts and digital passes immediately after registration.
+* **Digital Pass System:** Generates a unique digital pass for every user containing a dynamic QR code for entry.
+* **Gatekeeper Scanner:** A specialized web-based tool for volunteers to scan QR codes and mark attendance in real-time.
+* **Secure Config:** Protected API credentials using a `config.js` environment wrapper and `.gitignore` to prevent credential leaks.
 
-#### **3. app.js** (39,221 characters)
-- Complete JavaScript functionality
-- Navigation toggle and smooth scrolling
-- Multi-member registration system
-- Calendar picker with date selection
-- Fee calculation system
-- Payment simulation (UPI methods)
-- Form validation and error handling
-- FAQ toggle functionality
-- Contact form processing
+## 🛠️ Tech Stack
 
-## 🚀 **FEATURES IMPLEMENTED:**
+* **Frontend:** HTML5, CSS3 (Custom Properties/Variables), JavaScript (ES6+)
+* **Backend as a Service:** Firebase (Firestore)
+* **Communication:** EmailJS API
+* **Tools:** QR Server API, Html5-Qrcode (Scanner), Render (Deployment)
 
-### **✅ Navigation System**
-- Fixed header with backdrop blur
-- Smooth scrolling between sections
-- Mobile hamburger menu with slide animation
-- Active link highlighting
+## 📁 Project Structure
 
-### **✅ Hero Section**
-- Gradient background with animated elements
-- Event details with icons
-- Call-to-action buttons
-- Responsive typography
+```text
+├── index.html          # Main landing page & registration form
+├── app.js              # Core logic, fee calculation & EmailJS integration
+├── style.css           # Professional Teal & Dark themed styling
+├── pass.html           # Digital pass generator page (QR Code display)
+├── scanner.html        # Admin/Volunteer QR scanning tool
+├── config.js           # (Local only) Private API keys - NOT tracked by Git
+└── .gitignore          # Prevents config.js from being uploaded to GitHub
+🚀 Setup & Deployment
+1. Local Setup
+Clone the repository: git clone https://github.com/yourusername/atlantix-2k26.git
 
-### **✅ About Section**
-- Statistics display (Prize pool, Participants, Duration)
-- Feature cards with hover effects
-- Professional layout
+Create a config.js file in the root directory.
 
-### **✅ Schedule Section**
-- 2-day timeline layout
-- Day 1: Registration to late night coding
-- Day 2: Final sprint to awards ceremony
-- Time-based event cards
+Add your window.env object with your Firebase and EmailJS credentials.
 
-### **✅ Events Section**
-- Technical Events: 8 different competitions
-- Non-Technical Events: 8 fun activities
-- Card-based layout with descriptions
-- Hover animations
+Open index.html using a local server (like VS Code Live Server).
 
-### **✅ Prizes Section**
-- Main prizes: 1st (₹25,000), 2nd (₹15,000), 3rd (₹10,000)
-- Special awards with individual amounts
-- Medal-based visual design
-- Animated prize cards
+2. Firebase Rules
+Ensure your Firestore rules permit reading and writing to the registrations collection for the scanner to function:
 
-### **✅ Registration Section**
-- Multi-member registration (1-4 members)
-- Tab-based member forms
-- Event selection with fee calculation
-- Base fee: ₹50, Additional event: ₹30
-- Form validation and error handling
+JavaScript
 
-### **✅ Payment System**
-- UPI payment simulation
-- Multiple payment methods (GPay, PhonePe, Paytm, BHIM)
-- Payment summary with fee breakdown
-- Receipt generation with registration ID
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /registrations/{registrationId} {
+      allow read, write: if true;
+    }
+  }
+}
+3. Deployment (Render/Netlify)
+This project is optimized for deployment as a Static Site.
 
-### **✅ Contact Section**
-- Contact information (email, phone, address)
-- Contact form with validation
-- FAQ system with expandable answers
-- Professional layout
+Security: Since config.js is ignored by Git, you must add your keys (e.g., FIREBASE_API_KEY) as Environment Variables in your hosting provider's dashboard.
 
-### **✅ Interactive Elements**
-- Calendar picker for date of birth
-- Modal systems (calendar, payment, success)
-- FAQ toggles with smooth animations
-- Form validation with user feedback
+📱 Using the Scanner
+The scanning tool is located at /scanner.html.
 
-## 🎨 **DESIGN SYSTEM:**
+Open the URL on a mobile device at the event gate.
 
-### **Colors**
-- Primary: Teal (#218085)
-- Secondary: Light teal variations
-- Background: Cream tones
-- Text: Dark slate colors
-- Accents: Orange and red for highlights
+Grant camera permissions.
 
-### **Typography**
-- Display Font: Orbitron (headings)
-- Body Font: Rajdhani (content)
-- Font sizes: 11px to 30px responsive scale
-- Font weights: 400, 500, 550, 600
+Scan a participant's QR code.
 
-### **Layout**
-- Container max-widths: 640px, 768px, 1024px, 1280px
-- Consistent spacing scale (2px to 32px)
-- Border radius: 6px to 12px
-- Professional shadows and transitions
+The system will verify the ID and instantly update the "Checked-In" status in Firebase.
 
-## 📱 **RESPONSIVE DESIGN:**
+🎨 Design System
+Typography: Orbitron (Headings) & Rajdhani (Body).
 
-### **Desktop (1024px+)**
-- Full navigation menu visible
-- Multi-column layouts
-- Hover effects enabled
-- Optimal spacing and typography
+Colors: Primary Teal (#218085) with professional Dark/Cream variants.
 
-### **Tablet (768px-1023px)**
-- Adjusted layouts
-- Maintained functionality
-- Touch-friendly interactions
+Responsive: Mobile-first approach, fully functional on all screen sizes.
 
-### **Mobile (767px and below)**
-- Hamburger navigation menu
-- Single-column layouts
-- Touch-optimized buttons
-- Simplified forms
+📞 Support
+Event Email: hello@autotron2026.com
 
-## 🛠 **HOW TO USE:**
+Support Email: support@autotron2026.com
 
-### **Installation**
-1. Download and extract the zip file
-2. Open `index.html` in any modern web browser
-3. No additional setup required
+Lead Developer: [Your Name]
 
+<<<<<<< HEAD
 ### **Development**
 - All CSS uses custom properties for easy theming
 - JavaScript is modular and well-commented
@@ -189,3 +132,6 @@ For questions about this code:
 
 **Organized by:** Park College of Engineering and Technology, Coimbatore  
 **Event Date:** January 15-16, 2026 | 24 Hours | ₹50,000 Prize Pool
+=======
+Built with ❤️ for the Atlantix 2k26 Event | Organized by Park College of Engineering and Technology.
+>>>>>>> 8f90b90f7524403402cb0c369e404d32f6924538
