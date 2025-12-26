@@ -441,35 +441,7 @@ function proceedToPayment() {
     }
 }
 
-function validateRegistrationForm() {
-    // Basic validation
-    const member1Name = document.getElementById('member1_name');
-    const member1Email = document.getElementById('member1_email');
-    const member1Phone = document.getElementById('member1_phone');
-    const mainEvent = document.getElementById('main_event');
 
-    if (!member1Name || !member1Name.value.trim()) {
-        alert('Please enter team leader name');
-        return false;
-    }
-
-    if (!member1Email || !member1Email.value.trim()) {
-        alert('Please enter team leader email');
-        return false;
-    }
-
-    if (!member1Phone || !member1Phone.value.trim()) {
-        alert('Please enter team leader phone number');
-        return false;
-    }
-
-    if (!mainEvent || !mainEvent.value) {
-        alert('Please select a main event');
-        return false;
-    }
-
-    return true;
-}
 
 function updatePaymentModal() {
     // Update payment modal with current fees
