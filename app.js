@@ -570,10 +570,10 @@ function sendAutomaticReceipt(regId) {
     };
 
     // Replace with your actual IDs from EmailJS dashboard
-    emailjs.send(window.env.EMAILJS_SERVICE_ID, window.env.EMAILJS_TEMPLATE_ID, templateParams);
-        .then(() => console.log("✅ Email sent!"))
-        .catch(err => console.error("❌ Email error:", err));
-}
+    emailjs.send(window.env.EMAILJS_SERVICE_ID, window.env.EMAILJS_TEMPLATE_ID, templateParams)
+    .then(() => console.log("✅ Email sent!"))
+    .catch(err => console.error("❌ Email error:", err));
+}    
 
 function closeSuccessMessage() {
     const successModal = document.getElementById('successMessage');
@@ -896,7 +896,7 @@ async function sendAutomaticReceipt(regId) {
     };
 
     try {
-        const response = await emailjs.send('service_4sge16d', 'template_0vchqqr', templateParams);
+        const response = await emailjs.send('service_4sge16d', 'template_0vchqqr', templateParams)
         console.log('✅ Email sent successfully!', response.status);
     } catch (error) {
         console.error('❌ Email failed to send:', error);
