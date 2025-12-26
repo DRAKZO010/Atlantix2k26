@@ -525,29 +525,7 @@ function showRegistrationSuccess() {
     document.getElementById('successMessage').style.display = 'flex';
 }
 
-function sendAutomaticReceipt(regId) {
-    const lead = registrationData.members[0];
-    if (!lead.email) return;
-
-    // FIXED URL: Detects if you are in a subfolder or local
-    const baseUrl = window.location.href.split('index.html')[0];
-    const passUrl = `${baseUrl}pass.html?id=${regId}&name=${encodeURIComponent(lead.name)}&event=${encodeURIComponent(registrationData.mainEvent)}`;
-
-    const templateParams = {
-        to_email: lead.email,
-        team_lead: lead.name,
-        registration_id: regId,
-        technical_event: registrationData.mainEvent,
-        additional_event: registrationData.additionalEvent,
-        total_amount: "₹" + registrationData.totalFee,
-        pass_link: passUrl // This is the dynamic link for your button
-    };
-
-    // Replace with your actual IDs from EmailJS dashboard
-    emailjs.send(window.env.EMAILJS_SERVICE_ID, window.env.EMAILJS_TEMPLATE_ID, templateParams)
-    .then(() => console.log("✅ Email sent!"))
-    .catch(err => console.error("❌ Email error:", err));
-}    
+   
 
 function closeSuccessMessage() {
     const successModal = document.getElementById('successMessage');
@@ -853,24 +831,30 @@ let selectedEventForRegistration = null;
 
 
 async function sendAutomaticReceipt(regId) {
-    // 1. Identify the Team Lead (First Member in the array)
-    const teamLead = registrationData.members[0]; 
-    const leadEmail = teamLead.email;
-    const leadName = teamLead.name;
+    const lead = registrationData.members[0];
+    if (!lead || !lead.email) return;
 
-    const passUrl = `${window.location.origin}${window.location.pathname.replace('index.html', '')}pass.html?id=${regId}&name=${encodeURIComponent(leadName)}&event=${encodeURIComponent(registrationData.mainEvent)}`;
+    // Best way to build the URL for the digital pass
+    const baseUrl = window.location.origin + window.location.pathname.replace('index.html', '');
+    const passUrl = `${baseUrl}pass.html?id=${regId}&name=${encodeURIComponent(lead.name)}&event=${encodeURIComponent(registrationData.mainEvent)}`;
 
     const templateParams = {
-        to_email: leadEmail,            // The recipient email
-        team_lead: leadName,            // Used in "Hello {{team_lead}}"
-        registration_id: regId,         // Your AUTO123456 ID
+        to_email: lead.email,
+        team_lead: lead.name,
+        registration_id: regId,
         technical_event: registrationData.mainEvent,
+        additional_event: registrationData.additionalEvent || "None",
         total_amount: "₹" + registrationData.totalFee,
         pass_link: passUrl 
     };
 
     try {
-        const response = await emailjs.send('service_4sge16d', 'template_0vchqqr', templateParams)
+        // Use window.env so it works with your config.js
+        const response = await emailjs.send(
+            window.env.EMAILJS_SERVICE_ID, 
+            window.env.EMAILJS_TEMPLATE_ID, 
+            templateParams
+        );
         console.log('✅ Email sent successfully!', response.status);
     } catch (error) {
         console.error('❌ Email failed to send:', error);
