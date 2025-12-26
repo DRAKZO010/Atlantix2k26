@@ -3,13 +3,7 @@
     emailjs.init(window.env.EMAILJS_PUBLIC_KEY); 
 })();
 
-// Calendar-related global variables
-let currentCalendarDate = new Date();
-let selectedCalendarDate = null;
-let currentDateInputId = null;
 
-// Global variables
-let currentMember = 1;
 let registrationData = {
     members: [{}, {}, {}, {}],
     mainEvent: '',
@@ -18,6 +12,14 @@ let registrationData = {
     additionalEventFee: 0,
     totalFee: 50
 };
+
+// Calendar-related global variables
+let currentCalendarDate = new Date();
+let selectedCalendarDate = null;
+let currentDateInputId = null;
+
+// Global variables
+let currentMember = 1;
 
 // Initialize Application
 document.addEventListener('DOMContentLoaded', function() {
