@@ -840,29 +840,24 @@ let selectedEventForRegistration = null;
 
 
 async function sendAutomaticReceipt(regId, data) {
-    // Ensure we have values, fallback to "N/A" if empty
-    const technicalEvent = data.mainEvent || "Not Selected";
-    const nonTechnicalEvent = data.additionalEvent || "None";
-
     const templateParams = {
         to_name: data.members[0].name,
         to_email: data.members[0].email,
         reg_id: regId,
-        // These MUST match the {{names}} in your EmailJS Template
-        main_event: technicalEvent,
-        additional_event: nonTechnicalEvent,
+        // Make sure these keys match your EmailJS Template EXACTLY
+        main_event: data.mainEvent || "Hackathon Main Event",
+        additional_event: data.additionalEvent || "None",
         total_fee: data.totalFee,
-        // This generates the link for the digital pass button
-        pass_link: `https://atlantix2k26.netlify.app/pass.html?id=${regId}&name=${encodeURIComponent(data.members[0].name)}&event=${encodeURIComponent(technicalEvent)}`
+        pass_link: `https://atlantix2k26.netlify.app/pass.html?id=${regId}&name=${encodeURIComponent(data.members[0].name)}&event=${encodeURIComponent(data.mainEvent)}`
     };
 
     try {
         await emailjs.send(
-            window.env.EMAILJS_SERVICE_ID,
-            window.env.EMAILJS_TEMPLATE_ID,
+            window.env.EMAILJS_SERVICE_ID, 
+            window.env.EMAILJS_TEMPLATE_ID, 
             templateParams
         );
-        console.log("✅ Email sent with event details!");
+        console.log("✅ Email sent with events:", data.mainEvent);
     } catch (error) {
         console.error("❌ Email failed:", error);
     }
