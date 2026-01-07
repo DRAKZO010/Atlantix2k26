@@ -1,11 +1,15 @@
 // Atlantix Hackathon 2026 - Complete JavaScript
+// Atlantix Hackathon 2026 - Complete JavaScript
 (function() {
-    // Only initialize if the config loaded successfully
-    if (window.env && window.env.EMAILJS_PUBLIC_KEY) {
-        emailjs.init(window.env.EMAILJS_PUBLIC_KEY); 
-    } else {
-        console.warn("⚠️ config.js not found or window.env is missing. EmailJS skipped.");
-    }
+    // Wait for the window to fully load everything (including snippets)
+    window.addEventListener('load', function() {
+        if (window.env && window.env.EMAILJS_PUBLIC_KEY) {
+            emailjs.init(window.env.EMAILJS_PUBLIC_KEY);
+            console.log("✅ EmailJS Initialized Successfully!");
+        } else {
+            console.error("❌ EmailJS failed: window.env is still missing after page load.");
+        }
+    });
 })();
 
 
