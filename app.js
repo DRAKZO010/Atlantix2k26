@@ -839,34 +839,28 @@ const eventData = {
 let selectedEventForRegistration = null;
 
 
-async function sendAutomaticReceipt(regId) {
-    const lead = registrationData.members[0];
-    if (!lead || !lead.email) return;
-
-    // Best way to build the URL for the digital pass
-    const baseUrl = window.location.origin + window.location.pathname.replace('index.html', '');
-    const passUrl = `${baseUrl}pass.html?id=${regId}&name=${encodeURIComponent(lead.name)}&event=${encodeURIComponent(registrationData.mainEvent)}`;
-
+async function sendAutomaticReceipt(regId, data) {
     const templateParams = {
-        to_email: lead.email,
-        team_lead: lead.name,
-        registration_id: regId,
-        technical_event: registrationData.mainEvent,
-        additional_event: registrationData.additionalEvent || "None",
-        total_amount: "₹" + registrationData.totalFee,
-        pass_link: passUrl 
+        to_name: data.members[0].name,
+        to_email: data.members[0].email,
+        reg_id: regId,
+        // ADD THESE TWO LINES:
+        main_event: data.mainEvent || "N/A",
+        additional_event: data.additionalEvent || "None",
+        total_fee: data.totalFee,
+        // This generates the link to the digital pass
+        pass_link: `https://atlantix2k26.netlify.app/pass.html?id=${regId}&name=${encodeURIComponent(data.members[0].name)}&event=${encodeURIComponent(data.mainEvent)}`
     };
 
     try {
-        // Use window.env so it works with your config.js
-        const response = await emailjs.send(
-            window.env.EMAILJS_SERVICE_ID, 
-            window.env.EMAILJS_TEMPLATE_ID, 
+        await emailjs.send(
+            window.env.EMAILJS_SERVICE_ID,
+            window.env.EMAILJS_TEMPLATE_ID,
             templateParams
         );
-        console.log('✅ Email sent successfully!', response.status);
+        console.log("✅ Email sent successfully with event details!");
     } catch (error) {
-        console.error('❌ Email failed to send:', error);
+        console.error("❌ Email failed:", error);
     }
 }
 
