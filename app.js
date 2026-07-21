@@ -844,7 +844,7 @@ async function sendAutomaticReceipt(regId, data) {
     };
 
     try {
-        await fetch("https://script.google.com/macros/s/AKfycbxPoVCO_cbfvu4f1KKSvYlXlX6yshXtN5aS5XcTvf0_5-JV4o52KuYAdbqBhFleBwwS/exec", {
+        await fetch("https://script.google.com/macros/s/AKfycbykuWnzCHdbKmyt1cJ6pAlQLBvtVAlmTMd87K_qRx6GxeTL7dgTNGpqY8gEa8Kvsv8J/exec", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
