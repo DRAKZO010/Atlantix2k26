@@ -1,15 +1,5 @@
 // Atlantix Hackathon 2026 - Complete JavaScript
 // Atlantix Hackathon 2026 - Complete JavaScript
-(function() {
-    window.addEventListener('load', function() {
-        if (typeof emailjs !== 'undefined') {
-            emailjs.init("yXoInUtWoCeIT20b5");
-            console.log("✅ EmailJS Initialized Successfully!");
-        } else {
-            console.error("❌ EmailJS library not loaded.");
-        }
-    });
-})();
 
 
 let registrationData = {
@@ -840,29 +830,25 @@ let selectedEventForRegistration = null;
 
 async function sendAutomaticReceipt(regId, data) {
     const passUrl = `https://atlantix2k26.vercel.app/pass.html?id=${regId}&name=${encodeURIComponent(data.members[0].name)}&event=${encodeURIComponent(data.mainEvent)}`;
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${regId}`;
 
-    const templateParams = {
-        to_name: data.members[0].name,
+    const payload = {
         to_email: data.members[0].email,
         reg_id: regId,
-        main_event: data.mainEvent || "Hackathon Main Event",
+        team_lead: data.members[0].name,
+        event_name: data.mainEvent || "Atlantix Hackathon 2026",
         additional_event: data.additionalEvent || "None",
         total_fee: data.totalFee,
         pass_link: passUrl,
-        qr_code: qrUrl,
         venue: "Park College of Engineering and Technology, Kaniyur, Coimbatore",
-        event_date: "January 15-16, 2026",
-        team_lead: data.members[0].name,
-        event_name: data.mainEvent || "Atlantix Hackathon 2026"
+        event_date: "January 15-16, 2026"
     };
 
     try {
-        await emailjs.send(
-            "service_4sge16d",
-            "template_0vchqqr",
-            templateParams
-        );
+        await fetch("https://script.google.com/macros/s/AKfycbxPoVCO_cbfvu4f1KKSvYlXlX6yshXtN5aS5XcTvf0_5-JV4o52KuYAdbqBhFleBwwS/exec", {
+            method: "POST",
+            body: JSON.stringify(payload),
+            mode: "no-cors"
+        });
         console.log("✅ Pass email sent to:", data.members[0].email);
     } catch (error) {
         console.error("❌ Email failed:", error);
