@@ -871,8 +871,8 @@ async function sendAutomaticReceipt(regId, data) {
     try {
         await fetch("https://script.google.com/macros/s/AKfycbykuWnzCHdbKmyt1cJ6pAlQLBvtVAlmTMd87K_qRx6GxeTL7dgTNGpqY8gEa8Kvsv8J/exec", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(payload),
+            mode: "no-cors"
         });
         console.log("✅ Pass email sent to:", data.members[0].email);
     } catch (error) {
