@@ -45,8 +45,8 @@
 
         @media print {
             .button-group { display: none; }
-            body { background: white; }
-            .receipt-card { box-shadow: none; border: 1px solid #ccc; }
+            body { background: #121212 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .receipt-card { box-shadow: none; border: 1px solid rgba(0,212,255,0.3); }
         }
     </style>
 </head>
@@ -104,14 +104,16 @@
 
         // Generate QR Code with unique Registration ID
         const qrImg = document.getElementById('disp-qr');
-        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${regId}`;
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${regId}`;
 
-        // Function to download the pass as a PNG image
         function downloadPass() {
             const pass = document.getElementById('passContent');
             html2canvas(pass, {
                 backgroundColor: '#121212',
-                scale: 2 // Higher quality
+                scale: 3,
+                useCORS: true,
+                allowTaint: true,
+                logging: false
             }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = `Atlantix_Pass_${regId}.png`;

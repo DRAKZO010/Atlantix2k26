@@ -540,7 +540,10 @@ function downloadReceipt() {
     const card = document.getElementById('receiptCard');
     html2canvas(card, {
         backgroundColor: '#1a1a2e',
-        scale: 2
+        scale: 3,
+        useCORS: true,
+        allowTaint: true,
+        logging: false
     }).then(canvas => {
         const link = document.createElement('a');
         link.download = `Atlantix_Receipt_${lastRegisteredId}.png`;
