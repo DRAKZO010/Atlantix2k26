@@ -497,30 +497,54 @@ function closeUPIModal() {
     }
 }
 
+let lastRegisteredId = null;
+
 function showRegistrationSuccess() {
-    // 1. COLLECT DATA FROM THE FORM (Crucial fix)
     const m1Name = document.getElementById('member1_name')?.value || "Participant";
     const m1Email = document.getElementById('member1_email')?.value || "";
     const techEvent = document.getElementById('main_event')?.value || "None";
     const addEvent = document.getElementById('additional_event')?.value || "None";
 
-    // 2. Update the registration object so Firebase sees it
     registrationData.members[0] = { name: m1Name, email: m1Email };
     registrationData.mainEvent = techEvent;
     registrationData.additionalEvent = addEvent;
 
-    // 3. Generate the ID
     const generatedId = "AUTO" + Math.floor(100000 + Math.random() * 900000);
+    lastRegisteredId = generatedId;
 
-    // 4. SAVE TO FIREBASE
     if (window.saveRegistrationToFirebase) {
         window.saveRegistrationToFirebase(generatedId, registrationData);
     }
 
-    // 5. Update UI and Send Mail
-    document.getElementById('registrationId').textContent = generatedId;
+    document.getElementById('receiptName').textContent = m1Name;
+    document.getElementById('receiptId').textContent = generatedId;
+    document.getElementById('receiptTechEvent').textContent = techEvent;
+    document.getElementById('receiptNonTechEvent').textContent = addEvent;
+    document.getElementById('receiptAmount').textContent = `₹${registrationData.totalFee}`;
+    document.getElementById('receiptDate').textContent = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    document.getElementById('receiptQr').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${generatedId}`;
+
     sendAutomaticReceipt(generatedId, registrationData);
     document.getElementById('successMessage').style.display = 'flex';
+}
+
+function getPassUrl() {
+    const name = registrationData.members[0]?.name || 'Participant';
+    const event = registrationData.mainEvent || 'Atlantix Hackathon 2026';
+    return `https://atlantix2k26.vercel.app/pass.html?id=${lastRegisteredId}&name=${encodeURIComponent(name)}&event=${encodeURIComponent(event)}`;
+}
+
+function downloadReceipt() {
+    const card = document.getElementById('receiptCard');
+    html2canvas(card, {
+        backgroundColor: '#1a1a2e',
+        scale: 2
+    }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `Atlantix_Receipt_${lastRegisteredId}.png`;
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+    });
 }
 
    
@@ -546,12 +570,6 @@ function resetForm() {
     }
 }
 
-function downloadReceipt() {
-    // Simulate receipt download
-    console.log('Downloading receipt...');
-    alert('Receipt downloaded successfully!');
-}
-
 // ==================== UTILITY FUNCTIONS ====================
 function makeGlobalFunctions() {
     // Ensure all functions are available globally
@@ -571,6 +589,8 @@ function makeGlobalFunctions() {
     window.openEventDetails = openEventDetails;
     window.closeEventDetails = closeEventDetails;
     window.registerForEvent = registerForEvent;
+    window.downloadReceipt = downloadReceipt;
+    window.getPassUrl = getPassUrl;
 }
 
 function fixFormElements() {

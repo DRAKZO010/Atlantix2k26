@@ -847,28 +847,46 @@
             <div class="modal__body">
                 <p>Thank you for registering for Atlantix Hackathon 2026!</p>
 
-                <div class="success-details">
-    <h4>Registration Receipt</h4>
-    <div class="receipt-row">
-        <span>Registration ID:</span>
-        <span id="registrationId">AUTO123456</span>
-    </div>
-    <div class="receipt-row" id="technicalEventRow" style="display: none;">
-        <span>Technical Event:</span>
-        <span id="selectedTechnicalEvent">-</span>
-    </div>
-    <div class="receipt-row" id="nonTechnicalEventRow" style="display: none;">
-        <span>Non-Technical Event:</span>
-        <span id="selectedNonTechnicalEvent">-</span>
-    </div>
-    <div class="receipt-row">
-        <span>Amount Paid:</span>
-        <span id="paidAmount">₹50</span>
-    </div>
-</div>
+                <div id="receiptCard" class="receipt-card-download">
+                    <div class="receipt-card-header">
+                        <h3>ATLANTIX HACKATHON 2026</h3>
+                        <p>Digital Pass & Receipt</p>
+                    </div>
+                    <div class="receipt-card-body">
+                        <div class="receipt-card-row">
+                            <label>Participant</label>
+                            <span id="receiptName">-</span>
+                        </div>
+                        <div class="receipt-card-row">
+                            <label>Registration ID</label>
+                            <span id="receiptId" style="color:var(--color-primary)">-</span>
+                        </div>
+                        <div class="receipt-card-row">
+                            <label>Technical Event</label>
+                            <span id="receiptTechEvent">-</span>
+                        </div>
+                        <div class="receipt-card-row">
+                            <label>Non-Technical Event</label>
+                            <span id="receiptNonTechEvent">-</span>
+                        </div>
+                        <div class="receipt-card-row">
+                            <label>Amount Paid</label>
+                            <span id="receiptAmount">-</span>
+                        </div>
+                        <div class="receipt-card-row">
+                            <label>Date</label>
+                            <span id="receiptDate">-</span>
+                        </div>
+                        <div class="receipt-qr">
+                            <img id="receiptQr" src="" alt="QR Code" width="150" height="150">
+                            <p>Show this QR at the entry gate</p>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="success-actions">
-                    <p style="color: var(--color-primary); margin-bottom: 15px;">📧 A receipt and welcome note have been sent to your registered emails.</p>
+                    <button class="btn btn--primary" onclick="downloadReceipt()">Download Receipt</button>
+                    <button class="btn btn--outline" onclick="window.open(getPassUrl(), '_blank')">View Digital Pass</button>
                     <button class="btn btn--outline" onclick="resetForm()">Register Another Team</button>
                 </div>
             </div>
@@ -876,6 +894,7 @@
     </div>
 
     <!-- JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="app.js"></script>
 
     <script type="module">

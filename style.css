@@ -1333,6 +1333,64 @@ select.form-control {
     margin-top: var(--space-20);
 }
 
+/* Receipt Card for Download */
+.receipt-card-download {
+    background: var(--color-bg-1);
+    border: 1px solid rgba(0, 212, 255, 0.3);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+.receipt-card-header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    padding: 20px;
+    text-align: center;
+    border-bottom: 2px dashed rgba(0, 212, 255, 0.3);
+}
+.receipt-card-header h3 {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--color-primary);
+    font-size: 1rem;
+    letter-spacing: 2px;
+    margin: 0 0 5px;
+}
+.receipt-card-header p {
+    color: var(--color-muted);
+    margin: 0;
+    font-size: 0.85rem;
+}
+.receipt-card-body {
+    padding: 20px;
+}
+.receipt-card-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.receipt-card-row label {
+    color: var(--color-muted);
+    font-size: 0.85rem;
+}
+.receipt-card-row span {
+    font-weight: 600;
+}
+.receipt-qr {
+    text-align: center;
+    padding: 15px 0 5px;
+}
+.receipt-qr img {
+    border-radius: 8px;
+    background: white;
+    padding: 8px;
+}
+.receipt-qr p {
+    color: var(--color-primary);
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    margin-top: 8px;
+}
+
 /* Hidden utility */
 .hidden {
     display: none !important;
