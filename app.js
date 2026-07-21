@@ -529,7 +529,7 @@ function showRegistrationSuccess() {
 
     // 5. Update UI and Send Mail
     document.getElementById('registrationId').textContent = generatedId;
-    sendAutomaticReceipt(generatedId);
+    sendAutomaticReceipt(generatedId, registrationData);
     document.getElementById('successMessage').style.display = 'flex';
 }
 
