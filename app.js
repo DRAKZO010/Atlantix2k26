@@ -1,13 +1,12 @@
 // Atlantix Hackathon 2026 - Complete JavaScript
 // Atlantix Hackathon 2026 - Complete JavaScript
 (function() {
-    // Wait for the window to fully load everything (including snippets)
     window.addEventListener('load', function() {
-        if (window.env && window.env.EMAILJS_PUBLIC_KEY) {
-            emailjs.init(window.env.EMAILJS_PUBLIC_KEY);
+        if (typeof emailjs !== 'undefined') {
+            emailjs.init("yXoInUtWoCeIT20b5");
             console.log("✅ EmailJS Initialized Successfully!");
         } else {
-            console.error("❌ EmailJS failed: window.env is still missing after page load.");
+            console.error("❌ EmailJS library not loaded.");
         }
     });
 })();
@@ -840,24 +839,31 @@ let selectedEventForRegistration = null;
 
 
 async function sendAutomaticReceipt(regId, data) {
+    const passUrl = `https://atlantix2k26.vercel.app/pass.html?id=${regId}&name=${encodeURIComponent(data.members[0].name)}&event=${encodeURIComponent(data.mainEvent)}`;
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${regId}`;
+
     const templateParams = {
         to_name: data.members[0].name,
         to_email: data.members[0].email,
         reg_id: regId,
-        // Make sure these keys match your EmailJS Template EXACTLY
         main_event: data.mainEvent || "Hackathon Main Event",
         additional_event: data.additionalEvent || "None",
         total_fee: data.totalFee,
-        pass_link: `https://atlantix2k26.netlify.app/pass.html?id=${regId}&name=${encodeURIComponent(data.members[0].name)}&event=${encodeURIComponent(data.mainEvent)}`
+        pass_link: passUrl,
+        qr_code: qrUrl,
+        venue: "Park College of Engineering and Technology, Kaniyur, Coimbatore",
+        event_date: "January 15-16, 2026",
+        team_lead: data.members[0].name,
+        event_name: data.mainEvent || "Atlantix Hackathon 2026"
     };
 
     try {
         await emailjs.send(
-            window.env.EMAILJS_SERVICE_ID, 
-            window.env.EMAILJS_TEMPLATE_ID, 
+            "service_4sge16d",
+            "template_0vchqqr",
             templateParams
         );
-        console.log("✅ Email sent with events:", data.mainEvent);
+        console.log("✅ Pass email sent to:", data.members[0].email);
     } catch (error) {
         console.error("❌ Email failed:", error);
     }
