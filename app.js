@@ -525,7 +525,9 @@ function showRegistrationSuccess() {
     document.getElementById('receiptQr').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${generatedId}`;
 
     sendAutomaticReceipt(generatedId, registrationData);
-    document.getElementById('successMessage').style.display = 'flex';
+    const modal = document.getElementById('successMessage');
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
 }
 
 function getPassUrl() {
