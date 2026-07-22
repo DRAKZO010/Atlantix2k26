@@ -855,24 +855,28 @@ let selectedEventForRegistration = null;
 
 async function sendAutomaticReceipt(regId, data) {
     const passUrl = `https://atlantix2k26.vercel.app/pass.html?id=${regId}&name=${encodeURIComponent(data.members[0].name)}&event=${encodeURIComponent(data.mainEvent)}`;
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${regId}`;
 
-    const payload = {
-        to_email: data.members[0].email,
-        reg_id: regId,
-        team_lead: data.members[0].name,
-        event_name: data.mainEvent || "Atlantix Hackathon 2026",
-        additional_event: data.additionalEvent || "None",
-        total_fee: data.totalFee,
-        pass_link: passUrl,
-        venue: "Park College of Engineering and Technology, Kaniyur, Coimbatore",
-        event_date: "January 15-16, 2026"
-    };
+    const formData = new FormData();
+    formData.append("_captcha", "false");
+    formData.append("_template", "boxed");
+    formData.append("_subject", `Atlantix 2026 - Registration Confirmed (${regId})`);
+    formData.append("to", data.members[0].email);
+    formData.append("Registration ID", regId);
+    formData.append("Name", data.members[0].name);
+    formData.append("Email", data.members[0].email);
+    formData.append("Technical Event", data.mainEvent || "None");
+    formData.append("Non-Technical Event", data.additionalEvent || "None");
+    formData.append("Amount Paid", `Rs.${data.totalFee}`);
+    formData.append("Venue", "Park College of Engineering and Technology, Kaniyur, Coimbatore");
+    formData.append("Event Date", "January 15-16, 2026");
+    formData.append("Digital Pass", passUrl);
+    formData.append("QR Code", qrUrl);
 
     try {
-        await fetch("https://script.google.com/macros/s/AKfycbxE8oXINc8F7SAzuHeMyWOu9Kk1SgHt5SvVXzfu94DsX-4ezVlNWSUnKf6IM0fTrcDs/exec", {
+        await fetch("https://formsubmit.co/ajax/trialrebook@gmail.com", {
             method: "POST",
-            body: JSON.stringify(payload),
-            mode: "no-cors"
+            body: formData
         });
         console.log("✅ Pass email sent to:", data.members[0].email);
     } catch (error) {
