@@ -516,6 +516,9 @@ function showRegistrationSuccess() {
     const addEvent = document.getElementById('additional_event')?.value || "None";
 
     registrationData.members[0] = { name: m1Name, email: m1Email };
+    registrationData.members[1] = { name: document.getElementById('member2_name')?.value || "", email: document.getElementById('member2_email')?.value || "" };
+    registrationData.members[2] = { name: document.getElementById('member3_name')?.value || "", email: document.getElementById('member3_email')?.value || "" };
+    registrationData.members[3] = { name: document.getElementById('member4_name')?.value || "", email: document.getElementById('member4_email')?.value || "" };
     registrationData.mainEvent = techEvent;
     registrationData.additionalEvent = addEvent;
 
@@ -864,28 +867,34 @@ let selectedEventForRegistration = null;
 
 
 async function sendAutomaticReceipt(regId, data) {
-    const passUrl = `https://atlantix2k26.vercel.app/pass.html?id=${regId}&name=${encodeURIComponent(data.members[0].name)}&event=${encodeURIComponent(data.mainEvent)}`;
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${regId}`;
 
-    const templateParams = {
-        to_name: data.members[0].name,
-        to_email: data.members[0].email,
-        reg_id: regId,
-        team_lead: data.members[0].name,
-        event_name: data.mainEvent || "Atlantix Hackathon 2026",
-        additional_event: data.additionalEvent || "None",
-        total_fee: data.totalFee,
-        pass_link: passUrl,
-        qr_code: qrUrl,
-        venue: "Park College of Engineering and Technology, Kaniyur, Coimbatore",
-        event_date: "January 15-16, 2026"
-    };
+    for (let i = 0; i < data.members.length; i++) {
+        const member = data.members[i];
+        if (!member.name || !member.email) continue;
 
-    try {
-        await emailjs.send("service_qogm9lg", "template_0vchqqr", templateParams);
-        console.log("✅ Pass email sent to:", data.members[0].email);
-    } catch (error) {
-        console.error("❌ Email failed:", error);
+        const passUrl = `https://atlantix2k26.vercel.app/pass.html?id=${regId}&name=${encodeURIComponent(member.name)}&event=${encodeURIComponent(data.mainEvent)}`;
+
+        const templateParams = {
+            to_name: member.name,
+            to_email: member.email,
+            reg_id: regId,
+            team_lead: member.name,
+            event_name: data.mainEvent || "Atlantix Hackathon 2026",
+            additional_event: data.additionalEvent || "None",
+            total_fee: data.totalFee,
+            pass_link: passUrl,
+            qr_code: qrUrl,
+            venue: "Park College of Engineering and Technology, Kaniyur, Coimbatore",
+            event_date: "January 15-16, 2026"
+        };
+
+        try {
+            await emailjs.send("service_qogm9lg", "template_0vchqqr", templateParams);
+            console.log(`✅ Email ${i + 1} sent to:`, member.email);
+        } catch (error) {
+            console.error(`❌ Email failed for ${member.email}:`, error);
+        }
     }
 }
 
