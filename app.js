@@ -882,7 +882,7 @@ async function sendAutomaticReceipt(regId, data) {
     };
 
     try {
-        await emailjs.send("service_4sge16d", "template_0vchqqr", templateParams);
+        await emailjs.send("service_qogm9lg", "template_0vchqqr", templateParams);
         console.log("✅ Pass email sent to:", data.members[0].email);
     } catch (error) {
         console.error("❌ Email failed:", error);
