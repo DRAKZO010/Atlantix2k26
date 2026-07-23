@@ -1,5 +1,15 @@
 // Atlantix Hackathon 2026 - Complete JavaScript
 // Atlantix Hackathon 2026 - Complete JavaScript
+(function() {
+    window.addEventListener('load', function() {
+        if (typeof emailjs !== 'undefined') {
+            emailjs.init({ publicKey: "yXoInUtWoCeIT20b5" });
+            console.log("✅ EmailJS Initialized Successfully!");
+        } else {
+            console.error("❌ EmailJS library not loaded.");
+        }
+    });
+})();
 
 
 let registrationData = {
@@ -857,27 +867,22 @@ async function sendAutomaticReceipt(regId, data) {
     const passUrl = `https://atlantix2k26.vercel.app/pass.html?id=${regId}&name=${encodeURIComponent(data.members[0].name)}&event=${encodeURIComponent(data.mainEvent)}`;
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${regId}`;
 
-    const formData = new FormData();
-    formData.append("_captcha", "false");
-    formData.append("_template", "boxed");
-    formData.append("_subject", `Atlantix 2026 - Registration Confirmed (${regId})`);
-    formData.append("to", data.members[0].email);
-    formData.append("Registration ID", regId);
-    formData.append("Name", data.members[0].name);
-    formData.append("Email", data.members[0].email);
-    formData.append("Technical Event", data.mainEvent || "None");
-    formData.append("Non-Technical Event", data.additionalEvent || "None");
-    formData.append("Amount Paid", `Rs.${data.totalFee}`);
-    formData.append("Venue", "Park College of Engineering and Technology, Kaniyur, Coimbatore");
-    formData.append("Event Date", "January 15-16, 2026");
-    formData.append("Digital Pass", passUrl);
-    formData.append("QR Code", qrUrl);
+    const templateParams = {
+        to_name: data.members[0].name,
+        to_email: data.members[0].email,
+        reg_id: regId,
+        team_lead: data.members[0].name,
+        event_name: data.mainEvent || "Atlantix Hackathon 2026",
+        additional_event: data.additionalEvent || "None",
+        total_fee: data.totalFee,
+        pass_link: passUrl,
+        qr_code: qrUrl,
+        venue: "Park College of Engineering and Technology, Kaniyur, Coimbatore",
+        event_date: "January 15-16, 2026"
+    };
 
     try {
-        await fetch("https://formsubmit.co/ajax/trialrebook@gmail.com", {
-            method: "POST",
-            body: formData
-        });
+        await emailjs.send("service_4sge16d", "template_0vchqqr", templateParams);
         console.log("✅ Pass email sent to:", data.members[0].email);
     } catch (error) {
         console.error("❌ Email failed:", error);
