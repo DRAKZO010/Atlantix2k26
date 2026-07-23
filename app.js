@@ -523,6 +523,7 @@ function showRegistrationSuccess() {
     registrationData.additionalEvent = addEvent;
 
     const generatedId = "AUTO" + Math.floor(100000 + Math.random() * 900000);
+    const leadMemberId = generatedId + "-M1";
     lastRegisteredId = generatedId;
 
     if (window.saveRegistrationToFirebase) {
@@ -530,12 +531,12 @@ function showRegistrationSuccess() {
     }
 
     document.getElementById('receiptName').textContent = m1Name;
-    document.getElementById('receiptId').textContent = generatedId;
+    document.getElementById('receiptId').textContent = leadMemberId;
     document.getElementById('receiptTechEvent').textContent = techEvent;
     document.getElementById('receiptNonTechEvent').textContent = addEvent;
     document.getElementById('receiptAmount').textContent = `₹${registrationData.totalFee}`;
     document.getElementById('receiptDate').textContent = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
-    document.getElementById('receiptQr').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${generatedId}`;
+    document.getElementById('receiptQr').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${leadMemberId}`;
 
     sendAutomaticReceipt(generatedId, registrationData);
     const modal = document.getElementById('successMessage');
@@ -546,7 +547,7 @@ function showRegistrationSuccess() {
 function getPassUrl() {
     const name = registrationData.members[0]?.name || 'Participant';
     const event = registrationData.mainEvent || 'Atlantix Hackathon 2026';
-    return `https://atlantix2k26.vercel.app/pass.html?id=${lastRegisteredId}&name=${encodeURIComponent(name)}&event=${encodeURIComponent(event)}`;
+    return `https://atlantix2k26.vercel.app/pass.html?id=${lastRegisteredId}-M1&name=${encodeURIComponent(name)}&event=${encodeURIComponent(event)}`;
 }
 
 function downloadReceipt() {
@@ -867,18 +868,18 @@ let selectedEventForRegistration = null;
 
 
 async function sendAutomaticReceipt(regId, data) {
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${regId}`;
+    const activeMembers = data.members.filter(m => m.name && m.email);
 
-    for (let i = 0; i < data.members.length; i++) {
-        const member = data.members[i];
-        if (!member.name || !member.email) continue;
-
-        const passUrl = `https://atlantix2k26.vercel.app/pass.html?id=${regId}&name=${encodeURIComponent(member.name)}&event=${encodeURIComponent(data.mainEvent)}`;
+    for (let i = 0; i < activeMembers.length; i++) {
+        const member = activeMembers[i];
+        const memberId = regId + "-M" + (i + 1);
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${memberId}`;
+        const passUrl = `https://atlantix2k26.vercel.app/pass.html?id=${memberId}&name=${encodeURIComponent(member.name)}&event=${encodeURIComponent(data.mainEvent)}`;
 
         const templateParams = {
             to_name: member.name,
             to_email: member.email,
-            reg_id: regId,
+            reg_id: memberId,
             team_lead: member.name,
             event_name: data.mainEvent || "Atlantix Hackathon 2026",
             additional_event: data.additionalEvent || "None",
@@ -891,7 +892,7 @@ async function sendAutomaticReceipt(regId, data) {
 
         try {
             await emailjs.send("service_qogm9lg", "template_0vchqqr", templateParams);
-            console.log(`✅ Email ${i + 1} sent to:`, member.email);
+            console.log(`✅ Email sent to:`, member.email, `(${memberId})`);
         } catch (error) {
             console.error(`❌ Email failed for ${member.email}:`, error);
         }

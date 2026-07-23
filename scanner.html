@@ -111,7 +111,7 @@
             });
         }
 
-        async function verifyEntry(regId) {
+        async function verifyEntry(scannedId) {
             const statusBox = document.getElementById('statusBox');
             const scanAgainBtn = document.getElementById('scanAgainBtn');
             statusBox.style.display = "block";
@@ -120,12 +120,30 @@
             scanAgainBtn.style.display = "none";
 
             try {
-                const cleanId = regId.trim();
-                const docRef = doc(db, "registrations", cleanId);
+                const cleanId = scannedId.trim();
+                const isMemberId = cleanId.includes("-M");
+                const teamId = isMemberId ? cleanId.split("-M")[0] : cleanId;
+
+                const docRef = doc(db, "registrations", teamId);
                 const docSnap = await getDoc(docRef);
 
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
+                if (!docSnap.exists()) {
+                    playBeep('error');
+                    statusBox.classList.add('error');
+                    statusBox.innerHTML = `
+                        <div class="status-icon">❌</div>
+                        <div class="status-name">INVALID ID</div>
+                        <div class="status-detail">Not found in database</div>
+                        <div class="status-detail">ID: ${cleanId}</div>
+                    `;
+                    scanAgainBtn.style.display = 'inline-block';
+                    stopScanner();
+                    return;
+                }
+
+                const data = docSnap.data();
+
+                if (!isMemberId) {
                     if (data.checkedIn) {
                         playBeep('warning');
                         scanCountNum++;
@@ -140,7 +158,8 @@
                         `;
                         scanAgainBtn.style.display = 'inline-block';
                     } else {
-                        await updateDoc(docRef, { checkedIn: true });
+                        const updatedMembers = data.members.map(m => ({ ...m, checkedIn: true }));
+                        await updateDoc(docRef, { checkedIn: true, members: updatedMembers });
                         playBeep('success');
                         scanCountNum++;
                         document.getElementById('scanCount').textContent = `Scanned: ${scanCountNum}`;
@@ -151,20 +170,65 @@
                             <div class="status-detail"><b>${data.teamLead}</b></div>
                             <div class="status-detail">ID: ${cleanId}</div>
                             <div class="status-detail">Event: ${data.technicalEvent || 'N/A'}</div>
-                            <div class="status-detail" style="margin-top:10px;color:var(--success)">Successfully checked in!</div>
+                            <div class="status-detail" style="margin-top:10px;color:var(--success)">Team checked in!</div>
                         `;
                         scanAgainBtn.style.display = 'inline-block';
                     }
                 } else {
-                    playBeep('error');
-                    statusBox.classList.add('error');
-                    statusBox.innerHTML = `
-                        <div class="status-icon">❌</div>
-                        <div class="status-name">INVALID ID</div>
-                        <div class="status-detail">Not found in database</div>
-                        <div class="status-detail">ID: ${cleanId}</div>
-                    `;
-                    scanAgainBtn.style.display = 'inline-block';
+                    const memberIndex = parseInt(cleanId.split("-M")[1]) - 1;
+                    const member = data.members[memberIndex];
+
+                    if (!member) {
+                        playBeep('error');
+                        statusBox.classList.add('error');
+                        statusBox.innerHTML = `
+                            <div class="status-icon">❌</div>
+                            <div class="status-name">INVALID MEMBER ID</div>
+                            <div class="status-detail">Member not found in team</div>
+                            <div class="status-detail">ID: ${cleanId}</div>
+                        `;
+                        scanAgainBtn.style.display = 'inline-block';
+                        stopScanner();
+                        return;
+                    }
+
+                    if (member.checkedIn) {
+                        playBeep('warning');
+                        scanCountNum++;
+                        document.getElementById('scanCount').textContent = `Scanned: ${scanCountNum}`;
+                        statusBox.classList.add('warning');
+                        statusBox.innerHTML = `
+                            <div class="status-icon">⚠️</div>
+                            <div class="status-name">ALREADY CHECKED IN</div>
+                            <div class="status-detail"><b>${member.name}</b></div>
+                            <div class="status-detail">ID: ${cleanId}</div>
+                            <div class="status-detail">Event: ${data.technicalEvent || 'N/A'}</div>
+                        `;
+                        scanAgainBtn.style.display = 'inline-block';
+                    } else {
+                        const updatedMembers = data.members.map((m, i) => {
+                            if (i === memberIndex) return { ...m, checkedIn: true };
+                            return m;
+                        });
+                        const allCheckedIn = updatedMembers.every(m => m.checkedIn);
+                        await updateDoc(docRef, {
+                            members: updatedMembers,
+                            checkedIn: allCheckedIn
+                        });
+                        playBeep('success');
+                        scanCountNum++;
+                        document.getElementById('scanCount').textContent = `Scanned: ${scanCountNum}`;
+                        statusBox.classList.add('success');
+                        statusBox.innerHTML = `
+                            <div class="status-icon">✅</div>
+                            <div class="status-name">ACCESS GRANTED</div>
+                            <div class="status-detail"><b>${member.name}</b></div>
+                            <div class="status-detail">ID: ${cleanId}</div>
+                            <div class="status-detail">Event: ${data.technicalEvent || 'N/A'}</div>
+                            <div class="status-detail" style="margin-top:10px;color:var(--success)">Successfully checked in!</div>
+                        `;
+                        scanAgainBtn.style.display = 'inline-block';
+                    }
                 }
             } catch (err) {
                 console.error(err);

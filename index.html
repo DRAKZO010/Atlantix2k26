@@ -917,12 +917,17 @@
 
         window.saveRegistrationToFirebase = async (regId, data) => {
             try {
-                const members = data.members.filter(m => m.name && m.email);
+                const members = data.members.filter(m => m.name && m.email).map((m, i) => ({
+                    name: m.name,
+                    email: m.email,
+                    memberId: regId + "-M" + (i + 1),
+                    checkedIn: false
+                }));
                 await setDoc(doc(db, "registrations", regId), {
                     registrationId: regId,
                     teamLead: data.members[0].name,
                     leadEmail: data.members[0].email,
-                    members: members.map(m => ({ name: m.name, email: m.email })),
+                    members: members,
                     technicalEvent: data.mainEvent,
                     additionalEvent: data.additionalEvent,
                     amount: data.totalFee,
