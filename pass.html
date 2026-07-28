@@ -59,16 +59,16 @@
             
             <div class="detail-grid">
                 <div class="detail-item">
-                    <label>Participant</label>
+                    <label>Team</label>
                     <span id="disp-name">Loading...</span>
                 </div>
                 <div class="detail-item">
-                    <label>Pass ID</label>
+                    <label>Team ID</label>
                     <span id="disp-id" style="color:var(--color-primary)">Loading...</span>
                 </div>
                 <div class="detail-item">
                     <label>Date</label>
-                    <span id="disp-date">Dec 25, 2025</span>
+                    <span id="disp-date">Jan 15-16, 2026</span>
                 </div>
                 <div class="detail-item">
                     <label>Status</label>
@@ -94,15 +94,15 @@
         // Parse URL Parameters
         const params = new URLSearchParams(window.location.search);
         const regId = params.get('id') || 'ATL-OFFLINE';
-        const userName = params.get('name') || 'Valued Participant';
-        const eventName = params.get('event') || 'Atlantix 2k26';
+        const teamName = params.get('team') || 'Team';
+        const eventName = params.get('event') || 'Atlantix 2026';
 
-        // FIXED: Corrected IDs to match the HTML elements above
-        document.getElementById('disp-name').textContent = userName;
+        // Set display values
+        document.getElementById('disp-name').textContent = teamName;
         document.getElementById('disp-id').textContent = regId;
         document.getElementById('disp-event').textContent = eventName;
 
-        // Generate QR Code with unique Registration ID
+        // Generate QR Code with Team ID
         const qrImg = document.getElementById('disp-qr');
         qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${regId}`;
 

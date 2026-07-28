@@ -10,35 +10,64 @@
         body { font-family: 'Rajdhani', sans-serif; background: var(--bg); color: white; margin: 0; padding: 20px; text-align: center; }
         .container { max-width: 500px; margin: auto; }
         #reader { width: 100%; border-radius: 12px; overflow: hidden; border: 2px solid var(--primary) !important; margin-bottom: 20px; }
-        .status-box { padding: 20px; border-radius: 12px; margin-top: 20px; display: none; border: 1px solid #333; background: var(--card); }
-        .status-box .status-icon { font-size: 3rem; margin-bottom: 10px; }
-        .status-box .status-name { font-size: 1.3rem; font-weight: 700; margin: 5px 0; }
-        .status-box .status-detail { font-size: 0.9rem; opacity: 0.8; }
+        #reader video { border-radius: 8px; }
+        .status-box { padding: 20px; border-radius: 12px; margin-top: 20px; display: none; border: 1px solid #333; background: var(--card); text-align: left; }
+        .status-box .status-icon { font-size: 3rem; margin-bottom: 10px; text-align: center; }
+        .status-box .status-name { font-size: 1.3rem; font-weight: 700; margin: 5px 0; text-align: center; }
+        .status-box .status-detail { font-size: 0.9rem; opacity: 0.8; text-align: center; }
         .success { border-color: var(--success); color: var(--success); }
         .error { border-color: var(--error); color: var(--error); }
         .warning { border-color: #ffaa00; color: #ffaa00; }
-        input { background: #222; border: 1px solid #444; color: white; padding: 12px; border-radius: 5px; width: 70%; margin-top: 10px; }
+        input[type="text"] { background: #222; border: 1px solid #444; color: white; padding: 12px; border-radius: 5px; width: 70%; margin-top: 10px; }
         button { background: var(--primary); color: black; border: none; padding: 12px 24px; border-radius: 5px; font-weight: bold; cursor: pointer; transition: 0.3s; }
         button:hover { opacity: 0.8; }
         .manual-section { margin-top: 40px; border-top: 1px solid #333; padding-top: 20px; }
         .scan-again-btn { display: none; margin-top: 20px; padding: 14px 32px; font-size: 1rem; background: var(--primary); color: black; }
         .scan-count { color: var(--primary); font-size: 0.85rem; margin-top: 10px; }
+
+        .team-panel { display: none; margin-top: 20px; background: var(--card); border: 1px solid #333; border-radius: 12px; padding: 20px; text-align: left; }
+        .team-panel h3 { text-align: center; color: var(--primary); margin-top: 0; font-family: 'Orbitron', sans-serif; font-size: 1rem; }
+        .team-id-display { text-align: center; color: var(--primary); font-size: 1.2rem; font-weight: 700; margin-bottom: 15px; }
+        .team-meta { text-align: center; font-size: 0.85rem; opacity: 0.7; margin-bottom: 15px; }
+        .member-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; margin-bottom: 8px; background: #222; border: 1px solid #333; transition: 0.2s; }
+        .member-item.checked { border-color: var(--success); background: rgba(0, 255, 136, 0.05); }
+        .member-item input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--success); cursor: pointer; flex-shrink: 0; }
+        .member-info { flex: 1; }
+        .member-name { font-weight: 600; font-size: 1rem; }
+        .member-email { font-size: 0.8rem; opacity: 0.6; }
+        .member-status { font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; flex-shrink: 0; }
+        .member-status.present { background: rgba(0, 255, 136, 0.2); color: var(--success); }
+        .member-status.absent { background: rgba(255, 77, 77, 0.2); color: var(--error); }
+        .confirm-btn { width: 100%; margin-top: 15px; padding: 14px; font-size: 1.1rem; background: var(--success); color: black; display: none; font-weight: bold; }
+        .confirm-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .summary { text-align: center; margin-top: 10px; font-size: 0.9rem; opacity: 0.8; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1 style="font-family: 'Orbitron'; color: var(--primary);">GATEKEEPER</h1>
-        <p>Scan participant QR code for entry</p>
+        <p>Scan team QR code for entry</p>
         <div class="scan-count" id="scanCount">Scanned: 0</div>
         
         <div id="reader"></div>
         <div id="statusBox" class="status-box"></div>
-        <button class="scan-again-btn" id="scanAgainBtn" onclick="scanAnother()">Scan Another Pass</button>
+
+        <!-- Team Checklist Panel -->
+        <div class="team-panel" id="teamPanel">
+            <h3>TEAM CHECK-IN</h3>
+            <div class="team-id-display" id="teamIdDisplay"></div>
+            <div class="team-meta" id="teamMeta"></div>
+            <div id="memberList"></div>
+            <div class="summary" id="checkSummary"></div>
+            <button class="confirm-btn" id="confirmBtn">Confirm Check-In</button>
+        </div>
+
+        <button class="scan-again-btn" id="scanAgainBtn">Scan Another Pass</button>
 
         <div class="manual-section">
-            <p>Can't scan? Enter ID manually:</p>
+            <p>Can't scan? Enter Team ID manually:</p>
             <input type="text" id="manualId" placeholder="e.g. AUTO123456">
-            <button onclick="checkManual()">CHECK</button>
+            <button id="manualBtn">CHECK</button>
         </div>
     </div>
 
@@ -58,8 +87,11 @@
         const db = getFirestore(app);
 
         let scanCountNum = 0;
-        let html5QrcodeScanner = null;
+        let html5Qr = null;
         let lastScannedId = null;
+        let currentTeamData = null;
+        let currentTeamId = null;
+        let isScanning = false;
 
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         document.addEventListener('click', () => { if (audioCtx.state === 'suspended') audioCtx.resume(); }, { once: true });
@@ -68,14 +100,12 @@
         function playBeep(type) {
             if (audioCtx.state === 'suspended') audioCtx.resume();
             const now = audioCtx.currentTime;
-
             if (type === 'success') {
                 const osc1 = audioCtx.createOscillator();
                 const g1 = audioCtx.createGain();
                 osc1.connect(g1); g1.connect(audioCtx.destination);
                 osc1.frequency.value = 880; g1.gain.value = 0.4;
                 osc1.start(now); osc1.stop(now + 0.12);
-
                 const osc2 = audioCtx.createOscillator();
                 const g2 = audioCtx.createGain();
                 osc2.connect(g2); g2.connect(audioCtx.destination);
@@ -96,35 +126,63 @@
             }
         }
 
-        function stopScanner() {
-            if (html5QrcodeScanner) {
-                html5QrcodeScanner.clear();
+        async function stopScanner() {
+            if (html5Qr && isScanning) {
+                try {
+                    await html5Qr.stop();
+                } catch (e) {
+                    console.log("Scanner already stopped");
+                }
+                isScanning = false;
             }
         }
 
-        function startScanner() {
-            html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
-            html5QrcodeScanner.render((decodedText) => {
-                if (decodedText === lastScannedId) return;
-                lastScannedId = decodedText;
-                verifyEntry(decodedText);
-            });
+        async function startScanner() {
+            document.getElementById('reader').style.display = 'block';
+            document.getElementById('teamPanel').style.display = 'none';
+            document.getElementById('statusBox').style.display = 'none';
+            document.getElementById('scanAgainBtn').style.display = 'none';
+
+            html5Qr = new Html5Qrcode("reader");
+            isScanning = true;
+
+            try {
+                await html5Qr.start(
+                    { facingMode: "environment" },
+                    { fps: 10, qrbox: 250 },
+                    onScanSuccess,
+                    () => {}
+                );
+            } catch (err) {
+                console.error("Camera start failed:", err);
+                document.getElementById('statusBox').style.display = 'block';
+                document.getElementById('statusBox').className = 'status-box error';
+                document.getElementById('statusBox').innerHTML = `
+                    <div class="status-icon">📷</div>
+                    <div class="status-name">CAMERA ERROR</div>
+                    <div class="status-detail">Could not access camera</div>
+                    <div class="status-detail">Use manual entry below</div>
+                `;
+            }
+        }
+
+        async function onScanSuccess(decodedText) {
+            if (decodedText === lastScannedId) return;
+            lastScannedId = decodedText;
+            await stopScanner();
+            await verifyEntry(decodedText);
         }
 
         async function verifyEntry(scannedId) {
             const statusBox = document.getElementById('statusBox');
-            const scanAgainBtn = document.getElementById('scanAgainBtn');
             statusBox.style.display = "block";
             statusBox.innerHTML = "Processing...";
             statusBox.className = "status-box";
-            scanAgainBtn.style.display = "none";
 
             try {
-                const cleanId = scannedId.trim();
-                const isMemberId = cleanId.includes("-M");
-                const teamId = isMemberId ? cleanId.split("-M")[0] : cleanId;
-
-                const docRef = doc(db, "registrations", teamId);
+                const cleanId = scannedId.trim().toUpperCase();
+                console.log("Looking up team:", cleanId);
+                const docRef = doc(db, "registrations", cleanId);
                 const docSnap = await getDoc(docRef);
 
                 if (!docSnap.exists()) {
@@ -132,130 +190,153 @@
                     statusBox.classList.add('error');
                     statusBox.innerHTML = `
                         <div class="status-icon">❌</div>
-                        <div class="status-name">INVALID ID</div>
+                        <div class="status-name">INVALID TEAM ID</div>
                         <div class="status-detail">Not found in database</div>
                         <div class="status-detail">ID: ${cleanId}</div>
                     `;
-                    scanAgainBtn.style.display = 'inline-block';
-                    stopScanner();
+                    document.getElementById('scanAgainBtn').style.display = 'inline-block';
                     return;
                 }
 
                 const data = docSnap.data();
+                console.log("Team data loaded:", data);
+                renderTeamPanel(cleanId, data);
 
-                if (!isMemberId) {
-                    if (data.checkedIn) {
-                        playBeep('warning');
-                        scanCountNum++;
-                        document.getElementById('scanCount').textContent = `Scanned: ${scanCountNum}`;
-                        statusBox.classList.add('warning');
-                        statusBox.innerHTML = `
-                            <div class="status-icon">⚠️</div>
-                            <div class="status-name">ALREADY CHECKED IN</div>
-                            <div class="status-detail"><b>${data.teamLead}</b></div>
-                            <div class="status-detail">ID: ${cleanId}</div>
-                            <div class="status-detail">Event: ${data.technicalEvent || 'N/A'}</div>
-                        `;
-                        scanAgainBtn.style.display = 'inline-block';
-                    } else {
-                        const updatedMembers = data.members.map(m => ({ ...m, checkedIn: true }));
-                        await updateDoc(docRef, { checkedIn: true, members: updatedMembers });
-                        playBeep('success');
-                        scanCountNum++;
-                        document.getElementById('scanCount').textContent = `Scanned: ${scanCountNum}`;
-                        statusBox.classList.add('success');
-                        statusBox.innerHTML = `
-                            <div class="status-icon">✅</div>
-                            <div class="status-name">ACCESS GRANTED</div>
-                            <div class="status-detail"><b>${data.teamLead}</b></div>
-                            <div class="status-detail">ID: ${cleanId}</div>
-                            <div class="status-detail">Event: ${data.technicalEvent || 'N/A'}</div>
-                            <div class="status-detail" style="margin-top:10px;color:var(--success)">Team checked in!</div>
-                        `;
-                        scanAgainBtn.style.display = 'inline-block';
-                    }
-                } else {
-                    const memberIndex = parseInt(cleanId.split("-M")[1]) - 1;
-                    const member = data.members[memberIndex];
-
-                    if (!member) {
-                        playBeep('error');
-                        statusBox.classList.add('error');
-                        statusBox.innerHTML = `
-                            <div class="status-icon">❌</div>
-                            <div class="status-name">INVALID MEMBER ID</div>
-                            <div class="status-detail">Member not found in team</div>
-                            <div class="status-detail">ID: ${cleanId}</div>
-                        `;
-                        scanAgainBtn.style.display = 'inline-block';
-                        stopScanner();
-                        return;
-                    }
-
-                    if (member.checkedIn) {
-                        playBeep('warning');
-                        scanCountNum++;
-                        document.getElementById('scanCount').textContent = `Scanned: ${scanCountNum}`;
-                        statusBox.classList.add('warning');
-                        statusBox.innerHTML = `
-                            <div class="status-icon">⚠️</div>
-                            <div class="status-name">ALREADY CHECKED IN</div>
-                            <div class="status-detail"><b>${member.name}</b></div>
-                            <div class="status-detail">ID: ${cleanId}</div>
-                            <div class="status-detail">Event: ${data.technicalEvent || 'N/A'}</div>
-                        `;
-                        scanAgainBtn.style.display = 'inline-block';
-                    } else {
-                        const updatedMembers = data.members.map((m, i) => {
-                            if (i === memberIndex) return { ...m, checkedIn: true };
-                            return m;
-                        });
-                        const allCheckedIn = updatedMembers.every(m => m.checkedIn);
-                        await updateDoc(docRef, {
-                            members: updatedMembers,
-                            checkedIn: allCheckedIn
-                        });
-                        playBeep('success');
-                        scanCountNum++;
-                        document.getElementById('scanCount').textContent = `Scanned: ${scanCountNum}`;
-                        statusBox.classList.add('success');
-                        statusBox.innerHTML = `
-                            <div class="status-icon">✅</div>
-                            <div class="status-name">ACCESS GRANTED</div>
-                            <div class="status-detail"><b>${member.name}</b></div>
-                            <div class="status-detail">ID: ${cleanId}</div>
-                            <div class="status-detail">Event: ${data.technicalEvent || 'N/A'}</div>
-                            <div class="status-detail" style="margin-top:10px;color:var(--success)">Successfully checked in!</div>
-                        `;
-                        scanAgainBtn.style.display = 'inline-block';
-                    }
-                }
             } catch (err) {
-                console.error(err);
+                console.error("Verify error:", err);
                 playBeep('error');
                 statusBox.innerHTML = `
                     <div class="status-icon">⚠️</div>
                     <div class="status-name">CONNECTION ERROR</div>
                     <div class="status-detail">Could not connect to database</div>
                 `;
-                scanAgainBtn.style.display = 'inline-block';
+                document.getElementById('scanAgainBtn').style.display = 'inline-block';
             }
-
-            stopScanner();
         }
 
-        window.scanAnother = () => {
+        function renderTeamPanel(teamId, data) {
+            console.log("Rendering team panel for:", teamId);
+            currentTeamData = data;
+            currentTeamId = teamId;
+
+            document.getElementById('teamIdDisplay').textContent = teamId;
+            document.getElementById('teamMeta').textContent = `Team Lead: ${data.teamLead} | Event: ${data.technicalEvent || 'N/A'}`;
+
+            const memberList = document.getElementById('memberList');
+            memberList.innerHTML = '';
+
+            data.members.forEach((member, index) => {
+                const isAlreadyChecked = member.checkedIn;
+                const item = document.createElement('div');
+                item.className = 'member-item' + (isAlreadyChecked ? ' checked' : '');
+                item.innerHTML = `
+                    <input type="checkbox" data-index="${index}" ${isAlreadyChecked ? 'checked' : ''}>
+                    <div class="member-info">
+                        <div class="member-name">${member.name || 'Unknown'}</div>
+                        <div class="member-email">${member.email || ''}</div>
+                    </div>
+                    <span class="member-status ${isAlreadyChecked ? 'present' : 'absent'}">${isAlreadyChecked ? 'Present' : 'Absent'}</span>
+                `;
+                memberList.appendChild(item);
+            });
+
+            memberList.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.addEventListener('change', updateSummary);
+            });
+
+            updateSummary();
+            document.getElementById('reader').style.display = 'none';
+            document.getElementById('statusBox').style.display = 'none';
+            document.getElementById('teamPanel').style.display = 'block';
+            document.getElementById('confirmBtn').style.display = 'block';
+            document.getElementById('teamPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function updateSummary() {
+            const checkboxes = document.querySelectorAll('#memberList input[type="checkbox"]');
+            const checked = [...checkboxes].filter(cb => cb.checked).length;
+            const total = checkboxes.length;
+            document.getElementById('checkSummary').textContent = `${checked} of ${total} members present`;
+        }
+
+        document.getElementById('confirmBtn').addEventListener('click', async () => {
+            if (!currentTeamData || !currentTeamId) return;
+
+            const confirmBtn = document.getElementById('confirmBtn');
+            confirmBtn.disabled = true;
+            confirmBtn.textContent = 'Saving...';
+
+            const checkboxes = document.querySelectorAll('#memberList input[type="checkbox"]');
+            const updatedMembers = currentTeamData.members.map((m, i) => ({
+                ...m,
+                checkedIn: checkboxes[i].checked
+            }));
+            const allCheckedIn = updatedMembers.every(m => m.checkedIn);
+
+            try {
+                const docRef = doc(db, "registrations", currentTeamId);
+                await updateDoc(docRef, {
+                    members: updatedMembers,
+                    checkedIn: allCheckedIn
+                });
+
+                const checkedCount = updatedMembers.filter(m => m.checkedIn).length;
+                playBeep('success');
+                scanCountNum++;
+                document.getElementById('scanCount').textContent = `Scanned: ${scanCountNum}`;
+
+                const statusBox = document.getElementById('statusBox');
+                statusBox.style.display = 'block';
+                statusBox.className = 'status-box success';
+                statusBox.innerHTML = `
+                    <div class="status-icon">✅</div>
+                    <div class="status-name">CHECK-IN UPDATED</div>
+                    <div class="status-detail"><b>${currentTeamData.teamLead}</b></div>
+                    <div class="status-detail">Team: ${currentTeamId}</div>
+                    <div class="status-detail" style="margin-top:10px">${checkedCount} of ${updatedMembers.length} members checked in</div>
+                    ${allCheckedIn ? '<div class="status-detail" style="color:var(--success);margin-top:5px">All members present!</div>' : ''}
+                `;
+
+                document.getElementById('teamPanel').style.display = 'none';
+                document.getElementById('confirmBtn').style.display = 'none';
+                document.getElementById('scanAgainBtn').style.display = 'inline-block';
+            } catch (err) {
+                console.error("Save error:", err);
+                playBeep('error');
+                confirmBtn.disabled = false;
+                confirmBtn.textContent = 'Confirm Check-In';
+                const statusBox = document.getElementById('statusBox');
+                statusBox.style.display = 'block';
+                statusBox.className = 'status-box error';
+                statusBox.innerHTML = `
+                    <div class="status-icon">⚠️</div>
+                    <div class="status-name">SAVE FAILED</div>
+                    <div class="status-detail">Could not update database</div>
+                `;
+            }
+        });
+
+        document.getElementById('scanAgainBtn').addEventListener('click', () => {
             lastScannedId = null;
+            currentTeamData = null;
+            currentTeamId = null;
             document.getElementById('statusBox').style.display = 'none';
             document.getElementById('scanAgainBtn').style.display = 'none';
+            document.getElementById('teamPanel').style.display = 'none';
+            document.getElementById('confirmBtn').style.display = 'none';
+            document.getElementById('confirmBtn').disabled = false;
+            document.getElementById('confirmBtn').textContent = 'Confirm Check-In';
             document.getElementById('manualId').value = '';
             startScanner();
-        };
+        });
 
-        window.checkManual = () => {
+        document.getElementById('manualBtn').addEventListener('click', () => {
             const id = document.getElementById('manualId').value;
-            if (id) verifyEntry(id);
-        };
+            if (id) {
+                lastScannedId = null;
+                stopScanner().then(() => verifyEntry(id));
+            }
+        });
 
         startScanner();
     </script>
