@@ -117,7 +117,8 @@
 
         <!-- Tabs -->
         <div class="tabs">
-            <button class="tab-btn active" data-tab="hero">Hero</button>
+            <button class="tab-btn active" data-tab="global">Global</button>
+            <button class="tab-btn" data-tab="hero">Hero</button>
             <button class="tab-btn" data-tab="about">About</button>
             <button class="tab-btn" data-tab="schedule">Schedule</button>
             <button class="tab-btn" data-tab="events">Events</button>
@@ -127,8 +128,35 @@
             <button class="tab-btn" data-tab="footer">Footer</button>
         </div>
 
+        <!-- Global Tab -->
+        <div class="tab-content active" id="tab-global">
+            <div class="section-card">
+                <h2>Global Settings</h2>
+                <div class="form-group">
+                    <label>Site Title</label>
+                    <input type="text" id="global-title">
+                </div>
+                <div class="form-group">
+                    <label>Brand Name</label>
+                    <input type="text" id="global-brandName" placeholder="e.g. Robotron">
+                </div>
+                <div class="form-group">
+                    <label>Brand Year</label>
+                    <input type="text" id="global-brandYear" placeholder="e.g. 2027">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="global-description" rows="2"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Keywords</label>
+                    <textarea id="global-keywords" rows="2"></textarea>
+                </div>
+            </div>
+        </div>
+
         <!-- Hero Tab -->
-        <div class="tab-content active" id="tab-hero">
+        <div class="tab-content" id="tab-hero">
             <div class="section-card">
                 <h2>Hero Section</h2>
                 <div class="form-group">
@@ -370,6 +398,13 @@
     const DEFAULT_CONTENT = window.DEFAULT_CONTENT;
 
     function populateForms() {
+        // Global
+        setInput('global-title', siteContent.global?.title);
+        setInput('global-brandName', siteContent.global?.brandName);
+        setInput('global-brandYear', siteContent.global?.brandYear);
+        setInput('global-description', siteContent.global?.description);
+        setInput('global-keywords', siteContent.global?.keywords);
+
         // Hero
         setInput('hero-title', siteContent.hero?.title);
         setInput('hero-tagline', siteContent.hero?.tagline);
@@ -672,6 +707,13 @@
         saveBtn.textContent = 'Saving...';
 
         // Collect from forms
+        siteContent.global = {
+            title: getInput('global-title'),
+            brandName: getInput('global-brandName'),
+            brandYear: getInput('global-brandYear'),
+            description: getInput('global-description'),
+            keywords: getInput('global-keywords')
+        };
         siteContent.hero = {
             title: getInput('hero-title'),
             tagline: getInput('hero-tagline'),
