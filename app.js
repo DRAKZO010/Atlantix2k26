@@ -16,9 +16,9 @@ let registrationData = {
     members: [{}, {}, {}, {}],
     mainEvent: '',
     additionalEvent: '',
-    baseFee: 50,
+    baseFee: (window._siteFees && window._siteFees.base) || 50,
     additionalEventFee: 0,
-    totalFee: 50
+    totalFee: (window._siteFees && window._siteFees.base) || 50
 };
 
 // Calendar-related global variables
@@ -335,15 +335,14 @@ function initializeScrollEffects() {
 
 // ==================== FEE CALCULATION ====================
 function calculateFees() {
-    const baseFee = 50;
+    const baseFee = (window._siteFees && window._siteFees.base) || 50;
     let technicalEventFee = 0;
     let nonTechnicalEventFee = 0;
 
     // Technical event fees
     const technicalEvent = document.getElementById('main_event');
     if (technicalEvent && technicalEvent.value) {
-        // Different fees for different technical events
-        const technicalFees = {
+        const technicalFees = (window._siteFees && window._siteFees.technical) || {
             'Paper Presentation': 30,
             'Line Follower Robot': 50,
             'CAD Designing': 40,
@@ -356,12 +355,12 @@ function calculateFees() {
         technicalEventFee = technicalFees[technicalEvent.value] || 30;
     }
 
-    // Non-technical event fee (only Free Fire has additional cost)
+    // Non-technical event fee
     const nonTechnicalEvent = document.getElementById('additional_event');
-    if (nonTechnicalEvent && nonTechnicalEvent.value === 'Free Fire') {
-        nonTechnicalEventFee = 30;
+    if (nonTechnicalEvent && nonTechnicalEvent.value) {
+        const nonTechnicalFees = (window._siteFees && window._siteFees.nonTechnical) || { 'Free Fire': 30 };
+        nonTechnicalEventFee = nonTechnicalFees[nonTechnicalEvent.value] || 0;
     }
-    // Other non-technical events are free (no additional cost)
 
     const totalFee = baseFee + technicalEventFee + nonTechnicalEventFee;
 

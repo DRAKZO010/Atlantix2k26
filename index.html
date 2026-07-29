@@ -896,6 +896,7 @@
 
     <!-- JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="content.js"></script>
     <script src="app.js"></script>
 
     <script type="module">
@@ -939,6 +940,203 @@
                 console.error("❌ Firebase Error: ", e);
             }
         };
+    </script>
+
+    <!-- Content Loader: Apply Firestore content to DOM -->
+    <script>
+        (async function() {
+            const content = await loadSiteContent();
+            if (!content) return;
+
+            // Meta
+            document.title = content.global?.title || document.title;
+            const metaDesc = document.querySelector('meta[name="description"]');
+            if (metaDesc) metaDesc.content = content.global?.description || metaDesc.content;
+            const metaKeywords = document.querySelector('meta[name="keywords"]');
+            if (metaKeywords) metaKeywords.content = content.global?.keywords || metaKeywords.content;
+
+            // Hero
+            const h = content.hero || {};
+            const heroTitle = document.querySelector('.hero__title');
+            const heroTagline = document.querySelector('.hero__tagline');
+            if (heroTitle) heroTitle.textContent = h.title || heroTitle.textContent;
+            if (heroTagline) heroTagline.textContent = h.tagline || heroTagline.textContent;
+            const heroDetails = document.querySelectorAll('.hero__details .detail__text');
+            if (heroDetails[0]) heroDetails[0].textContent = h.date || heroDetails[0].textContent;
+            if (heroDetails[1]) heroDetails[1].textContent = h.location || heroDetails[1].textContent;
+            if (heroDetails[2]) heroDetails[2].textContent = h.duration || heroDetails[2].textContent;
+            const heroBtns = document.querySelectorAll('.hero__actions .btn');
+            if (heroBtns[0]) heroBtns[0].textContent = h.primaryCta || heroBtns[0].textContent;
+            if (heroBtns[1]) heroBtns[1].textContent = h.secondaryCta || heroBtns[1].textContent;
+
+            // About
+            const a = content.about || {};
+            const aboutTitle = document.querySelector('#about .section__title');
+            if (aboutTitle) aboutTitle.textContent = a.title || aboutTitle.textContent;
+            if (a.cards && a.cards.length) {
+                const aboutGrid = document.querySelector('.about__grid');
+                if (aboutGrid) {
+                    aboutGrid.innerHTML = a.cards.map(c => `
+                        <div class="about__card">
+                            <h3>${c.icon} ${c.heading}</h3>
+                            <p>${c.description}</p>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            // Schedule
+            const s = content.schedule || {};
+            const schedTitle = document.querySelector('#schedule .section__title');
+            if (schedTitle) schedTitle.textContent = s.title || schedTitle.textContent;
+            if (s.days && s.days.length) {
+                const schedContainer = document.querySelector('.schedule__timeline');
+                if (schedContainer) {
+                    schedContainer.innerHTML = s.days.map(day => `
+                        <div class="timeline__day">
+                            <h3 class="day__title">${day.heading}</h3>
+                            <div class="day__events">
+                                ${day.events.map(ev => `
+                                    <div class="event">
+                                        <span class="event__time">${ev.time}</span>
+                                        <div class="event__details">
+                                            <h4 class="event__name">${ev.name}</h4>
+                                            <p class="event__desc">${ev.description}</p>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            // Events
+            const ev = content.events || {};
+            function renderEventCards(events, containerSelector) {
+                const container = document.querySelector(containerSelector);
+                if (!container || !events) return;
+                container.innerHTML = events.map(e => `
+                    <div class="track__card" onclick="openEventDetails('${e.key}')">
+                        <h4>${e.icon} ${e.title}</h4>
+                        <p>${e.shortDesc}</p>
+                    </div>
+                `).join('');
+            }
+            renderEventCards(ev.technical, '#events .event-category:first-child .track__grid');
+            renderEventCards(ev.nonTechnical, '#events .event-category:last-child .track__grid');
+
+            // Update eventData global object for modal
+            if (typeof eventData !== 'undefined') {
+                const allEvents = [...(ev.technical || []), ...(ev.nonTechnical || [])];
+                allEvents.forEach(e => {
+                    eventData[e.key] = {
+                        title: e.title,
+                        formValue: e.formValue,
+                        eventType: e.key && (ev.technical || []).find(t => t.key === e.key) ? 'technical' : 'non-technical',
+                        description: e.description,
+                        details: e.details || [],
+                        poster: e.poster || ''
+                    };
+                });
+            }
+
+            // Update event dropdowns
+            function updateEventDropdown(events, selectId) {
+                const select = document.getElementById(selectId);
+                if (!select || !events) return;
+                const currentVal = select.value;
+                const firstOption = select.options[0];
+                select.innerHTML = '';
+                select.appendChild(firstOption);
+                events.forEach(e => {
+                    const opt = document.createElement('option');
+                    opt.value = e.formValue;
+                    const feeText = e.fee > 0 ? ` (+₹${e.fee})` : ' (Free)';
+                    opt.textContent = e.title + feeText;
+                    select.appendChild(opt);
+                });
+                if (currentVal) select.value = currentVal;
+            }
+            updateEventDropdown(ev.technical, 'main_event');
+            updateEventDropdown(ev.nonTechnical, 'additional_event');
+
+            // Update fees object in app.js
+            if (typeof registrationData !== 'undefined' && content.fees) {
+                // Will be used by calculateFees()
+                window._siteFees = content.fees;
+            }
+
+            // Prizes
+            const p = content.prizes || {};
+            const prizesTitle = document.querySelector('#prizes .section__title');
+            if (prizesTitle) prizesTitle.textContent = p.title || prizesTitle.textContent;
+            if (p.main && p.main.length) {
+                const prizeCards = document.querySelectorAll('.prize__card');
+                p.main.forEach((prize, i) => {
+                    if (prizeCards[i]) {
+                        prizeCards[i].querySelector('.prize__title').textContent = prize.place;
+                        prizeCards[i].querySelector('.prize__amount').textContent = prize.amount;
+                        prizeCards[i].querySelector('.prize__desc').textContent = prize.description;
+                    }
+                });
+            }
+            if (p.special && p.special.length) {
+                const specialGrid = document.querySelector('.special-prizes__grid');
+                if (specialGrid) {
+                    specialGrid.innerHTML = p.special.map(s => `
+                        <div class="special-prize">
+                            <div class="special-prize__icon">${s.icon}</div>
+                            <h4>${s.title}</h4>
+                            <p>${s.prize}</p>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            // Contact
+            const c = content.contact || {};
+            const contactTitle = document.querySelector('#contact .section__title');
+            if (contactTitle) contactTitle.textContent = c.title || contactTitle.textContent;
+            const contactItems = document.querySelectorAll('.contact__info .contact__item');
+            if (contactItems[0] && c.emails) contactItems[0].querySelector('p').textContent = c.emails.join('\n');
+            if (contactItems[1] && c.phones) contactItems[1].querySelector('p').textContent = c.phones.join('\n');
+            if (contactItems[2] && c.address) contactItems[2].querySelector('p').textContent = c.address;
+            if (contactItems[3] && c.hours) {
+                const hoursPs = contactItems[3].querySelectorAll('p');
+                c.hours.forEach((h, i) => { if (hoursPs[i]) hoursPs[i].textContent = h; });
+            }
+
+            // FAQ
+            const faq = content.faq || [];
+            if (faq.length) {
+                const faqList = document.querySelector('.faq__list');
+                if (faqList) {
+                    faqList.innerHTML = faq.map(f => `
+                        <div class="faq__item">
+                            <button class="faq__question" onclick="toggleFaq(this)">
+                                ${f.question}
+                                <span class="faq__icon">+</span>
+                            </button>
+                            <div class="faq__answer">
+                                <p>${f.answer}</p>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            // Footer
+            const ft = content.footer || {};
+            const footerBrand = document.querySelector('.footer__brand h3');
+            const footerTagline = document.querySelector('.footer__brand p');
+            const footerCopy = document.querySelector('.footer__bottom p');
+            if (footerBrand) footerBrand.textContent = ft.brand || footerBrand.textContent;
+            if (footerTagline) footerTagline.textContent = ft.tagline || footerTagline.textContent;
+            if (footerCopy) footerCopy.textContent = ft.copyright || footerCopy.content;
+
+            console.log("✅ Site content applied from Firestore");
+        })();
     </script>
     
 </body>

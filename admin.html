@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atlantix 2026 - Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #00d4ff; --bg: #0a0a0a; --card: #1a1a1a; --surface: #222; --border: #333; --success: #00ff88; --error: #ff4d4d; --text: #fff; --muted: #888; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Rajdhani', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+        /* Login */
+        .login-container { max-width: 400px; margin: 80px auto; padding: 40px; background: var(--card); border-radius: 16px; border: 1px solid var(--border); }
+        .login-container h1 { font-family: 'Orbitron'; color: var(--primary); text-align: center; margin-bottom: 8px; font-size: 1.2rem; }
+        .login-container p { text-align: center; color: var(--muted); margin-bottom: 24px; }
+        .login-error { color: var(--error); text-align: center; margin-bottom: 12px; font-size: 0.9rem; display: none; }
+
+        /* Admin Panel */
+        .admin-panel { display: none; }
+        .admin-header { background: var(--card); border-bottom: 1px solid var(--border); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .admin-header h1 { font-family: 'Orbitron'; color: var(--primary); font-size: 1rem; }
+        .admin-header button { background: transparent; color: var(--error); border: 1px solid var(--error); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-family: 'Rajdhani'; font-weight: 600; }
+        .admin-content { max-width: 900px; margin: 0 auto; padding: 24px; }
+
+        /* Tabs */
+        .tabs { display: flex; gap: 4px; margin-bottom: 24px; overflow-x: auto; padding-bottom: 4px; }
+        .tab-btn { background: var(--surface); color: var(--muted); border: 1px solid var(--border); padding: 10px 18px; border-radius: 8px; cursor: pointer; font-family: 'Rajdhani'; font-weight: 600; font-size: 0.9rem; white-space: nowrap; transition: 0.2s; }
+        .tab-btn.active { background: var(--primary); color: #000; border-color: var(--primary); }
+        .tab-btn:hover { border-color: var(--primary); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Forms */
+        .section-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+        .section-card h2 { color: var(--primary); font-family: 'Orbitron'; font-size: 0.95rem; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 10px 14px; border-radius: 8px; font-family: 'Rajdhani'; font-size: 0.95rem; }
+        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--primary); }
+        .form-group textarea { min-height: 80px; resize: vertical; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+        /* Dynamic lists */
+        .list-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 12px; position: relative; }
+        .list-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .list-item-header h4 { color: var(--primary); font-size: 0.9rem; }
+        .remove-btn { background: var(--error); color: white; border: none; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; }
+        .add-btn { background: transparent; color: var(--primary); border: 2px dashed var(--primary); padding: 12px; border-radius: 8px; cursor: pointer; width: 100%; font-family: 'Rajdhani'; font-weight: 600; font-size: 0.95rem; margin-top: 8px; }
+        .add-btn:hover { background: rgba(0, 212, 255, 0.1); }
+
+        /* Event poster */
+        .poster-preview { width: 100%; max-width: 200px; border-radius: 8px; margin-top: 8px; display: block; }
+        .poster-upload { display: flex; gap: 8px; align-items: center; }
+        .poster-upload input[type="file"] { flex: 1; }
+
+        /* Save bar */
+        .save-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card); border-top: 1px solid var(--border); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; z-index: 100; }
+        .save-bar .status { color: var(--success); font-weight: 600; }
+        .save-btn { background: var(--success); color: #000; border: none; padding: 12px 32px; border-radius: 8px; font-family: 'Rajdhani'; font-weight: 700; font-size: 1rem; cursor: pointer; }
+        .save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .save-btn:hover { opacity: 0.9; }
+
+        /* Registration stats */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px; text-align: center; }
+        .stat-card .stat-num { font-size: 2rem; font-weight: 700; color: var(--primary); }
+        .stat-card .stat-label { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; }
+
+        @media (max-width: 600px) {
+            .form-row, .form-row-3 { grid-template-columns: 1fr; }
+            .tabs { gap: 2px; }
+            .tab-btn { padding: 8px 12px; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Login Screen -->
+<div class="login-container" id="loginScreen">
+    <h1>ATLANTIX 2026</h1>
+    <p>Admin Panel</p>
+    <div class="login-error" id="loginError"></div>
+    <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="loginEmail" placeholder="admin@atlantix2026.com">
+    </div>
+    <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="Enter password">
+    </div>
+    <button class="save-btn" style="width:100%;margin-top:8px" onclick="adminLogin()">Login</button>
+</div>
+
+<!-- Admin Panel -->
+<div class="admin-panel" id="adminPanel">
+    <div class="admin-header">
+        <h1>ATLANTIX ADMIN</h1>
+        <button onclick="adminLogout()">Logout</button>
+    </div>
+
+    <!-- Registration Stats -->
+    <div class="admin-content">
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card"><div class="stat-num" id="statTeams">-</div><div class="stat-label">Teams</div></div>
+            <div class="stat-card"><div class="stat-num" id="statMembers">-</div><div class="stat-label">Members</div></div>
+            <div class="stat-card"><div class="stat-num" id="statCheckedIn">-</div><div class="stat-label">Checked In</div></div>
+            <div class="stat-card"><div class="stat-num" id="statRevenue">-</div><div class="stat-label">Revenue</div></div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="hero">Hero</button>
+            <button class="tab-btn" data-tab="about">About</button>
+            <button class="tab-btn" data-tab="schedule">Schedule</button>
+            <button class="tab-btn" data-tab="events">Events</button>
+            <button class="tab-btn" data-tab="prizes">Prizes</button>
+            <button class="tab-btn" data-tab="contact">Contact</button>
+            <button class="tab-btn" data-tab="faq">FAQ</button>
+            <button class="tab-btn" data-tab="footer">Footer</button>
+        </div>
+
+        <!-- Hero Tab -->
+        <div class="tab-content active" id="tab-hero">
+            <div class="section-card">
+                <h2>Hero Section</h2>
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="hero-title">
+                </div>
+                <div class="form-group">
+                    <label>Tagline</label>
+                    <input type="text" id="hero-tagline">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="text" id="hero-date">
+                    </div>
+                    <div class="form-group">
+                        <label>Duration</label>
+                        <input type="text" id="hero-duration">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Location</label>
+                    <input type="text" id="hero-location">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Primary CTA</label>
+                        <input type="text" id="hero-primaryCta">
+                    </div>
+                    <div class="form-group">
+                        <label>Secondary CTA</label>
+                        <input type="text" id="hero-secondaryCta">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- About Tab -->
+        <div class="tab-content" id="tab-about">
+            <div class="section-card">
+                <h2>About Section</h2>
+                <div class="form-group">
+                    <label>Section Title</label>
+                    <input type="text" id="about-title">
+                </div>
+                <div id="aboutCards"></div>
+                <button class="add-btn" onclick="addAboutCard()">+ Add Card</button>
+            </div>
+        </div>
+
+        <!-- Schedule Tab -->
+        <div class="tab-content" id="tab-schedule">
+            <div class="section-card">
+                <h2>Schedule</h2>
+                <div class="form-group">
+                    <label>Section Title</label>
+                    <input type="text" id="schedule-title">
+                </div>
+                <div id="scheduleDays"></div>
+                <button class="add-btn" onclick="addScheduleDay()">+ Add Day</button>
+            </div>
+        </div>
+
+        <!-- Events Tab -->
+        <div class="tab-content" id="tab-events">
+            <div class="section-card">
+                <h2>Technical Events</h2>
+                <div id="technicalEvents"></div>
+                <button class="add-btn" onclick="addEvent('technical')">+ Add Technical Event</button>
+            </div>
+            <div class="section-card">
+                <h2>Non-Technical Events</h2>
+                <div id="nonTechnicalEvents"></div>
+                <button class="add-btn" onclick="addEvent('nonTechnical')">+ Add Non-Technical Event</button>
+            </div>
+        </div>
+
+        <!-- Prizes Tab -->
+        <div class="tab-content" id="tab-prizes">
+            <div class="section-card">
+                <h2>Main Prizes</h2>
+                <div class="form-group">
+                    <label>Section Title</label>
+                    <input type="text" id="prizes-title">
+                </div>
+                <div id="mainPrizes"></div>
+                <button class="add-btn" onclick="addMainPrize()">+ Add Prize</button>
+            </div>
+            <div class="section-card">
+                <h2>Special Awards</h2>
+                <div id="specialPrizes"></div>
+                <button class="add-btn" onclick="addSpecialPrize()">+ Add Award</button>
+            </div>
+        </div>
+
+        <!-- Contact Tab -->
+        <div class="tab-content" id="tab-contact">
+            <div class="section-card">
+                <h2>Contact Information</h2>
+                <div class="form-group">
+                    <label>Section Title</label>
+                    <input type="text" id="contact-title">
+                </div>
+                <div class="form-group">
+                    <label>Emails (one per line)</label>
+                    <textarea id="contact-emails" rows="2"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Phones (one per line)</label>
+                    <textarea id="contact-phones" rows="2"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Address</label>
+                    <input type="text" id="contact-address">
+                </div>
+                <div class="form-group">
+                    <label>Event Hours (one per line)</label>
+                    <textarea id="contact-hours" rows="2"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ Tab -->
+        <div class="tab-content" id="tab-faq">
+            <div class="section-card">
+                <h2>FAQ</h2>
+                <div id="faqItems"></div>
+                <button class="add-btn" onclick="addFaqItem()">+ Add FAQ</button>
+            </div>
+        </div>
+
+        <!-- Footer Tab -->
+        <div class="tab-content" id="tab-footer">
+            <div class="section-card">
+                <h2>Footer</h2>
+                <div class="form-group">
+                    <label>Brand Name</label>
+                    <input type="text" id="footer-brand">
+                </div>
+                <div class="form-group">
+                    <label>Tagline</label>
+                    <input type="text" id="footer-tagline">
+                </div>
+                <div class="form-group">
+                    <label>Copyright</label>
+                    <input type="text" id="footer-copyright">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Save Bar -->
+    <div class="save-bar">
+        <span class="status" id="saveStatus"></span>
+        <button class="save-btn" id="saveBtn" onclick="saveAllContent()">Save All Changes</button>
+    </div>
+</div>
+
+<script src="content.js"></script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-storage.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCQKLM92UMnSb_ZLd7BZGgH6TNP9ugXffg",
+        authDomain: "atlantix2k26.firebaseapp.com",
+        projectId: "atlantix2k26",
+        storageBucket: "atlantix2k26.firebasestorage.app",
+        messagingSenderId: "988770007742",
+        appId: "1:988770007742:web:742114c6f386a0422fbcef"
+    };
+
+    const app = initializeApp(firebaseConfig, "adminPanel");
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    const storage = getStorage(app);
+
+    let siteContent = null;
+
+    // ==================== AUTH ====================
+    window.adminLogin = async () => {
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+        const errorEl = document.getElementById('loginError');
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            errorEl.style.display = 'none';
+        } catch (err) {
+            errorEl.textContent = err.message;
+            errorEl.style.display = 'block';
+        }
+    };
+
+    window.adminLogout = async () => {
+        await signOut(auth);
+    };
+
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'block';
+            await loadContent();
+            await loadStats();
+        } else {
+            document.getElementById('loginScreen').style.display = 'block';
+            document.getElementById('adminPanel').style.display = 'none';
+        }
+    });
+
+    // ==================== LOAD CONTENT ====================
+    async function loadContent() {
+        try {
+            const docRef = doc(db, "siteContent", "main");
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                siteContent = docSnap.data();
+            } else {
+                siteContent = JSON.parse(JSON.stringify(DEFAULT_CONTENT));
+            }
+        } catch (err) {
+            console.error("Load error:", err);
+            siteContent = JSON.parse(JSON.stringify(DEFAULT_CONTENT));
+        }
+        populateForms();
+    }
+
+    // Use global defaults
+    const DEFAULT_CONTENT = window.DEFAULT_CONTENT;
+
+    function populateForms() {
+        // Hero
+        setInput('hero-title', siteContent.hero?.title);
+        setInput('hero-tagline', siteContent.hero?.tagline);
+        setInput('hero-date', siteContent.hero?.date);
+        setInput('hero-duration', siteContent.hero?.duration);
+        setInput('hero-location', siteContent.hero?.location);
+        setInput('hero-primaryCta', siteContent.hero?.primaryCta);
+        setInput('hero-secondaryCta', siteContent.hero?.secondaryCta);
+
+        // About
+        setInput('about-title', siteContent.about?.title);
+        renderAboutCards();
+
+        // Schedule
+        setInput('schedule-title', siteContent.schedule?.title);
+        renderSchedule();
+
+        // Events
+        renderEvents('technical');
+        renderEvents('nonTechnical');
+
+        // Prizes
+        setInput('prizes-title', siteContent.prizes?.title);
+        renderMainPrizes();
+        renderSpecialPrizes();
+
+        // Contact
+        setInput('contact-title', siteContent.contact?.title);
+        setInput('contact-emails', (siteContent.contact?.emails || []).join('\n'));
+        setInput('contact-phones', (siteContent.contact?.phones || []).join('\n'));
+        setInput('contact-address', siteContent.contact?.address);
+        setInput('contact-hours', (siteContent.contact?.hours || []).join('\n'));
+
+        // FAQ
+        renderFaq();
+
+        // Footer
+        setInput('footer-brand', siteContent.footer?.brand);
+        setInput('footer-tagline', siteContent.footer?.tagline);
+        setInput('footer-copyright', siteContent.footer?.copyright);
+    }
+
+    function setInput(id, value) {
+        const el = document.getElementById(id);
+        if (el) el.value = value || '';
+    }
+    function getInput(id) {
+        return document.getElementById(id)?.value || '';
+    }
+
+    // ==================== ABOUT CARDS ====================
+    window.addAboutCard = () => {
+        if (!siteContent.about) siteContent.about = { title: '', cards: [] };
+        siteContent.about.cards.push({ icon: '🚀', heading: 'New Card', description: 'Description here' });
+        renderAboutCards();
+    };
+    window.removeAboutCard = (i) => {
+        siteContent.about.cards.splice(i, 1);
+        renderAboutCards();
+    };
+    function renderAboutCards() {
+        const container = document.getElementById('aboutCards');
+        const cards = siteContent.about?.cards || [];
+        container.innerHTML = cards.map((c, i) => `
+            <div class="list-item">
+                <div class="list-item-header">
+                    <h4>Card ${i + 1}</h4>
+                    <button class="remove-btn" onclick="removeAboutCard(${i})">×</button>
+                </div>
+                <div class="form-row-3">
+                    <div class="form-group"><label>Icon</label><input value="${c.icon}" onchange="siteContent.about.cards[${i}].icon=this.value"></div>
+                    <div class="form-group" style="grid-column:span 2"><label>Heading</label><input value="${c.heading}" onchange="siteContent.about.cards[${i}].heading=this.value"></div>
+                </div>
+                <div class="form-group"><label>Description</label><textarea onchange="siteContent.about.cards[${i}].description=this.value">${c.description}</textarea></div>
+            </div>
+        `).join('');
+    }
+
+    // ==================== SCHEDULE ====================
+    window.addScheduleDay = () => {
+        if (!siteContent.schedule) siteContent.schedule = { title: '', days: [] };
+        siteContent.schedule.days.push({ heading: 'New Day', events: [{ time: '09:00 AM', name: 'Event', description: 'Description' }] });
+        renderSchedule();
+    };
+    window.removeScheduleDay = (di) => {
+        siteContent.schedule.days.splice(di, 1);
+        renderSchedule();
+    };
+    window.addScheduleEvent = (di) => {
+        siteContent.schedule.days[di].events.push({ time: '12:00 PM', name: 'New Event', description: '' });
+        renderSchedule();
+    };
+    window.removeScheduleEvent = (di, ei) => {
+        siteContent.schedule.days[di].events.splice(ei, 1);
+        renderSchedule();
+    };
+    window.updateScheduleEvent = (di, ei, field, value) => {
+        siteContent.schedule.days[di].events[ei][field] = value;
+    };
+    window.updateScheduleDay = (di, value) => {
+        siteContent.schedule.days[di].heading = value;
+    };
+    function renderSchedule() {
+        const container = document.getElementById('scheduleDays');
+        const days = siteContent.schedule?.days || [];
+        container.innerHTML = days.map((day, di) => `
+            <div class="list-item">
+                <div class="list-item-header">
+                    <h4>Day ${di + 1}</h4>
+                    <button class="remove-btn" onclick="removeScheduleDay(${di})">×</button>
+                </div>
+                <div class="form-group"><label>Day Heading</label><input value="${day.heading}" onchange="updateScheduleDay(${di}, this.value)"></div>
+                <div style="margin-top:12px">
+                    <strong style="font-size:0.85rem;color:var(--muted)">EVENTS</strong>
+                    ${day.events.map((ev, ei) => `
+                        <div style="background:#1a1a1a;border:1px solid #333;border-radius:6px;padding:10px;margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                            <input style="width:100px;background:#222;border:1px solid #444;color:#fff;padding:6px 8px;border-radius:4px" value="${ev.time}" onchange="updateScheduleEvent(${di},${ei},'time',this.value)" placeholder="Time">
+                            <input style="flex:1;min-width:120px;background:#222;border:1px solid #444;color:#fff;padding:6px 8px;border-radius:4px" value="${ev.name}" onchange="updateScheduleEvent(${di},${ei},'name',this.value)" placeholder="Event Name">
+                            <input style="flex:1;min-width:120px;background:#222;border:1px solid #444;color:#fff;padding:6px 8px;border-radius:4px" value="${ev.description}" onchange="updateScheduleEvent(${di},${ei},'description',this.value)" placeholder="Description">
+                            <button class="remove-btn" style="width:24px;height:24px;font-size:0.8rem" onclick="removeScheduleEvent(${di},${ei})">×</button>
+                        </div>
+                    `).join('')}
+                    <button class="add-btn" style="margin-top:8px;padding:8px;font-size:0.85rem" onclick="addScheduleEvent(${di})">+ Add Event</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // ==================== EVENTS ====================
+    window.addEvent = (type) => {
+        if (!siteContent.events) siteContent.events = { technical: [], nonTechnical: [] };
+        siteContent.events[type].push({ key: 'new-event', title: 'New Event', icon: '📌', shortDesc: '', formValue: 'New Event', fee: 0, description: '', details: [], poster: '' });
+        renderEvents(type);
+    };
+    window.removeEvent = (type, i) => {
+        siteContent.events[type].splice(i, 1);
+        renderEvents(type);
+    };
+    window.updateEvent = (type, i, field, value) => {
+        if (field === 'fee') value = parseInt(value) || 0;
+        siteContent.events[type][i][field] = value;
+    };
+    window.updateEventDetail = (type, i, di, value) => {
+        siteContent.events[type][i].details[di] = value;
+    };
+    window.addEventDetail = (type, i) => {
+        siteContent.events[type][i].details.push('New detail');
+        renderEvents(type);
+    };
+    window.removeEventDetail = (type, i, di) => {
+        siteContent.events[type][i].details.splice(di, 1);
+        renderEvents(type);
+    };
+    window.uploadPoster = async (type, i, fileInput) => {
+        const file = fileInput.files[0];
+        if (!file) return;
+        const storageRef = ref(storage, `posters/${siteContent.events[type][i].key}`);
+        await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(storageRef);
+        siteContent.events[type][i].poster = url;
+        renderEvents(type);
+    };
+    function renderEvents(type) {
+        const container = document.getElementById(type === 'technical' ? 'technicalEvents' : 'nonTechnicalEvents');
+        const events = siteContent.events?.[type] || [];
+        container.innerHTML = events.map((ev, i) => `
+            <div class="list-item">
+                <div class="list-item-header">
+                    <h4>${ev.icon} ${ev.title}</h4>
+                    <button class="remove-btn" onclick="removeEvent('${type}',${i})">×</button>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Title</label><input value="${ev.title}" onchange="updateEvent('${type}',${i},'title',this.value)"></div>
+                    <div class="form-group"><label>Icon (emoji)</label><input value="${ev.icon}" onchange="updateEvent('${type}',${i},'icon',this.value)"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Form Value</label><input value="${ev.formValue}" onchange="updateEvent('${type}',${i},'formValue',this.value)"></div>
+                    <div class="form-group"><label>Fee (₹)</label><input type="number" value="${ev.fee}" onchange="updateEvent('${type}',${i},'fee',this.value)"></div>
+                </div>
+                <div class="form-group"><label>Short Description</label><input value="${ev.shortDesc}" onchange="updateEvent('${type}',${i},'shortDesc',this.value)"></div>
+                <div class="form-group"><label>Full Description</label><textarea onchange="updateEvent('${type}',${i},'description',this.value)">${ev.description}</textarea></div>
+                <div class="form-group">
+                    <label>Poster Image</label>
+                    ${ev.poster ? `<img src="${ev.poster}" class="poster-preview">` : ''}
+                    <div class="poster-upload">
+                        <input type="file" accept="image/*" id="poster-${type}-${i}">
+                        <button style="padding:6px 12px;font-size:0.8rem" onclick="uploadPoster('${type}',${i},document.getElementById('poster-${type}-${i}'))">Upload</button>
+                    </div>
+                </div>
+                <div>
+                    <strong style="font-size:0.85rem;color:var(--muted)">DETAILS</strong>
+                    ${(ev.details || []).map((d, di) => `
+                        <div style="display:flex;gap:6px;margin-top:6px">
+                            <input style="flex:1;background:#222;border:1px solid #444;color:#fff;padding:6px 8px;border-radius:4px" value="${d}" onchange="updateEventDetail('${type}',${i},${di},this.value)">
+                            <button class="remove-btn" style="width:24px;height:24px;font-size:0.8rem" onclick="removeEventDetail('${type}',${i},${di})">×</button>
+                        </div>
+                    `).join('')}
+                    <button class="add-btn" style="margin-top:8px;padding:8px;font-size:0.85rem" onclick="addEventDetail('${type}',${i})">+ Add Detail</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // ==================== PRIZES ====================
+    window.addMainPrize = () => {
+        if (!siteContent.prizes) siteContent.prizes = { title: '', main: [], special: [] };
+        siteContent.prizes.main.push({ place: 'New Place', icon: '🏆', amount: '₹0', description: '' });
+        renderMainPrizes();
+    };
+    window.removeMainPrize = (i) => {
+        siteContent.prizes.main.splice(i, 1);
+        renderMainPrizes();
+    };
+    function renderMainPrizes() {
+        const container = document.getElementById('mainPrizes');
+        const prizes = siteContent.prizes?.main || [];
+        container.innerHTML = prizes.map((p, i) => `
+            <div class="list-item">
+                <div class="list-item-header">
+                    <h4>${p.icon} ${p.place}</h4>
+                    <button class="remove-btn" onclick="removeMainPrize(${i})">×</button>
+                </div>
+                <div class="form-row-3">
+                    <div class="form-group"><label>Icon</label><input value="${p.icon}" onchange="siteContent.prizes.main[${i}].icon=this.value"></div>
+                    <div class="form-group"><label>Place</label><input value="${p.place}" onchange="siteContent.prizes.main[${i}].place=this.value"></div>
+                    <div class="form-group"><label>Amount</label><input value="${p.amount}" onchange="siteContent.prizes.main[${i}].amount=this.value"></div>
+                </div>
+                <div class="form-group"><label>Description</label><input value="${p.description}" onchange="siteContent.prizes.main[${i}].description=this.value"></div>
+            </div>
+        `).join('');
+    }
+
+    window.addSpecialPrize = () => {
+        if (!siteContent.prizes) siteContent.prizes = { title: '', main: [], special: [] };
+        siteContent.prizes.special.push({ icon: '⭐', title: 'New Award', prize: '' });
+        renderSpecialPrizes();
+    };
+    window.removeSpecialPrize = (i) => {
+        siteContent.prizes.special.splice(i, 1);
+        renderSpecialPrizes();
+    };
+    function renderSpecialPrizes() {
+        const container = document.getElementById('specialPrizes');
+        const prizes = siteContent.prizes?.special || [];
+        container.innerHTML = prizes.map((p, i) => `
+            <div class="list-item">
+                <div class="list-item-header">
+                    <h4>${p.icon} ${p.title}</h4>
+                    <button class="remove-btn" onclick="removeSpecialPrize(${i})">×</button>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Icon</label><input value="${p.icon}" onchange="siteContent.prizes.special[${i}].icon=this.value"></div>
+                    <div class="form-group"><label>Title</label><input value="${p.title}" onchange="siteContent.prizes.special[${i}].title=this.value"></div>
+                </div>
+                <div class="form-group"><label>Prize</label><input value="${p.prize}" onchange="siteContent.prizes.special[${i}].prize=this.value"></div>
+            </div>
+        `).join('');
+    }
+
+    // ==================== FAQ ====================
+    window.addFaqItem = () => {
+        if (!siteContent.faq) siteContent.faq = [];
+        siteContent.faq.push({ question: 'New Question?', answer: 'Answer here' });
+        renderFaq();
+    };
+    window.removeFaqItem = (i) => {
+        siteContent.faq.splice(i, 1);
+        renderFaq();
+    };
+    function renderFaq() {
+        const container = document.getElementById('faqItems');
+        const items = siteContent.faq || [];
+        container.innerHTML = items.map((f, i) => `
+            <div class="list-item">
+                <div class="list-item-header">
+                    <h4>FAQ ${i + 1}</h4>
+                    <button class="remove-btn" onclick="removeFaqItem(${i})">×</button>
+                </div>
+                <div class="form-group"><label>Question</label><input value="${f.question}" onchange="siteContent.faq[${i}].question=this.value"></div>
+                <div class="form-group"><label>Answer</label><textarea onchange="siteContent.faq[${i}].answer=this.value">${f.answer}</textarea></div>
+            </div>
+        `).join('');
+    }
+
+    // ==================== TABS ====================
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+        });
+    });
+
+    // ==================== SAVE ====================
+    window.saveAllContent = async () => {
+        const saveBtn = document.getElementById('saveBtn');
+        const saveStatus = document.getElementById('saveStatus');
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Saving...';
+
+        // Collect from forms
+        siteContent.hero = {
+            title: getInput('hero-title'),
+            tagline: getInput('hero-tagline'),
+            date: getInput('hero-date'),
+            duration: getInput('hero-duration'),
+            location: getInput('hero-location'),
+            primaryCta: getInput('hero-primaryCta'),
+            secondaryCta: getInput('hero-secondaryCta')
+        };
+        siteContent.about = siteContent.about || {};
+        siteContent.about.title = getInput('about-title');
+        siteContent.schedule = siteContent.schedule || {};
+        siteContent.schedule.title = getInput('schedule-title');
+        siteContent.contact = {
+            title: getInput('contact-title'),
+            emails: getInput('contact-emails').split('\n').map(s => s.trim()).filter(Boolean),
+            phones: getInput('contact-phones').split('\n').map(s => s.trim()).filter(Boolean),
+            address: getInput('contact-address'),
+            hours: getInput('contact-hours').split('\n').map(s => s.trim()).filter(Boolean)
+        };
+        siteContent.footer = {
+            brand: getInput('footer-brand'),
+            tagline: getInput('footer-tagline'),
+            copyright: getInput('footer-copyright')
+        };
+
+        try {
+            await setDoc(doc(db, "siteContent", "main"), siteContent);
+            saveStatus.textContent = 'Saved at ' + new Date().toLocaleTimeString();
+            setTimeout(() => saveStatus.textContent = '', 3000);
+        } catch (err) {
+            console.error("Save error:", err);
+            saveStatus.textContent = 'Error: ' + err.message;
+            saveStatus.style.color = 'var(--error)';
+            setTimeout(() => { saveStatus.textContent = ''; saveStatus.style.color = ''; }, 5000);
+        }
+
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save All Changes';
+    };
+
+    // ==================== STATS ====================
+    async function loadStats() {
+        try {
+            const snapshot = await getDocs(collection(db, "registrations"));
+            let teams = 0, members = 0, checkedIn = 0, revenue = 0;
+            snapshot.forEach(doc => {
+                const d = doc.data();
+                teams++;
+                members += (d.members || []).length;
+                checkedIn += (d.members || []).filter(m => m.checkedIn).length;
+                revenue += d.amount || 0;
+            });
+            document.getElementById('statTeams').textContent = teams;
+            document.getElementById('statMembers').textContent = members;
+            document.getElementById('statCheckedIn').textContent = checkedIn;
+            document.getElementById('statRevenue').textContent = '₹' + revenue;
+        } catch (err) {
+            console.error("Stats error:", err);
+        }
+    }
+
+    // Expose siteContent globally for inline handlers
+    window.siteContent = siteContent;
+    // Re-expose after load
+    const origLoad = loadContent;
+    window.loadContent = async () => {
+        await origLoad();
+        window.siteContent = siteContent;
+    };
+</script>
+</body>
+</html>
