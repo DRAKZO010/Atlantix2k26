@@ -77,8 +77,14 @@
 </head>
 <body>
 
+<!-- Secret Key Check -->
+<div id="accessDenied" style="display:none;text-align:center;margin-top:100px;color:#555;font-family:'Rajdhani',sans-serif">
+    <h1 style="font-size:4rem;color:#333">404</h1>
+    <p>Page not found</p>
+</div>
+
 <!-- Login Screen -->
-<div class="login-container" id="loginScreen">
+<div class="login-container" id="loginScreen" style="display:none">
     <h1>ATLANTIX 2026</h1>
     <p>Admin Panel</p>
     <div class="login-error" id="loginError"></div>
@@ -283,6 +289,15 @@
 
 <script src="content.js"></script>
 <script type="module">
+    // Secret key check - show 404 if wrong key
+    const SECRET_KEY = 'ax26adm';
+    const urlKey = new URLSearchParams(window.location.search).get('k');
+    if (urlKey !== SECRET_KEY) {
+        document.getElementById('accessDenied').style.display = 'block';
+        throw new Error('Access denied');
+    }
+    document.getElementById('loginScreen').style.display = 'block';
+
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
     import { getFirestore, doc, getDoc, setDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
