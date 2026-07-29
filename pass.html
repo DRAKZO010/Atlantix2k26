@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atlantix 2k26 - Digital Pass</title>
+    <title>Robotron 2027 - Digital Pass</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -95,7 +95,7 @@
         const params = new URLSearchParams(window.location.search);
         const regId = params.get('id') || 'ATL-OFFLINE';
         const teamName = params.get('team') || 'Team';
-        const eventName = params.get('event') || 'Atlantix 2026';
+        const eventName = params.get('event') || 'Robotron 2027';
 
         // Set display values
         document.getElementById('disp-name').textContent = teamName;
@@ -116,7 +116,7 @@
                 logging: false
             }).then(canvas => {
                 const link = document.createElement('a');
-                link.download = `Atlantix_Pass_${regId}.png`;
+                link.download = `Robotron_Pass_${regId}.png`;
                 link.href = canvas.toDataURL("image/png");
                 link.click();
             });

@@ -1,10 +1,6 @@
-<<<<<<< HEAD
-# Atlantix Hackathon 2026 - Complete Source Code
-=======
-# 🚀 Atlantix 2k26 - Event Management System
->>>>>>> 8f90b90f7524403402cb0c369e404d32f6924538
+# 🚀 Robotron 2027 - Event Management System
 
-Atlantix 2k26 is a full-stack event registration and management platform. It features a modern user interface, automated email ticketing with unique QR codes, and a real-time mobile-ready scanner for gate check-ins.
+Robotron 2027 is a full-stack event registration and management platform. It features a modern user interface, automated email ticketing with unique QR codes, and a real-time mobile-ready scanner for gate check-ins.
 
 
 
@@ -36,7 +32,7 @@ Atlantix 2k26 is a full-stack event registration and management platform. It fea
 └── .gitignore          # Prevents config.js from being uploaded to GitHub
 🚀 Setup & Deployment
 1. Local Setup
-Clone the repository: git clone https://github.com/yourusername/atlantix-2k26.git
+Clone the repository: git clone https://github.com/yourusername/robotron-2027.git
 
 Create a config.js file in the root directory.
 
@@ -80,58 +76,10 @@ Colors: Primary Teal (#218085) with professional Dark/Cream variants.
 Responsive: Mobile-first approach, fully functional on all screen sizes.
 
 📞 Support
-Event Email: hello@autotron2026.com
+Event Email: hello@Robotron2027.com
 
-Support Email: support@autotron2026.com
+Support Email: support@Robotron2027.com
 
 Lead Developer: [Your Name]
 
-<<<<<<< HEAD
-### **Development**
-- All CSS uses custom properties for easy theming
-- JavaScript is modular and well-commented
-- HTML uses semantic markup
-- Responsive design with mobile-first approach
-
-### **Customization**
-- Modify CSS custom properties in `:root` for color changes
-- Update event details in HTML
-- Add new form fields as needed
-- Extend JavaScript functionality
-
-## 📊 **TECHNICAL SPECIFICATIONS:**
-
-### **Browser Support**
-- Chrome, Firefox, Safari, Edge (modern versions)
-- Mobile browsers (iOS Safari, Chrome Mobile)
-- Progressive enhancement for older browsers
-
-### **Performance**
-- Optimized CSS with efficient selectors
-- Minimal JavaScript with event delegation
-- Lazy loading for smooth interactions
-- Compressed and minified code structure
-
-### **Accessibility**
-- Semantic HTML markup
-- ARIA labels where needed
-- Keyboard navigation support
-- High contrast color ratios
-- Screen reader friendly
-
-## 📞 **SUPPORT**
-
-For questions about this code:
-- **Event Email:** hello@Atlantix2026.com
-- **Support Email:** support@Atlantix2026.com
-- **Phone:** +91 98765 43210, +91 87654 32109
-
----
-
-**🎉 READY TO USE:** This is the complete, production-ready source code for the Atlantix Hackathon 2026 website with all features working perfectly!
-
-**Organized by:** Park College of Engineering and Technology, Coimbatore  
-**Event Date:** January 15-16, 2026 | 24 Hours | ₹50,000 Prize Pool
-=======
-Built with ❤️ for the Atlantix 2k26 Event | Organized by Park College of Engineering and Technology.
->>>>>>> 8f90b90f7524403402cb0c369e404d32f6924538
+Built with ❤️ for the Robotron 2027 Event | Organized by Park College of Engineering and Technology.

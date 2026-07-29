@@ -1,5 +1,5 @@
-// Atlantix Hackathon 2026 - Complete JavaScript
-// Atlantix Hackathon 2026 - Complete JavaScript
+// Robotron 2027 - Complete JavaScript
+// Robotron 2027 - Complete JavaScript
 (function() {
     window.addEventListener('load', function() {
         if (typeof emailjs !== 'undefined') {
@@ -31,7 +31,7 @@ let currentMember = 1;
 
 // Initialize Application
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Atlantix 2026 - Application starting...');
+    console.log('Robotron 2027 - Application starting...');
     initializeApp();
 });
 
@@ -545,8 +545,8 @@ function showRegistrationSuccess() {
 
 function getPassUrl() {
     const teamName = registrationData.members[0]?.name || 'Team';
-    const event = registrationData.mainEvent || 'Atlantix Hackathon 2026';
-    return `https://atlantix2k26.vercel.app/pass.html?id=${lastRegisteredId}&team=${encodeURIComponent(teamName)}&event=${encodeURIComponent(event)}`;
+    const event = registrationData.mainEvent || 'Robotron 2027';
+    return `https://robotron2027.vercel.app/pass.html?id=${lastRegisteredId}&team=${encodeURIComponent(teamName)}&event=${encodeURIComponent(event)}`;
 }
 
 function downloadReceipt() {
@@ -559,7 +559,7 @@ function downloadReceipt() {
         logging: false
     }).then(canvas => {
         const link = document.createElement('a');
-        link.download = `Atlantix_Receipt_${lastRegisteredId}.png`;
+        link.download = `Robotron_Receipt_${lastRegisteredId}.png`;
         link.href = canvas.toDataURL("image/png");
         link.click();
     });
@@ -870,7 +870,7 @@ async function sendAutomaticReceipt(regId, data) {
     const activeMembers = data.members.filter(m => m.name && m.email);
     const teamName = data.members[0]?.name || 'Team';
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${regId}`;
-    const passUrl = `https://atlantix2k26.vercel.app/pass.html?id=${regId}&team=${encodeURIComponent(teamName)}&event=${encodeURIComponent(data.mainEvent)}`;
+    const passUrl = `https://robotron2027.vercel.app/pass.html?id=${regId}&team=${encodeURIComponent(teamName)}&event=${encodeURIComponent(data.mainEvent)}`;
 
     for (let i = 0; i < activeMembers.length; i++) {
         const member = activeMembers[i];
@@ -880,7 +880,7 @@ async function sendAutomaticReceipt(regId, data) {
             to_email: member.email,
             reg_id: regId,
             team_lead: teamName,
-            event_name: data.mainEvent || "Atlantix Hackathon 2026",
+            event_name: data.mainEvent || "Robotron 2027",
             additional_event: data.additionalEvent || "None",
             total_fee: data.totalFee,
             pass_link: passUrl,
@@ -1010,4 +1010,4 @@ document.addEventListener('keydown', function(e) {
 });
 
 // Initialize the application
-console.log('🚀 Atlantix 2026 - JavaScript loaded');
+console.log('🚀 Robotron 2027 - JavaScript loaded');

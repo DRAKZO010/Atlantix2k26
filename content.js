@@ -1,18 +1,18 @@
-// Atlantix 2026 - Content Manager
+// Robotron 2027 - Content Manager
 // Handles loading/saving site content from Firestore
 
 const SITE_CONTENT_DOC = "siteContent/main";
 
 window.DEFAULT_CONTENT = {
     global: {
-        title: "Atlantix Hackathon 2026",
-        description: "Join Atlantix Hackathon 2026 - 24 hours of coding, innovation, and competition at Park College of Engineering and Technology, Coimbatore. Win prizes worth ₹50,000!",
+        title: "Robotron 2027",
+        description: "Join Robotron 2027 - 24 hours of coding, innovation, and competition at Park College of Engineering and Technology, Coimbatore. Win prizes worth ₹50,000!",
         keywords: "hackathon, coding, programming, innovation, competition, Coimbatore, technology, Park College",
-        brandName: "Atlantix",
-        brandYear: "2026"
+        brandName: "Robotron",
+        brandYear: "2027"
     },
     hero: {
-        title: "Atlantix Hackathon 2026",
+        title: "Robotron 2027",
         tagline: "Code. Create. Compete. Drive Innovation Forward",
         date: "January 15-16, 2026",
         location: "Park College of Engineering and Technology, Kaniyur, Coimbatore",
@@ -21,7 +21,7 @@ window.DEFAULT_CONTENT = {
         secondaryCta: "Learn More"
     },
     about: {
-        title: "About Atlantix",
+        title: "About Robotron",
         cards: [
             { icon: "🚀", heading: "Innovation Hub", description: "Join the most exciting hackathon in South India where brilliant minds come together to solve real-world problems through technology and creativity." },
             { icon: "🏆", heading: "Compete & Win", description: "Compete for amazing prizes worth ₹50,000 while showcasing your technical skills in various categories from AI/ML to cybersecurity." },
@@ -97,7 +97,7 @@ window.DEFAULT_CONTENT = {
     },
     contact: {
         title: "Contact Us",
-        emails: ["hello@Atlantix2026.com", "support@Atlantix2026.com"],
+        emails: ["hello@Robotron2027.com", "support@Robotron2027.com"],
         phones: ["+91 98765 43210", "+91 87654 32109"],
         address: "Park College of Engineering and Technology, Kaniyur, Coimbatore - 641659, Tamil Nadu, India",
         hours: ["January 15: 9:00 AM - 12:00 AM", "January 16: 8:00 AM - 6:00 PM"]
@@ -110,9 +110,9 @@ window.DEFAULT_CONTENT = {
         { question: "What is the refund policy?", answer: "Registration fees are non-refundable. However, you can transfer your registration to another person by contacting us at least 48 hours before the event." }
     ],
     footer: {
-        brand: "Atlantix 2026",
+        brand: "Robotron 2027",
         tagline: "Drive Innovation Forward",
-        copyright: "© 2026 Atlantix Hackathon. All rights reserved. Organized by Park College of Engineering and Technology."
+        copyright: "© 2027 Robotron. All rights reserved. Organized by Park College of Engineering and Technology."
     },
     fees: {
         base: 50,
