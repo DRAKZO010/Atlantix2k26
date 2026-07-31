@@ -28,7 +28,7 @@
         <div class="container">
             <nav class="nav">
                 <div class="nav__brand">
-                    <h2>Robotron 2027</h2>
+                    <h2><span>Robotron</span><span class="logo-year">2027</span></h2>
                 </div>
 
                 <ul class="nav__menu" id="navMenu">
@@ -68,7 +68,10 @@
     <section class="hero" id="home">
         <div class="container">
             <div class="hero__content">
-                <h1 class="hero__title">Robotron 2027</h1>
+                <h1 class="hero__title">
+                    <span class="hero-title-main">Robotron</span>
+                    <span class="hero-title-accent">2027</span>
+                </h1>
                 <p class="hero__tagline">Code. Create. Compete. Drive Innovation Forward</p>
 
                 <div class="hero__details">
@@ -874,11 +877,11 @@
                 <button class="modal__close" onclick="closeSuccessMessage()">&times;</button>
             </div>
             <div class="modal__body">
-                <p>Thank you for registering for Robotron 2027!</p>
+                <p>Thank you for registering for Atlantix Hackathon 2026!</p>
 
                 <div id="receiptCard" class="receipt-card-download">
                     <div class="receipt-card-header">
-                        <h3>ROBOTRON 2027</h3>
+                        <h3>ATLANTIX HACKATHON 2026</h3>
                         <p>Digital Pass & Receipt</p>
                     </div>
                     <div class="receipt-card-body">
@@ -987,7 +990,13 @@
             // Navbar Brand
             const navBrand = document.querySelector('.nav__brand h2');
             if (navBrand && content.global?.brandName) {
-                navBrand.textContent = content.global.brandName + ' ' + (content.global.brandYear || '');
+                const spans = navBrand.querySelectorAll('span');
+                if (spans.length >= 2) {
+                    spans[0].textContent = content.global.brandName;
+                    spans[1].textContent = content.global.brandYear || '';
+                } else {
+                    navBrand.textContent = content.global.brandName + ' ' + (content.global.brandYear || '');
+                }
             }
 
             // Hero
