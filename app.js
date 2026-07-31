@@ -42,6 +42,7 @@ function initializeApp() {
     initializeFAQ();
     initializeScrollEffects();
     initializeCalendar();
+    initializeScheduleTabs();
 
     // Ensure all functions are available globally
     makeGlobalFunctions();
@@ -286,6 +287,25 @@ function initializeContactForm() {
             contactForm.reset();
         });
     }
+}
+
+// ==================== SCHEDULE TABS ====================
+function initializeScheduleTabs() {
+    const tabs = document.querySelectorAll('.schedule__tabs .schedule__tab');
+    const days = document.querySelectorAll('.timeline__day');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const targetDay = this.getAttribute('data-day');
+
+            tabs.forEach(t => t.classList.remove('active'));
+            days.forEach(d => d.classList.remove('active'));
+
+            this.classList.add('active');
+            const targetEl = document.getElementById(targetDay);
+            if (targetEl) targetEl.classList.add('active');
+        });
+    });
 }
 
 // ==================== FAQ SYSTEM ====================
