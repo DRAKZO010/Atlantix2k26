@@ -1,19 +1,16 @@
 import React, { useState } from 'react';
-import { NavTab, SiteContent } from '../types';
-import { Search, Zap } from 'lucide-react';
+import { NavTab, EventItem } from '../types';
+import { TECHNICAL_EVENTS, CIVILIAN_EVENTS } from '../data/events';
+import { Search, Zap, Shield, Flame, Sparkles, Filter, ChevronRight, CheckCircle2 } from 'lucide-react';
 
 interface EventsViewProps {
   setActiveTab: (tab: NavTab) => void;
   onSelectEvent: (eventId: string) => void;
-  siteContent: SiteContent;
 }
 
-export const EventsView: React.FC<EventsViewProps> = ({ setActiveTab, onSelectEvent, siteContent }) => {
+export const EventsView: React.FC<EventsViewProps> = ({ setActiveTab, onSelectEvent }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<'all' | 'technical' | 'civilian'>('all');
-
-  const TECHNICAL_EVENTS = siteContent.events?.technical || [];
-  const CIVILIAN_EVENTS = siteContent.events?.civilian || [];
 
   const filteredTech = TECHNICAL_EVENTS.filter(e => 
     e.title.toLowerCase().includes(searchQuery.toLowerCase()) || 

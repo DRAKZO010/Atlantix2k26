@@ -1,13 +1,11 @@
 import React from 'react';
-import { NavTab, SiteContent } from '../types';
+import { NavTab } from '../types';
 
 interface FooterProps {
   setActiveTab: (tab: NavTab) => void;
-  siteContent: SiteContent;
 }
 
-export const Footer: React.FC<FooterProps> = ({ setActiveTab, siteContent }) => {
-  const { footer } = siteContent;
+export const Footer: React.FC<FooterProps> = ({ setActiveTab }) => {
   return (
     <footer className="bg-[#1a1a1a] text-white border-t-4 border-[#1a1a1a] pt-12 pb-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
@@ -55,9 +53,9 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab, siteContent }) => 
 
         {/* Bottom Tagline */}
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left text-xs font-bricolage text-zinc-400">
-          <p>{footer.copyright}</p>
+          <p>© 2027 ROBOTRON HACKATHON. ASSEMBLE YOUR TEAM.</p>
           <div className="flex items-center gap-4">
-            <p className="text-zinc-500">{footer.tagline}</p>
+            <p className="text-zinc-500">24 HOURS. INFINITE POSSIBILITIES.</p>
             <button
               onClick={() => setActiveTab('admin')}
               className="text-zinc-600 hover:text-zinc-400 text-[10px] tracking-widest uppercase"
