@@ -1,0 +1,115 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    background-color: #f4ead5;
+    color: #1a1a1a;
+  }
+
+  h1, h2, h3, h4, h5, h6, .font-display {
+    font-family: 'Anton', 'Oswald', sans-serif;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+}
+
+.font-anton {
+  font-family: 'Anton', 'Oswald', sans-serif;
+}
+
+.font-bricolage {
+  font-family: 'Bricolage Grotesque', sans-serif;
+}
+
+/* Comic / Pop-Art Utilities */
+.bg-comic-paper {
+  background-color: #f4ead5;
+  background-image: radial-gradient(#1a1a1a 0.75px, transparent 0.75px);
+  background-size: 16px 16px;
+}
+
+.bg-halftone-dots {
+  background-image: radial-gradient(rgba(0, 0, 0, 0.15) 1.2px, transparent 1.2px);
+  background-size: 8px 8px;
+}
+
+.bg-halftone-red {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.25) 1.5px, transparent 1.5px);
+  background-size: 10px 10px;
+}
+
+.bg-halftone-yellow {
+  background-image: radial-gradient(rgba(0, 0, 0, 0.12) 1.5px, transparent 1.5px);
+  background-size: 10px 10px;
+}
+
+/* Hard Drop Shadows */
+.shadow-comic-sm {
+  box-shadow: 2px 2px 0px #1a1a1a;
+}
+
+.shadow-comic {
+  box-shadow: 4px 4px 0px #1a1a1a;
+}
+
+.shadow-comic-md {
+  box-shadow: 6px 6px 0px #1a1a1a;
+}
+
+.shadow-comic-lg {
+  box-shadow: 8px 8px 0px #1a1a1a;
+}
+
+.shadow-comic-xl {
+  box-shadow: 12px 12px 0px #1a1a1a;
+}
+
+.shadow-comic-red {
+  box-shadow: 6px 6px 0px #bb0013;
+}
+
+.shadow-comic-yellow {
+  box-shadow: 6px 6px 0px #fddc00;
+}
+
+/* Slanted Banner & Badge Clip Paths */
+.clip-banner {
+  clip-path: polygon(0 0, 100% 0, 96% 100%, 0% 100%);
+}
+
+.clip-badge-slanted {
+  transform: skewX(-8deg);
+}
+
+.clip-badge-slanted > * {
+  transform: skewX(8deg);
+}
+
+.comic-border-thick {
+  border: 3px solid #1a1a1a;
+}
+
+.comic-border-ultra {
+  border: 4px solid #1a1a1a;
+}
+
+/* Smooth custom scrollbars */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f4ead5;
+  border-left: 2px solid #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #bb0013;
+  border: 2px solid #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #fddc00;
+}
