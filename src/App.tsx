@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { NavTab, SiteContent } from './types';
-import { loadContent } from './services/content';
+import React, { useState } from 'react';
+import { NavTab } from './types';
 import { ALL_EVENTS } from './data/events';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
@@ -22,18 +21,6 @@ export function App() {
   const [preselectedNonTechId, setPreselectedNonTechId] = useState<string>('');
   const [adminUnlocked, setAdminUnlocked] = useState(false);
   const [adminPassInput, setAdminPassInput] = useState('');
-  const [siteContent, setSiteContent] = useState<SiteContent | null>(null);
-
-  useEffect(() => {
-    loadContent().then(c => setSiteContent(c));
-  }, []);
-
-  // Reload content when leaving admin tab (user may have saved changes)
-  useEffect(() => {
-    if (activeTab !== 'admin') {
-      loadContent().then(c => setSiteContent(c));
-    }
-  }, [activeTab]);
 
   const selectedEvent = ALL_EVENTS.find(e => e.id === selectedEventId);
 
@@ -59,17 +46,6 @@ export function App() {
     }
   };
 
-  if (!siteContent) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f4ead5]">
-        <div className="bg-white p-8 comic-border-ultra shadow-comic-lg text-center space-y-4">
-          <div className="font-anton text-3xl text-[#bb0013] animate-pulse">LOADING...</div>
-          <p className="font-bricolage text-sm text-zinc-600">Connecting to mission control.</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen flex flex-col bg-[#f4ead5] text-[#1a1a1a] selection:bg-[#e71620] selection:text-white">
       
@@ -87,29 +63,27 @@ export function App() {
         {activeTab === 'home' && (
           <HomeView 
             setActiveTab={setActiveTab} 
-            onSelectEvent={handleSelectEventModal}
-            siteContent={siteContent}
+            onSelectEvent={handleSelectEventModal} 
           />
         )}
 
         {activeTab === 'about' && (
-          <AboutView setActiveTab={setActiveTab} siteContent={siteContent} />
+          <AboutView setActiveTab={setActiveTab} />
         )}
 
         {activeTab === 'events' && (
           <EventsView 
             setActiveTab={setActiveTab} 
-            onSelectEvent={handleSelectEventModal}
-            siteContent={siteContent}
+            onSelectEvent={handleSelectEventModal} 
           />
         )}
 
         {activeTab === 'schedule' && (
-          <ScheduleView setActiveTab={setActiveTab} siteContent={siteContent} />
+          <ScheduleView setActiveTab={setActiveTab} />
         )}
 
         {activeTab === 'prizes' && (
-          <PrizesView setActiveTab={setActiveTab} siteContent={siteContent} />
+          <PrizesView setActiveTab={setActiveTab} />
         )}
 
         {activeTab === 'register' && (
@@ -165,7 +139,7 @@ export function App() {
       </main>
 
       {/* Pop-Art Footer */}
-      <Footer setActiveTab={setActiveTab} siteContent={siteContent} />
+      <Footer setActiveTab={setActiveTab} />
 
       {/* Event Details Popup Modal */}
       {selectedEvent && (

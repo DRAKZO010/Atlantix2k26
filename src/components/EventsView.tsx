@@ -1,25 +1,23 @@
 import React, { useState } from 'react';
-import { NavTab, SiteContent } from '../types';
-import { Search, Zap } from 'lucide-react';
+import { NavTab, EventItem } from '../types';
+import { TECHNICAL_EVENTS, CIVILIAN_EVENTS } from '../data/events';
+import { Search, Zap, Shield, Flame, Sparkles, Filter, ChevronRight, CheckCircle2 } from 'lucide-react';
 
 interface EventsViewProps {
   setActiveTab: (tab: NavTab) => void;
   onSelectEvent: (eventId: string) => void;
-  siteContent: SiteContent;
 }
 
-export const EventsView: React.FC<EventsViewProps> = ({ setActiveTab, onSelectEvent, siteContent }) => {
+export const EventsView: React.FC<EventsViewProps> = ({ setActiveTab, onSelectEvent }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<'all' | 'technical' | 'civilian'>('all');
 
-  const { events } = siteContent;
-
-  const filteredTech = events.technical.filter(e => 
+  const filteredTech = TECHNICAL_EVENTS.filter(e => 
     e.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
     e.code.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const filteredCivilian = events.civilian.filter(e => 
+  const filteredCivilian = CIVILIAN_EVENTS.filter(e => 
     e.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
     e.code.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -41,6 +39,7 @@ export const EventsView: React.FC<EventsViewProps> = ({ setActiveTab, onSelectEv
           CHOOSE YOUR TECHNOLOGY. DEFEND YOUR DOMAIN.
         </p>
 
+        {/* Filter & Search Bar */}
         <div className="max-w-2xl mx-auto pt-4 flex flex-col sm:flex-row gap-4 items-center">
           <div className="relative flex-1 w-full">
             <Search className="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500" />
@@ -54,22 +53,35 @@ export const EventsView: React.FC<EventsViewProps> = ({ setActiveTab, onSelectEv
           </div>
 
           <div className="flex gap-2 w-full sm:w-auto justify-center">
-            {(['all', 'technical', 'civilian'] as const).map(cat => (
-              <button
-                key={cat}
-                onClick={() => setCategoryFilter(cat)}
-                className={`px-4 py-3 font-anton text-sm tracking-wider comic-border-thick shadow-comic-sm uppercase cursor-pointer ${
-                  categoryFilter === cat ? 'bg-[#bb0013] text-white' : 'bg-white text-[#1a1a1a]'
-                }`}
-              >
-                {cat === 'all' ? 'ALL' : cat === 'technical' ? 'TECHNICAL' : 'CIVILIAN'}
-              </button>
-            ))}
+            <button
+              onClick={() => setCategoryFilter('all')}
+              className={`px-4 py-3 font-anton text-sm tracking-wider comic-border-thick shadow-comic-sm uppercase cursor-pointer ${
+                categoryFilter === 'all' ? 'bg-[#bb0013] text-white' : 'bg-white text-[#1a1a1a]'
+              }`}
+            >
+              ALL
+            </button>
+            <button
+              onClick={() => setCategoryFilter('technical')}
+              className={`px-4 py-3 font-anton text-sm tracking-wider comic-border-thick shadow-comic-sm uppercase cursor-pointer ${
+                categoryFilter === 'technical' ? 'bg-[#bb0013] text-white' : 'bg-white text-[#1a1a1a]'
+              }`}
+            >
+              TECHNICAL
+            </button>
+            <button
+              onClick={() => setCategoryFilter('civilian')}
+              className={`px-4 py-3 font-anton text-sm tracking-wider comic-border-thick shadow-comic-sm uppercase cursor-pointer ${
+                categoryFilter === 'civilian' ? 'bg-[#bb0013] text-white' : 'bg-white text-[#1a1a1a]'
+              }`}
+            >
+              CIVILIAN
+            </button>
           </div>
         </div>
       </section>
 
-      {/* TECHNICAL */}
+      {/* CATEGORY 1: TECHNICAL OPERATIONS */}
       {(categoryFilter === 'all' || categoryFilter === 'technical') && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
           <div className="border-b-4 border-[#1a1a1a] pb-3 flex items-center justify-between">
@@ -77,7 +89,7 @@ export const EventsView: React.FC<EventsViewProps> = ({ setActiveTab, onSelectEv
               TECHNICAL OPERATIONS
             </h2>
             <span className="font-anton text-lg text-[#1a1a1a] bg-[#fddc00] px-3 py-1 comic-border-thick">
-              {events.technical.length} MISSIONS
+              8 MISSIONS
             </span>
           </div>
 
@@ -140,7 +152,7 @@ export const EventsView: React.FC<EventsViewProps> = ({ setActiveTab, onSelectEv
         </div>
       </section>
 
-      {/* CIVILIAN */}
+      {/* CATEGORY 2: CIVILIAN ENGAGEMENT */}
       {(categoryFilter === 'all' || categoryFilter === 'civilian') && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
           <div className="border-b-4 border-[#1a1a1a] pb-3 flex items-center justify-between">
@@ -148,7 +160,7 @@ export const EventsView: React.FC<EventsViewProps> = ({ setActiveTab, onSelectEv
               CIVILIAN ENGAGEMENT
             </h2>
             <span className="font-anton text-lg text-[#1a1a1a] bg-[#fddc00] px-3 py-1 comic-border-thick">
-              {events.civilian.length} EVENTS
+              8 EVENTS
             </span>
           </div>
 
@@ -165,7 +177,7 @@ export const EventsView: React.FC<EventsViewProps> = ({ setActiveTab, onSelectEv
                       {item.code}
                     </span>
                     <span className="bg-[#00c853] text-white font-anton text-xs px-2.5 py-1 comic-border-thick">
-                      {item.feeText}
+                      VERIFIED FEE: FREE
                     </span>
                   </div>
 
