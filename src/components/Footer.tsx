@@ -54,7 +54,15 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab }) => {
         {/* Bottom Tagline */}
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left text-xs font-bricolage text-zinc-400">
           <p>© 2027 ROBOTRON HACKATHON. ASSEMBLE YOUR TEAM.</p>
-          <p className="text-zinc-500">24 HOURS. INFINITE POSSIBILITIES.</p>
+          <div className="flex items-center gap-4">
+            <p className="text-zinc-500">24 HOURS. INFINITE POSSIBILITIES.</p>
+            <button
+              onClick={() => setActiveTab('admin')}
+              className="text-zinc-600 hover:text-zinc-400 text-[10px] tracking-widest uppercase"
+            >
+              ADMIN
+            </button>
+          </div>
         </div>
       </div>
     </footer>

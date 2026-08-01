@@ -1,4 +1,48 @@
-export type NavTab = 'home' | 'about' | 'schedule' | 'events' | 'prizes' | 'register';
+export type NavTab = 'home' | 'about' | 'schedule' | 'events' | 'prizes' | 'register' | 'admin';
+
+export interface SiteContent {
+  hero: {
+    badge: string;
+    title: string;
+    subtitle: string;
+    date: string;
+    venue: string;
+  };
+  about: {
+    heading: string;
+    cards: { title: string; description: string }[];
+  };
+  stats: {
+    hours: string;
+    prizePool: string;
+    events: string;
+  };
+  schedule: {
+    day1: { time: string; title: string; description: string; isHighlight?: boolean }[];
+    day2: { time: string; title: string; description: string; isHighlight?: boolean }[];
+  };
+  events: {
+    technical: EventItem[];
+    civilian: EventItem[];
+  };
+  prizes: {
+    pool: string;
+    first: { title: string; amount: string; perks: string[] };
+    second: { title: string; amount: string; perks: string[] };
+    third: { title: string; amount: string; perks: string[] };
+    special: SpecialAward[];
+  };
+  contact: {
+    emails: string[];
+    phones: string[];
+    address: string;
+  };
+  footer: {
+    brand: string;
+    tagline: string;
+    copyright: string;
+  };
+}
 
 export interface EventItem {
   id: string;
