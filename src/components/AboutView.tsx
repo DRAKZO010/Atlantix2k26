@@ -1,14 +1,12 @@
 import React from 'react';
-import { NavTab, SiteContent } from '../types';
-import { Calendar, MapPin, Rocket, Trophy, Users } from 'lucide-react';
+import { NavTab } from '../types';
+import { Calendar, MapPin, Rocket, Trophy, Users, ShieldAlert, Cpu } from 'lucide-react';
 
 interface AboutViewProps {
   setActiveTab: (tab: NavTab) => void;
-  siteContent: SiteContent;
 }
 
-export const AboutView: React.FC<AboutViewProps> = ({ setActiveTab, siteContent }) => {
-  const { hero, about, stats } = siteContent;
+export const AboutView: React.FC<AboutViewProps> = ({ setActiveTab }) => {
   return (
     <div className="space-y-12 pb-16">
       
@@ -30,18 +28,18 @@ export const AboutView: React.FC<AboutViewProps> = ({ setActiveTab, siteContent 
           </h1>
 
           <p className="font-bricolage text-lg sm:text-xl text-zinc-800 font-medium leading-relaxed max-w-3xl mb-8">
-            {hero.title} is not just a hackathon. It is a 24-hour high-stakes arena where South India's brilliant minds converge to solve real-world problems through raw technology and creativity.
+            ROBOTRON 2027 is not just a hackathon. It is a 24-hour high-stakes arena where South India's brilliant minds converge to solve real-world problems through raw technology and creativity.
           </p>
 
           {/* Date & Location Bar */}
           <div className="bg-[#efe1c5] p-4 comic-border-thick flex flex-col sm:flex-row items-center justify-between gap-4 font-anton text-lg sm:text-xl">
             <div className="flex items-center gap-2">
               <Calendar className="w-6 h-6 text-[#bb0013]" />
-              <span>{hero.date}</span>
+              <span>JANUARY 15-16, 2026</span>
             </div>
             <div className="flex items-center gap-2">
               <MapPin className="w-6 h-6 text-[#bb0013]" />
-              <span>{hero.venue}</span>
+              <span>COIMBATORE, INDIA</span>
             </div>
           </div>
 
@@ -54,7 +52,7 @@ export const AboutView: React.FC<AboutViewProps> = ({ setActiveTab, siteContent 
         {/* Yellow Header Badge */}
         <div className="mb-8">
           <div className="bg-[#fddc00] text-[#1a1a1a] font-anton text-3xl sm:text-5xl px-6 py-2 inline-block comic-border-ultra shadow-comic transform -skew-x-6">
-            {about.heading}
+            ABOUT ROBOTRON
           </div>
         </div>
 
@@ -81,10 +79,10 @@ export const AboutView: React.FC<AboutViewProps> = ({ setActiveTab, siteContent 
             <div className="p-6 sm:p-8 space-y-4 bg-[#1a1a1a]">
               <div className="flex items-center gap-3">
                 <Rocket className="w-7 h-7 text-[#bb0013]" />
-                <h3 className="font-anton text-2xl sm:text-3xl text-white">{about.cards[0]?.title}</h3>
+                <h3 className="font-anton text-2xl sm:text-3xl text-white">INNOVATION HUB</h3>
               </div>
               <p className="font-bricolage text-sm sm:text-base text-zinc-300 leading-relaxed">
-                {about.cards[0]?.description}
+                Join the most exciting hackathon in South India. Our innovation hub is a pressure cooker for ideas, where cross-disciplinary teams forge the future of AI, ML, and sustainable technology.
               </p>
             </div>
 
@@ -97,10 +95,10 @@ export const AboutView: React.FC<AboutViewProps> = ({ setActiveTab, siteContent 
             <div className="bg-[#efe1c5] p-6 sm:p-8 comic-border-ultra shadow-comic-lg flex-1 space-y-4">
               <div className="flex items-center gap-3 text-[#1a1a1a]">
                 <Trophy className="w-8 h-8 text-[#bb0013]" />
-                <h3 className="font-anton text-2xl sm:text-3xl">{about.cards[1]?.title}</h3>
+                <h3 className="font-anton text-2xl sm:text-3xl">COMPETE & WIN</h3>
               </div>
               <p className="font-bricolage text-sm sm:text-base text-zinc-800 leading-relaxed">
-                {about.cards[1]?.description}
+                Compete for amazing prizes worth ₹50,000. Showcase your technical skills across categories from Cybersecurity to Robo Soccer.
               </p>
             </div>
 
@@ -108,10 +106,10 @@ export const AboutView: React.FC<AboutViewProps> = ({ setActiveTab, siteContent 
             <div className="bg-[#efe1c5] p-6 sm:p-8 comic-border-ultra shadow-comic-lg flex-1 space-y-4">
               <div className="flex items-center gap-3 text-[#1a1a1a]">
                 <Users className="w-8 h-8 text-[#bb0013]" />
-                <h3 className="font-anton text-2xl sm:text-3xl">{about.cards[2]?.title}</h3>
+                <h3 className="font-anton text-2xl sm:text-3xl">NETWORK & LEARN</h3>
               </div>
               <p className="font-bricolage text-sm sm:text-base text-zinc-800 leading-relaxed">
-                {about.cards[2]?.description}
+                Connect with industry experts and mentors. Participate in workshops and gain insights that redefine your career path.
               </p>
             </div>
 
@@ -127,17 +125,17 @@ export const AboutView: React.FC<AboutViewProps> = ({ setActiveTab, siteContent 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
             
             <div className="bg-white p-6 comic-border-thick shadow-comic transform -rotate-2">
-              <div className="font-anton text-6xl text-[#1a1a1a]">{stats.hours}</div>
+              <div className="font-anton text-6xl text-[#1a1a1a]">24</div>
               <div className="font-anton text-xl tracking-wider text-[#bb0013] mt-1">HOURS OF CODING</div>
             </div>
 
             <div className="bg-white p-6 comic-border-thick shadow-comic transform rotate-1">
-              <div className="font-anton text-6xl text-[#1a1a1a]">{stats.prizePool}</div>
+              <div className="font-anton text-6xl text-[#1a1a1a]">50K</div>
               <div className="font-anton text-xl tracking-wider text-[#bb0013] mt-1">PRIZE POOL</div>
             </div>
 
             <div className="bg-white p-6 comic-border-thick shadow-comic transform -rotate-1">
-              <div className="font-anton text-6xl text-[#1a1a1a]">{stats.events}+</div>
+              <div className="font-anton text-6xl text-[#1a1a1a]">15+</div>
               <div className="font-anton text-xl tracking-wider text-[#bb0013] mt-1">EVENTS</div>
             </div>
 
@@ -157,7 +155,7 @@ export const AboutView: React.FC<AboutViewProps> = ({ setActiveTab, siteContent 
               className="w-full h-80 object-cover comic-border-thick grayscale contrast-125"
             />
             <div className="font-anton text-center text-sm py-2 tracking-widest text-[#1a1a1a]">
-              {hero.title} LAB SESSIONS
+              ROBOTRON 2027 LAB SESSIONS
             </div>
           </div>
 
@@ -175,7 +173,7 @@ export const AboutView: React.FC<AboutViewProps> = ({ setActiveTab, siteContent 
 
             {/* Dashed Box Statement */}
             <div className="border-4 border-dashed border-[#1a1a1a] p-6 bg-[#f4ead5] font-bricolage text-sm text-zinc-800 leading-relaxed font-semibold">
-              {hero.title} provides the platform, the community, and the resources to turn speculative ideas into functional prototypes. Whether you are building a line-follower robot or a complex AI model, your mission remains the same: Solve. Adapt. Evolve.
+              Robotron 2027 provides the platform, the community, and the resources to turn speculative ideas into functional prototypes. Whether you are building a line-follower robot or a complex AI model, your mission remains the same: Solve. Adapt. Evolve.
             </div>
 
             {/* Red Button CTA */}
@@ -200,7 +198,7 @@ export const AboutView: React.FC<AboutViewProps> = ({ setActiveTab, siteContent 
             "THE BEST WAY TO PREDICT THE FUTURE IS TO ASSEMBLE AND BUILD IT."
           </p>
           <p className="font-anton text-[#bb0013] text-lg tracking-widest">
-            — {hero.title} CORE
+            — ROBOTRON CORE 2027
           </p>
         </div>
       </section>

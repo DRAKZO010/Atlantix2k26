@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { NavTab } from './types';
-import { loadContent } from './services/content';
 import { ALL_EVENTS } from './data/events';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
@@ -12,7 +11,6 @@ import { PrizesView } from './components/PrizesView';
 import { RegisterView } from './components/RegisterView';
 import { AdminView } from './components/AdminView';
 import { EventDetailModal } from './components/EventDetailModal';
-import { SiteContent } from './types';
 
 const ADMIN_PASSWORD = 'robotron2027';
 
@@ -23,21 +21,8 @@ export function App() {
   const [preselectedNonTechId, setPreselectedNonTechId] = useState<string>('');
   const [adminUnlocked, setAdminUnlocked] = useState(false);
   const [adminPassInput, setAdminPassInput] = useState('');
-  const [siteContent, setSiteContent] = useState<SiteContent | null>(null);
-
-  useEffect(() => {
-    loadContent().then(c => setSiteContent(c));
-  }, []);
-
-  useEffect(() => {
-    if (activeTab !== 'admin') {
-      loadContent().then(c => setSiteContent(c));
-    }
-  }, [activeTab]);
 
   const selectedEvent = ALL_EVENTS.find(e => e.id === selectedEventId);
-
-  const content = siteContent || {} as SiteContent;
 
   const handleSelectEventModal = (eventId: string) => {
     setSelectedEventId(eventId);
@@ -79,28 +64,26 @@ export function App() {
           <HomeView 
             setActiveTab={setActiveTab} 
             onSelectEvent={handleSelectEventModal} 
-            siteContent={content}
           />
         )}
 
         {activeTab === 'about' && (
-          <AboutView setActiveTab={setActiveTab} siteContent={content} />
+          <AboutView setActiveTab={setActiveTab} />
         )}
 
         {activeTab === 'events' && (
           <EventsView 
             setActiveTab={setActiveTab} 
             onSelectEvent={handleSelectEventModal} 
-            siteContent={content}
           />
         )}
 
         {activeTab === 'schedule' && (
-          <ScheduleView setActiveTab={setActiveTab} siteContent={content} />
+          <ScheduleView setActiveTab={setActiveTab} />
         )}
 
         {activeTab === 'prizes' && (
-          <PrizesView setActiveTab={setActiveTab} siteContent={content} />
+          <PrizesView setActiveTab={setActiveTab} />
         )}
 
         {activeTab === 'register' && (
@@ -156,7 +139,7 @@ export function App() {
       </main>
 
       {/* Pop-Art Footer */}
-      <Footer setActiveTab={setActiveTab} siteContent={content} />
+      <Footer setActiveTab={setActiveTab} />
 
       {/* Event Details Popup Modal */}
       {selectedEvent && (
