@@ -352,7 +352,7 @@
 
             c.hero = { badge: g("hero_badge"), title: g("hero_title"), subtitle: g("hero_subtitle"), date: g("hero_date"), venue: g("hero_venue") };
             c.about = { heading: g("about_heading"), cards: [] };
-            document.querySelectorAll("[id^=about_card")[...new Set([...document.querySelectorAll("[id^=about_card")].map(el => el.id.match(/about_card(\d+)/)?.[1]).filter(Boolean))].sort().forEach(i => {
+            [...new Set([...document.querySelectorAll("[id^=about_card]")].map(el => el.id.match(/about_card(\d+)/)?.[1]).filter(Boolean))].sort().forEach(i => {
                 c.about.cards.push({ title: g(`about_card${i}_title`), description: g(`about_card${i}_desc`) });
             });
             c.stats = { hours: g("stats_hours"), prizePool: g("stats_prizePool"), events: g("stats_events") };
