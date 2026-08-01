@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robotron 2027 - Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bricolage+Grotesque:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #f4ead5; --red: #bb0013; --yellow: #fddc00; --dark: #1a1a1a; --success: #00c853; --card: #ffffff; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Bricolage Grotesque', sans-serif; background: var(--bg); color: var(--dark); min-height: 100vh; background-image: radial-gradient(#1a1a1a 0.75px, transparent 0.75px); background-size: 16px 16px; }
+        .hidden { display: none !important; }
+
+        /* Login */
+        .login-wrap { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 16px; }
+        .login-card { background: var(--card); max-width: 420px; width: 100%; border: 4px solid var(--dark); box-shadow: 8px 8px 0px var(--dark); padding: 0; }
+        .login-header { background: var(--red); padding: 24px; text-align: center; border-bottom: 4px solid var(--dark); }
+        .login-header h1 { font-family: 'Anton', sans-serif; color: white; font-size: 1.8rem; letter-spacing: 3px; }
+        .login-header h1 span { color: var(--yellow); }
+        .login-header p { color: rgba(255,255,255,0.8); font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }
+        .login-body { padding: 28px 24px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-family: 'Anton', sans-serif; font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+        .form-group input { width: 100%; padding: 12px; border: 3px solid var(--dark); background: var(--bg); font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 0.95rem; outline: none; }
+        .form-group input:focus { border-color: var(--red); }
+        .btn { display: block; width: 100%; padding: 14px; font-family: 'Anton', sans-serif; font-size: 1.2rem; letter-spacing: 2px; text-transform: uppercase; border: 3px solid var(--dark); box-shadow: 4px 4px 0px var(--dark); cursor: pointer; transition: all 0.15s; }
+        .btn:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--dark); }
+        .btn:active { transform: translate(4px, 4px); box-shadow: none; }
+        .btn-red { background: var(--red); color: white; }
+        .btn-yellow { background: var(--yellow); color: var(--dark); }
+        .btn-dark { background: var(--dark); color: white; }
+        .btn-green { background: var(--success); color: white; border-color: var(--success); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: 4px 4px 0px var(--dark); }
+        .error-msg { color: var(--red); font-size: 0.85rem; font-weight: 700; margin-top: 10px; text-align: center; }
+
+        /* Dashboard */
+        .dash-header { background: var(--red); padding: 16px 20px; border-bottom: 4px solid var(--dark); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+        .dash-header h1 { font-family: 'Anton', sans-serif; color: white; font-size: 1.3rem; letter-spacing: 2px; }
+        .dash-header h1 span { color: var(--yellow); }
+        .dash-header .user-email { color: rgba(255,255,255,0.7); font-size: 0.75rem; }
+        .dash-body { max-width: 800px; margin: 24px auto; padding: 0 16px 40px; }
+
+        .section-toggle { width: 100%; background: var(--dark); color: white; padding: 14px 16px; border: 3px solid var(--dark); font-family: 'Anton', sans-serif; font-size: 1.1rem; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; transition: background 0.2s; }
+        .section-toggle:hover { background: var(--red); }
+        .section-toggle.active { background: var(--red); }
+        .section-body { background: var(--card); border: 3px solid var(--dark); box-shadow: 4px 4px 0px var(--dark); padding: 20px; margin-bottom: 16px; }
+        .field { margin-bottom: 14px; }
+        .field label { display: block; font-family: 'Anton', sans-serif; font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase; color: #666; margin-bottom: 4px; }
+        .field input, .field textarea { width: 100%; padding: 10px; border: 2px solid var(--dark); background: var(--bg); font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 0.9rem; outline: none; }
+        .field input:focus, .field textarea:focus { border-color: var(--red); }
+        .field textarea { resize: vertical; min-height: 60px; }
+        .sub-heading { font-family: 'Anton', sans-serif; font-size: 0.9rem; letter-spacing: 1px; color: var(--red); border-bottom: 2px dashed var(--dark); padding-bottom: 6px; margin: 16px 0 10px; }
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .save-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--dark); padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; border-top: 4px solid var(--red); z-index: 100; }
+        .save-bar .status { color: var(--success); font-family: 'Anton', sans-serif; font-size: 0.85rem; letter-spacing: 1px; }
+        @media (max-width: 600px) { .row { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen" class="login-wrap">
+    <div class="login-card">
+        <div class="login-header">
+            <h1>ROBOTRON <span>2027</span></h1>
+            <p>ADMIN DASHBOARD</p>
+        </div>
+        <div class="login-body">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="loginEmail" placeholder="admin@robotron2027.com">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="loginPassword" placeholder="Enter password">
+            </div>
+            <button class="btn btn-red" id="loginBtn">LOGIN</button>
+            <div class="error-msg hidden" id="loginError"></div>
+        </div>
+    </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboardScreen" class="hidden">
+    <div class="dash-header">
+        <div>
+            <h1>ROBOTRON <span>2027</span> ADMIN</h1>
+            <div class="user-email" id="userEmail"></div>
+        </div>
+        <button class="btn btn-dark" onclick="logout()" style="width:auto;padding:8px 16px;font-size:0.8rem;box-shadow:2px 2px 0px var(--red);">LOGOUT</button>
+    </div>
+
+    <div class="dash-body">
+        <!-- HERO -->
+        <button class="section-toggle" onclick="toggle('hero',this)">HERO SECTION <span>&#9660;</span></button>
+        <div id="sec-hero" class="section-body hidden">
+            <div class="field"><label>Badge Text</label><input id="hero_badge"></div>
+            <div class="field"><label>Main Title</label><input id="hero_title"></div>
+            <div class="field"><label>Subtitle</label><textarea id="hero_subtitle"></textarea></div>
+            <div class="row">
+                <div class="field"><label>Date</label><input id="hero_date"></div>
+                <div class="field"><label>Venue</label><input id="hero_venue"></div>
+            </div>
+        </div>
+
+        <!-- ABOUT -->
+        <button class="section-toggle" onclick="toggle('about',this)">ABOUT SECTION <span>&#9660;</span></button>
+        <div id="sec-about" class="section-body hidden">
+            <div class="field"><label>Section Heading</label><input id="about_heading"></div>
+            <div id="aboutCards"></div>
+        </div>
+
+        <!-- STATS -->
+        <button class="section-toggle" onclick="toggle('stats',this)">STATS <span>&#9660;</span></button>
+        <div id="sec-stats" class="section-body hidden">
+            <div class="row">
+                <div class="field"><label>Hours</label><input id="stats_hours"></div>
+                <div class="field"><label>Prize Pool</label><input id="stats_prizePool"></div>
+            </div>
+            <div class="field"><label>Events Count</label><input id="stats_events"></div>
+        </div>
+
+        <!-- SCHEDULE -->
+        <button class="section-toggle" onclick="toggle('schedule',this)">SCHEDULE <span>&#9660;</span></button>
+        <div id="sec-schedule" class="section-body hidden">
+            <div class="sub-heading">DAY 1</div>
+            <div id="schedDay1"></div>
+            <div class="sub-heading">DAY 2</div>
+            <div id="schedDay2"></div>
+        </div>
+
+        <!-- EVENTS -->
+        <button class="section-toggle" onclick="toggle('events',this)">EVENTS <span>&#9660;</span></button>
+        <div id="sec-events" class="section-body hidden">
+            <div class="sub-heading">TECHNICAL EVENTS</div>
+            <div id="techEvents"></div>
+            <div class="sub-heading">CIVILIAN EVENTS</div>
+            <div id="civEvents"></div>
+        </div>
+
+        <!-- PRIZES -->
+        <button class="section-toggle" onclick="toggle('prizes',this)">PRIZES <span>&#9660;</span></button>
+        <div id="sec-prizes" class="section-body hidden">
+            <div class="field"><label>Prize Pool Total</label><input id="prizes_pool"></div>
+            <div class="sub-heading">1ST PLACE</div>
+            <div class="row">
+                <div class="field"><label>Title</label><input id="prizes_first_title"></div>
+                <div class="field"><label>Amount</label><input id="prizes_first_amount"></div>
+            </div>
+            <div class="field"><label>Perks (comma separated)</label><input id="prizes_first_perks"></div>
+            <div class="sub-heading">2ND PLACE</div>
+            <div class="row">
+                <div class="field"><label>Title</label><input id="prizes_second_title"></div>
+                <div class="field"><label>Amount</label><input id="prizes_second_amount"></div>
+            </div>
+            <div class="field"><label>Perks (comma separated)</label><input id="prizes_second_perks"></div>
+            <div class="sub-heading">3RD PLACE</div>
+            <div class="row">
+                <div class="field"><label>Title</label><input id="prizes_third_title"></div>
+                <div class="field"><label>Amount</label><input id="prizes_third_amount"></div>
+            </div>
+            <div class="field"><label>Perks (comma separated)</label><input id="prizes_third_perks"></div>
+        </div>
+
+        <!-- CONTACT -->
+        <button class="section-toggle" onclick="toggle('contact',this)">CONTACT INFO <span>&#9660;</span></button>
+        <div id="sec-contact" class="section-body hidden">
+            <div class="field"><label>Address</label><textarea id="contact_address"></textarea></div>
+            <div class="row">
+                <div class="field"><label>Email 1</label><input id="contact_email0"></div>
+                <div class="field"><label>Email 2</label><input id="contact_email1"></div>
+            </div>
+            <div class="row">
+                <div class="field"><label>Phone 1</label><input id="contact_phone0"></div>
+                <div class="field"><label>Phone 2</label><input id="contact_phone1"></div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <button class="section-toggle" onclick="toggle('footer',this)">FOOTER <span>&#9660;</span></button>
+        <div id="sec-footer" class="section-body hidden">
+            <div class="field"><label>Brand Name</label><input id="footer_brand"></div>
+            <div class="field"><label>Tagline</label><input id="footer_tagline"></div>
+            <div class="field"><label>Copyright</label><input id="footer_copyright"></div>
+        </div>
+    </div>
+
+    <!-- Save Bar -->
+    <div class="save-bar">
+        <div class="status" id="saveStatus"></div>
+        <button class="btn btn-green" onclick="saveAll()" id="saveBtn" style="width:auto;padding:10px 28px;font-size:0.9rem;box-shadow:2px 2px 0px var(--dark);">SAVE ALL CONTENT</button>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCQKLM92UMnSb_ZLd7BZGgH6TNP9ugXffg",
+        authDomain: "atlantix2k26.firebaseapp.com",
+        projectId: "atlantix2k26",
+        storageBucket: "atlantix2k26.firebasestorage.app",
+        messagingSenderId: "988770007742",
+        appId: "1:988770007742:web:742114c6f386a0422fbcef"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    const CONTENT_DOC = "siteContent/main";
+
+    let siteContent = null;
+
+    // === AUTH ===
+    document.getElementById("loginBtn").onclick = async () => {
+        const email = document.getElementById("loginEmail").value.trim();
+        const pass = document.getElementById("loginPassword").value;
+        const errEl = document.getElementById("loginError");
+        errEl.classList.add("hidden");
+        if (!email || !pass) { errEl.textContent = "Fill in all fields"; errEl.classList.remove("hidden"); return; }
+        try {
+            await signInWithEmailAndPassword(auth, email, pass);
+        } catch (e) {
+            errEl.textContent = "Invalid email or password";
+            errEl.classList.remove("hidden");
+        }
+    };
+
+    document.getElementById("loginPassword").onkeydown = (e) => { if (e.key === "Enter") document.getElementById("loginBtn").click(); };
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            document.getElementById("loginScreen").classList.add("hidden");
+            document.getElementById("dashboardScreen").classList.remove("hidden");
+            document.getElementById("userEmail").textContent = user.email;
+            loadContent();
+        } else {
+            document.getElementById("loginScreen").classList.remove("hidden");
+            document.getElementById("dashboardScreen").classList.add("hidden");
+        }
+    });
+
+    window.logout = () => signOut(auth);
+
+    // === LOAD ===
+    async function loadContent() {
+        try {
+            const snap = await getDoc(doc(db, CONTENT_DOC));
+            siteContent = snap.exists() ? snap.data() : getDefaultContent();
+        } catch (e) {
+            siteContent = getDefaultContent();
+        }
+        populateUI();
+    }
+
+    function populateUI() {
+        const c = siteContent;
+        setVal("hero_badge", c.hero?.badge);
+        setVal("hero_title", c.hero?.title);
+        setVal("hero_subtitle", c.hero?.subtitle);
+        setVal("hero_date", c.hero?.date);
+        setVal("hero_venue", c.hero?.venue);
+        setVal("about_heading", c.about?.heading);
+
+        // About cards
+        const cardsEl = document.getElementById("aboutCards");
+        cardsEl.innerHTML = "";
+        (c.about?.cards || []).forEach((card, i) => {
+            cardsEl.innerHTML += `<div class="sub-heading">CARD ${i+1}</div>
+                <div class="field"><label>Title</label><input id="about_card${i}_title" value="${esc(card.title)}"></div>
+                <div class="field"><label>Description</label><textarea id="about_card${i}_desc">${esc(card.description)}</textarea></div>`;
+        });
+
+        setVal("stats_hours", c.stats?.hours);
+        setVal("stats_prizePool", c.stats?.prizePool);
+        setVal("stats_events", c.stats?.events);
+
+        // Schedule
+        ["day1","day2"].forEach(day => {
+            const el = document.getElementById(day === "day1" ? "schedDay1" : "schedDay2");
+            el.innerHTML = "";
+            (c.schedule?.[day] || []).forEach((item, i) => {
+                el.innerHTML += `<div style="border:2px solid var(--dark);padding:10px;margin-bottom:8px;background:${item.isHighlight?'var(--red);color:white':'var(--bg)'}">
+                    <div class="row"><div class="field"><label>Time</label><input id="sched_${day}_${i}_time" value="${esc(item.time)}" style="${item.isHighlight?'color:white;border-color:white':''}"></div>
+                    <div class="field"><label>Title</label><input id="sched_${day}_${i}_title" value="${esc(item.title)}" style="${item.isHighlight?'color:white;border-color:white':''}"></div></div>
+                    <div class="field"><label>Description</label><textarea id="sched_${day}_${i}_desc" style="${item.isHighlight?'color:white;border-color:white':''}">${esc(item.description)}</textarea></div>
+                </div>`;
+            });
+        });
+
+        // Events
+        const techEl = document.getElementById("techEvents");
+        techEl.innerHTML = "";
+        (c.events?.technical || []).forEach((evt, i) => {
+            techEl.innerHTML += `<div style="border:2px solid var(--dark);padding:10px;margin-bottom:8px;background:var(--bg)">
+                <div class="row"><div class="field"><label>Code</label><input id="evt_tech_${i}_code" value="${esc(evt.code)}"></div>
+                <div class="field"><label>Title</label><input id="evt_tech_${i}_title" value="${esc(evt.title)}"></div></div>
+                <div class="field"><label>Description</label><textarea id="evt_tech_${i}_desc">${esc(evt.description)}</textarea></div>
+                <div class="row"><div class="field"><label>Fee (₹)</label><input type="number" id="evt_tech_${i}_fee" value="${evt.fee}"></div>
+                <div class="field"><label>Team Size</label><input id="evt_tech_${i}_team" value="${esc(evt.teamSize||'')}"></div></div>
+                <div class="field"><label>Timing</label><input id="evt_tech_${i}_timing" value="${esc(evt.timing||'')}"></div>
+                <div class="field"><label>Venue</label><input id="evt_tech_${i}_venue" value="${esc(evt.venue||'')}"></div>
+            </div>`;
+        });
+
+        const civEl = document.getElementById("civEvents");
+        civEl.innerHTML = "";
+        (c.events?.civilian || []).forEach((evt, i) => {
+            civEl.innerHTML += `<div style="border:2px solid var(--dark);padding:10px;margin-bottom:8px;background:var(--bg)">
+                <div class="row"><div class="field"><label>Code</label><input id="evt_civ_${i}_code" value="${esc(evt.code)}"></div>
+                <div class="field"><label>Title</label><input id="evt_civ_${i}_title" value="${esc(evt.title)}"></div></div>
+                <div class="field"><label>Description</label><textarea id="evt_civ_${i}_desc">${esc(evt.description)}</textarea></div>
+                <div class="row"><div class="field"><label>Fee (₹)</label><input type="number" id="evt_civ_${i}_fee" value="${evt.fee}"></div>
+                <div class="field"><label>Team Size</label><input id="evt_civ_${i}_team" value="${esc(evt.teamSize||'')}"></div></div>
+                <div class="field"><label>Timing</label><input id="evt_civ_${i}_timing" value="${esc(evt.timing||'')}"></div>
+                <div class="field"><label>Venue</label><input id="evt_civ_${i}_venue" value="${esc(evt.venue||'')}"></div>
+            </div>`;
+        });
+
+        // Prizes
+        setVal("prizes_pool", c.prizes?.pool);
+        ["first","second","third"].forEach(r => {
+            setVal(`prizes_${r}_title`, c.prizes?.[r]?.title);
+            setVal(`prizes_${r}_amount`, c.prizes?.[r]?.amount);
+            setVal(`prizes_${r}_perks`, (c.prizes?.[r]?.perks || []).join(", "));
+        });
+
+        // Contact
+        setVal("contact_address", c.contact?.address);
+        setVal("contact_email0", c.contact?.emails?.[0]);
+        setVal("contact_email1", c.contact?.emails?.[1]);
+        setVal("contact_phone0", c.contact?.phones?.[0]);
+        setVal("contact_phone1", c.contact?.phones?.[1]);
+
+        // Footer
+        setVal("footer_brand", c.footer?.brand);
+        setVal("footer_tagline", c.footer?.tagline);
+        setVal("footer_copyright", c.footer?.copyright);
+    }
+
+    // === SAVE ===
+    window.saveAll = async () => {
+        const btn = document.getElementById("saveBtn");
+        const status = document.getElementById("saveStatus");
+        btn.disabled = true;
+        btn.textContent = "SAVING...";
+        status.textContent = "";
+
+        try {
+            const c = JSON.parse(JSON.stringify(siteContent));
+
+            c.hero = { badge: g("hero_badge"), title: g("hero_title"), subtitle: g("hero_subtitle"), date: g("hero_date"), venue: g("hero_venue") };
+            c.about = { heading: g("about_heading"), cards: [] };
+            document.querySelectorAll("[id^=about_card")[...new Set([...document.querySelectorAll("[id^=about_card")].map(el => el.id.match(/about_card(\d+)/)?.[1]).filter(Boolean))].sort().forEach(i => {
+                c.about.cards.push({ title: g(`about_card${i}_title`), description: g(`about_card${i}_desc`) });
+            });
+            c.stats = { hours: g("stats_hours"), prizePool: g("stats_prizePool"), events: g("stats_events") };
+
+            c.schedule = { day1: [], day2: [] };
+            ["day1","day2"].forEach(day => {
+                const items = document.querySelectorAll(`[id^="sched_${day}_"]`);
+                const indices = [...new Set([...items].map(el => el.id.match(/sched_(day\d)_(\d+)/)?.[2]).filter(Boolean))].sort();
+                indices.forEach(i => {
+                    c.schedule[day].push({ time: g(`sched_${day}_${i}_time`), title: g(`sched_${day}_${i}_title`), description: g(`sched_${day}_${i}_desc`), isHighlight: siteContent.schedule?.[day]?.[parseInt(i)]?.isHighlight || false });
+                });
+            });
+
+            c.events = { technical: [], civilian: [] };
+            const techIndices = [...new Set([...document.querySelectorAll("[id^=evt_tech_")].map(el => el.id.match(/evt_tech_(\d+)/)?.[1]).filter(Boolean))].sort();
+            techIndices.forEach(i => {
+                c.events.technical.push({ id: `tech-${String(parseInt(i)+1).padStart(2,'0')}`, code: g(`evt_tech_${i}_code`), title: g(`evt_tech_${i}_title`), category: "technical", description: g(`evt_tech_${i}_desc`), fee: parseInt(g(`evt_tech_${i}_fee`))||0, feeText: (parseInt(g(`evt_tech_${i}_fee`))||0)>0?`FEE: ₹${g(`evt_tech_${i}_fee`)}`:'VERIFIED FEE: FREE', iconName: siteContent.events?.technical?.[parseInt(i)]?.iconName||'Zap', teamSize: g(`evt_tech_${i}_team`), timing: g(`evt_tech_${i}_timing`), venue: g(`evt_tech_${i}_venue`), rules: siteContent.events?.technical?.[parseInt(i)]?.rules||[] });
+            });
+            const civIndices = [...new Set([...document.querySelectorAll("[id^=evt_civ_")].map(el => el.id.match(/evt_civ_(\d+)/)?.[1]).filter(Boolean))].sort();
+            civIndices.forEach(i => {
+                c.events.civilian.push({ id: `civilian-${String(parseInt(i)+1).padStart(2,'0')}`, code: g(`evt_civ_${i}_code`), title: g(`evt_civ_${i}_title`), category: "civilian", description: g(`evt_civ_${i}_desc`), fee: parseInt(g(`evt_civ_${i}_fee`))||0, feeText: (parseInt(g(`evt_civ_${i}_fee`))||0)>0?`FEE: ₹${g(`evt_civ_${i}_fee`)}`:'VERIFIED FEE: FREE', iconName: siteContent.events?.civilian?.[parseInt(i)]?.iconName||'Sparkles', teamSize: g(`evt_civ_${i}_team`), timing: g(`evt_civ_${i}_timing`), venue: g(`evt_civ_${i}_venue`), rules: siteContent.events?.civilian?.[parseInt(i)]?.rules||[] });
+            });
+
+            c.prizes = { pool: g("prizes_pool") };
+            ["first","second","third"].forEach(r => {
+                c.prizes[r] = { title: g(`prizes_${r}_title`), amount: g(`prizes_${r}_amount`), perks: g(`prizes_${r}_perks`).split(",").map(s=>s.trim()).filter(Boolean) };
+            });
+            c.prizes.special = siteContent.prizes?.special || [];
+
+            c.contact = { address: g("contact_address"), emails: [g("contact_email0"), g("contact_email1")].filter(Boolean), phones: [g("contact_phone0"), g("contact_phone1")].filter(Boolean) };
+            c.footer = { brand: g("footer_brand"), tagline: g("footer_tagline"), copyright: g("footer_copyright") };
+
+            await setDoc(doc(db, CONTENT_DOC), c);
+            siteContent = c;
+            status.textContent = "SAVED SUCCESSFULLY!";
+            setTimeout(() => { status.textContent = ""; }, 3000);
+        } catch (e) {
+            status.textContent = "SAVE FAILED: " + e.message;
+            console.error(e);
+        }
+        btn.disabled = false;
+        btn.textContent = "SAVE ALL CONTENT";
+    };
+
+    // === HELPERS ===
+    function g(id) { return document.getElementById(id)?.value || ""; }
+    function setVal(id, val) { const el = document.getElementById(id); if (el) el.value = val || ""; }
+    function esc(s) { return (s||"").replace(/"/g, "&quot;"); }
+
+    window.toggle = (section, btn) => {
+        const el = document.getElementById("sec-" + section);
+        const isOpen = !el.classList.contains("hidden");
+        document.querySelectorAll("[id^='sec-']").forEach(s => s.classList.add("hidden"));
+        document.querySelectorAll(".section-toggle").forEach(b => b.classList.remove("active"));
+        if (!isOpen) { el.classList.remove("hidden"); btn.classList.add("active"); }
+    };
+
+    function getDefaultContent() {
+        return {
+            hero: { badge: "MISSION CRITICAL: JANUARY 15-16, 2026 • COIMBATORE", title: "ROBOTRON 2027", subtitle: "24 HOURS. INFINITE POSSIBILITIES. ASSEMBLE YOUR SQUAD AND EXECUTE THE PLAN.", date: "JANUARY 15-16, 2026", venue: "PARK COLLEGE OF ENGINEERING, COIMBATORE" },
+            about: { heading: "ABOUT ROBOTRON", cards: [{ title: "INNOVATION HUB", description: "Join the most exciting hackathon in South India." }, { title: "COMPETE & WIN", description: "Compete for amazing prizes worth ₹50,000." }, { title: "NETWORK & LEARN", description: "Connect with industry experts and mentors." }] },
+            stats: { hours: "24", prizePool: "₹50K", events: "16" },
+            schedule: { day1: [{ time: "09:00 AM", title: "REGISTRATION & CHECK-IN", description: "Get your badges and welcome kit." }, { time: "12:00 PM", title: "HACKING BEGINS!", description: "DEPLOY ALL SYSTEMS.", isHighlight: true }, { time: "03:00 PM", title: "MENTOR SESSIONS", description: "Get guidance from industry experts." }], day2: [{ time: "08:00 AM", title: "BREAKFAST", description: "Morning refreshments." }, { time: "12:00 PM", title: "SUBMISSION DEADLINE", description: "Final code freeze.", isHighlight: true }, { time: "05:00 PM", title: "AWARDS CEREMONY", description: "Announcing winners." }] },
+            events: { technical: [], civilian: [] },
+            prizes: { pool: "₹50,000", first: { title: "ROBOTRON KING", amount: "₹25,000", perks: ["Startup Incubation", "Industry Mentorship"] }, second: { title: "RUNNER UP", amount: "₹15,000", perks: ["Tech Workshop Access", "Official Certificate"] }, third: { title: "BRONZE ELITE", amount: "₹10,000", perks: ["Sponsor Goodie Bag", "Merit Certificate"] }, special: [] },
+            contact: { address: "Park College of Engineering and Technology, Coimbatore", emails: ["hello@Robotron2027.com"], phones: ["+91 98765 43210"] },
+            footer: { brand: "ROBOTRON 2027", tagline: "24 HOURS. INFINITE POSSIBILITIES.", copyright: "© 2027 ROBOTRON HACKATHON." }
+        };
+    }
+</script>
+</body>
+</html>
