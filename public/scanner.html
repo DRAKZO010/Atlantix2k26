@@ -4,51 +4,283 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Robotron 2027 - Gatekeeper</title>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bricolage+Grotesque:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/html5-qrcode"></script>
     <style>
-        :root { --primary: #00d4ff; --bg: #0a0a0a; --card: #1a1a1a; --success: #00ff88; --error: #ff4d4d; }
-        body { font-family: 'Rajdhani', sans-serif; background: var(--bg); color: white; margin: 0; padding: 20px; text-align: center; }
-        .container { max-width: 500px; margin: auto; }
-        #reader { width: 100%; border-radius: 12px; overflow: hidden; border: 2px solid var(--primary) !important; margin-bottom: 20px; }
-        #reader video { border-radius: 8px; }
-        .status-box { padding: 20px; border-radius: 12px; margin-top: 20px; display: none; border: 1px solid #333; background: var(--card); text-align: left; }
-        .status-box .status-icon { font-size: 3rem; margin-bottom: 10px; text-align: center; }
-        .status-box .status-name { font-size: 1.3rem; font-weight: 700; margin: 5px 0; text-align: center; }
-        .status-box .status-detail { font-size: 0.9rem; opacity: 0.8; text-align: center; }
-        .success { border-color: var(--success); color: var(--success); }
-        .error { border-color: var(--error); color: var(--error); }
-        .warning { border-color: #ffaa00; color: #ffaa00; }
-        input[type="text"] { background: #222; border: 1px solid #444; color: white; padding: 12px; border-radius: 5px; width: 70%; margin-top: 10px; }
-        button { background: var(--primary); color: black; border: none; padding: 12px 24px; border-radius: 5px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        button:hover { opacity: 0.8; }
-        .manual-section { margin-top: 40px; border-top: 1px solid #333; padding-top: 20px; }
-        .scan-again-btn { display: none; margin-top: 20px; padding: 14px 32px; font-size: 1rem; background: var(--primary); color: black; }
-        .scan-count { color: var(--primary); font-size: 0.85rem; margin-top: 10px; }
+        :root {
+            --bg: #f4ead5;
+            --red: #bb0013;
+            --yellow: #fddc00;
+            --dark: #1a1a1a;
+            --success: #00c853;
+            --error: #e71620;
+            --card: #ffffff;
+        }
 
-        .team-panel { display: none; margin-top: 20px; background: var(--card); border: 1px solid #333; border-radius: 12px; padding: 20px; text-align: left; }
-        .team-panel h3 { text-align: center; color: var(--primary); margin-top: 0; font-family: 'Orbitron', sans-serif; font-size: 1rem; }
-        .team-id-display { text-align: center; color: var(--primary); font-size: 1.2rem; font-weight: 700; margin-bottom: 15px; }
-        .team-meta { text-align: center; font-size: 0.85rem; opacity: 0.7; margin-bottom: 15px; }
-        .member-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; margin-bottom: 8px; background: #222; border: 1px solid #333; transition: 0.2s; }
-        .member-item.checked { border-color: var(--success); background: rgba(0, 255, 136, 0.05); }
-        .member-item input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--success); cursor: pointer; flex-shrink: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Bricolage Grotesque', sans-serif;
+            background: var(--bg);
+            color: var(--dark);
+            padding: 16px;
+            min-height: 100vh;
+            background-image: radial-gradient(#1a1a1a 0.75px, transparent 0.75px);
+            background-size: 16px 16px;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .brand-bar {
+            background: var(--red);
+            color: white;
+            padding: 12px 16px;
+            border: 3px solid var(--dark);
+            box-shadow: 4px 4px 0px var(--dark);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand-bar h1 {
+            font-family: 'Anton', sans-serif;
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .brand-bar h1 span { color: var(--yellow); }
+
+        .scan-count {
+            background: var(--yellow);
+            color: var(--dark);
+            font-family: 'Anton', sans-serif;
+            font-size: 0.85rem;
+            padding: 4px 10px;
+            border: 2px solid var(--dark);
+            letter-spacing: 1px;
+        }
+
+        #reader {
+            width: 100%;
+            border: 3px solid var(--dark) !important;
+            border-radius: 0 !important;
+            overflow: hidden;
+            margin-bottom: 16px;
+            box-shadow: 4px 4px 0px var(--dark);
+        }
+        #reader video { border-radius: 0 !important; }
+
+        .status-box {
+            padding: 20px;
+            border: 3px solid var(--dark);
+            box-shadow: 4px 4px 0px var(--dark);
+            margin-top: 16px;
+            display: none;
+            background: var(--card);
+            text-align: center;
+        }
+        .status-box .status-icon { font-size: 2.5rem; margin-bottom: 8px; }
+        .status-box .status-name {
+            font-family: 'Anton', sans-serif;
+            font-size: 1.3rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin: 4px 0;
+        }
+        .status-box .status-detail { font-size: 0.9rem; opacity: 0.8; }
+
+        .success { border-color: var(--success); background: #e8f5e9; }
+        .success .status-name { color: var(--success); }
+        .error { border-color: var(--error); background: #fce4ec; }
+        .error .status-name { color: var(--error); }
+
+        .team-panel {
+            display: none;
+            margin-top: 16px;
+            background: var(--card);
+            border: 3px solid var(--dark);
+            box-shadow: 6px 6px 0px var(--dark);
+            padding: 20px;
+            text-align: left;
+        }
+        .team-panel h3 {
+            text-align: center;
+            font-family: 'Anton', sans-serif;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--red);
+            margin-bottom: 8px;
+        }
+        .team-id-display {
+            text-align: center;
+            font-family: 'Anton', sans-serif;
+            font-size: 1.1rem;
+            color: var(--red);
+            margin-bottom: 4px;
+        }
+        .team-meta {
+            text-align: center;
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .member-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            background: var(--bg);
+            border: 2px solid var(--dark);
+            transition: 0.2s;
+        }
+        .member-item.checked {
+            border-color: var(--success);
+            background: #e8f5e9;
+        }
+        .member-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--success);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
         .member-info { flex: 1; }
-        .member-name { font-weight: 600; font-size: 1rem; }
-        .member-email { font-size: 0.8rem; opacity: 0.6; }
-        .member-status { font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; flex-shrink: 0; }
-        .member-status.present { background: rgba(0, 255, 136, 0.2); color: var(--success); }
-        .member-status.absent { background: rgba(255, 77, 77, 0.2); color: var(--error); }
-        .confirm-btn { width: 100%; margin-top: 15px; padding: 14px; font-size: 1.1rem; background: var(--success); color: black; display: none; font-weight: bold; }
-        .confirm-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .summary { text-align: center; margin-top: 10px; font-size: 0.9rem; opacity: 0.8; }
+        .member-name { font-weight: 700; font-size: 0.95rem; }
+        .member-email { font-size: 0.75rem; opacity: 0.6; }
+        .member-status {
+            font-size: 0.7rem;
+            font-family: 'Anton', sans-serif;
+            letter-spacing: 1px;
+            padding: 3px 8px;
+            border: 2px solid var(--dark);
+            flex-shrink: 0;
+            text-transform: uppercase;
+        }
+        .member-status.present { background: var(--success); color: white; border-color: var(--success); }
+        .member-status.absent { background: var(--error); color: white; border-color: var(--error); }
+
+        .confirm-btn {
+            width: 100%;
+            margin-top: 16px;
+            padding: 14px;
+            font-family: 'Anton', sans-serif;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: var(--success);
+            color: white;
+            border: 3px solid var(--dark);
+            box-shadow: 4px 4px 0px var(--dark);
+            cursor: pointer;
+            transition: all 0.15s;
+            display: none;
+        }
+        .confirm-btn:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--dark); }
+        .confirm-btn:active { transform: translate(4px, 4px); box-shadow: none; }
+        .confirm-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: 4px 4px 0px var(--dark); }
+
+        .summary {
+            text-align: center;
+            margin-top: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            opacity: 0.7;
+        }
+
+        .scan-again-btn {
+            display: none;
+            margin-top: 16px;
+            padding: 14px 32px;
+            font-family: 'Anton', sans-serif;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: var(--yellow);
+            color: var(--dark);
+            border: 3px solid var(--dark);
+            box-shadow: 4px 4px 0px var(--dark);
+            cursor: pointer;
+            transition: all 0.15s;
+            width: 100%;
+        }
+        .scan-again-btn:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--dark); }
+
+        .manual-section {
+            margin-top: 24px;
+            border-top: 3px dashed var(--dark);
+            padding-top: 16px;
+            text-align: center;
+        }
+        .manual-section p {
+            font-weight: 700;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .manual-input-row {
+            display: flex;
+            gap: 8px;
+        }
+        .manual-input-row input[type="text"] {
+            flex: 1;
+            background: var(--card);
+            border: 3px solid var(--dark);
+            color: var(--dark);
+            padding: 12px;
+            font-family: 'Bricolage Grotesque', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            outline: none;
+        }
+        .manual-input-row input[type="text"]:focus {
+            border-color: var(--red);
+        }
+        .manual-input-row button {
+            padding: 12px 20px;
+            font-family: 'Anton', sans-serif;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            background: var(--red);
+            color: white;
+            border: 3px solid var(--dark);
+            box-shadow: 3px 3px 0px var(--dark);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .manual-input-row button:hover { transform: translate(1px, 1px); box-shadow: 2px 2px 0px var(--dark); }
+
+        .footer-badge {
+            margin-top: 24px;
+            background: var(--dark);
+            color: white;
+            padding: 12px;
+            border: 3px solid var(--dark);
+            text-align: center;
+            font-family: 'Anton', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+        }
+        .footer-badge span { color: var(--yellow); }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1 style="font-family: 'Orbitron'; color: var(--primary);">GATEKEEPER</h1>
-        <p>Scan team QR code for entry</p>
-        <div class="scan-count" id="scanCount">Scanned: 0</div>
-        
+        <div class="brand-bar">
+            <h1>ROBOTRON <span>2027</span></h1>
+            <div class="scan-count" id="scanCount">SCANNED: 0</div>
+        </div>
+
         <div id="reader"></div>
         <div id="statusBox" class="status-box"></div>
 
@@ -59,15 +291,21 @@
             <div class="team-meta" id="teamMeta"></div>
             <div id="memberList"></div>
             <div class="summary" id="checkSummary"></div>
-            <button class="confirm-btn" id="confirmBtn">Confirm Check-In</button>
+            <button class="confirm-btn" id="confirmBtn">CONFIRM CHECK-IN</button>
         </div>
 
-        <button class="scan-again-btn" id="scanAgainBtn">Scan Another Pass</button>
+        <button class="scan-again-btn" id="scanAgainBtn">SCAN ANOTHER PASS</button>
 
         <div class="manual-section">
             <p>Can't scan? Enter Team ID manually:</p>
-            <input type="text" id="manualId" placeholder="e.g. AUTO123456">
-            <button id="manualBtn">CHECK</button>
+            <div class="manual-input-row">
+                <input type="text" id="manualId" placeholder="e.g. AUTO123456">
+                <button id="manualBtn">CHECK</button>
+            </div>
+        </div>
+
+        <div class="footer-badge">
+            <span>ROBOTRON 2027</span> &mdash; PARK COLLEGE OF ENGINEERING
         </div>
     </div>
 
@@ -128,11 +366,7 @@
 
         async function stopScanner() {
             if (html5Qr && isScanning) {
-                try {
-                    await html5Qr.stop();
-                } catch (e) {
-                    console.log("Scanner already stopped");
-                }
+                try { await html5Qr.stop(); } catch (e) {}
                 isScanning = false;
             }
         }
@@ -158,9 +392,8 @@
                 document.getElementById('statusBox').style.display = 'block';
                 document.getElementById('statusBox').className = 'status-box error';
                 document.getElementById('statusBox').innerHTML = `
-                    <div class="status-icon">📷</div>
-                    <div class="status-name">CAMERA ERROR</div>
-                    <div class="status-detail">Could not access camera</div>
+                    <div class="status-icon">CAMERA ERROR</div>
+                    <div class="status-name">COULD NOT ACCESS CAMERA</div>
                     <div class="status-detail">Use manual entry below</div>
                 `;
             }
@@ -176,12 +409,11 @@
         async function verifyEntry(scannedId) {
             const statusBox = document.getElementById('statusBox');
             statusBox.style.display = "block";
-            statusBox.innerHTML = "Processing...";
+            statusBox.innerHTML = '<div class="status-name">PROCESSING...</div>';
             statusBox.className = "status-box";
 
             try {
                 const cleanId = scannedId.trim().toUpperCase();
-                console.log("Looking up team:", cleanId);
                 const docRef = doc(db, "registrations", cleanId);
                 const docSnap = await getDoc(docRef);
 
@@ -189,33 +421,32 @@
                     playBeep('error');
                     statusBox.classList.add('error');
                     statusBox.innerHTML = `
-                        <div class="status-icon">❌</div>
+                        <div class="status-icon">X</div>
                         <div class="status-name">INVALID TEAM ID</div>
                         <div class="status-detail">Not found in database</div>
-                        <div class="status-detail">ID: ${cleanId}</div>
+                        <div class="status-detail" style="margin-top:6px;font-family:'Anton';letter-spacing:1px;">ID: ${cleanId}</div>
                     `;
-                    document.getElementById('scanAgainBtn').style.display = 'inline-block';
+                    document.getElementById('scanAgainBtn').style.display = 'block';
                     return;
                 }
 
                 const data = docSnap.data();
-                console.log("Team data loaded:", data);
                 renderTeamPanel(cleanId, data);
 
             } catch (err) {
                 console.error("Verify error:", err);
                 playBeep('error');
+                statusBox.classList.add('error');
                 statusBox.innerHTML = `
-                    <div class="status-icon">⚠️</div>
+                    <div class="status-icon">!</div>
                     <div class="status-name">CONNECTION ERROR</div>
                     <div class="status-detail">Could not connect to database</div>
                 `;
-                document.getElementById('scanAgainBtn').style.display = 'inline-block';
+                document.getElementById('scanAgainBtn').style.display = 'block';
             }
         }
 
         function renderTeamPanel(teamId, data) {
-            console.log("Rendering team panel for:", teamId);
             currentTeamData = data;
             currentTeamId = teamId;
 
@@ -235,7 +466,7 @@
                         <div class="member-name">${member.name || 'Unknown'}</div>
                         <div class="member-email">${member.email || ''}</div>
                     </div>
-                    <span class="member-status ${isAlreadyChecked ? 'present' : 'absent'}">${isAlreadyChecked ? 'Present' : 'Absent'}</span>
+                    <span class="member-status ${isAlreadyChecked ? 'present' : 'absent'}">${isAlreadyChecked ? 'PRESENT' : 'ABSENT'}</span>
                 `;
                 memberList.appendChild(item);
             });
@@ -264,7 +495,7 @@
 
             const confirmBtn = document.getElementById('confirmBtn');
             confirmBtn.disabled = true;
-            confirmBtn.textContent = 'Saving...';
+            confirmBtn.textContent = 'SAVING...';
 
             const checkboxes = document.querySelectorAll('#memberList input[type="checkbox"]');
             const updatedMembers = currentTeamData.members.map((m, i) => ({
@@ -283,33 +514,32 @@
                 const checkedCount = updatedMembers.filter(m => m.checkedIn).length;
                 playBeep('success');
                 scanCountNum++;
-                document.getElementById('scanCount').textContent = `Scanned: ${scanCountNum}`;
+                document.getElementById('scanCount').textContent = `SCANNED: ${scanCountNum}`;
 
                 const statusBox = document.getElementById('statusBox');
                 statusBox.style.display = 'block';
                 statusBox.className = 'status-box success';
                 statusBox.innerHTML = `
-                    <div class="status-icon">✅</div>
-                    <div class="status-name">CHECK-IN UPDATED</div>
-                    <div class="status-detail"><b>${currentTeamData.teamLead}</b></div>
+                    <div class="status-icon">CHECK-IN UPDATED</div>
+                    <div class="status-name" style="color:var(--success)">${currentTeamData.teamLead}</div>
                     <div class="status-detail">Team: ${currentTeamId}</div>
-                    <div class="status-detail" style="margin-top:10px">${checkedCount} of ${updatedMembers.length} members checked in</div>
-                    ${allCheckedIn ? '<div class="status-detail" style="color:var(--success);margin-top:5px">All members present!</div>' : ''}
+                    <div class="status-detail" style="margin-top:10px;font-weight:700;">${checkedCount} of ${updatedMembers.length} members checked in</div>
+                    ${allCheckedIn ? '<div class="status-detail" style="color:var(--success);margin-top:5px;font-weight:700;">All members present!</div>' : ''}
                 `;
 
                 document.getElementById('teamPanel').style.display = 'none';
                 document.getElementById('confirmBtn').style.display = 'none';
-                document.getElementById('scanAgainBtn').style.display = 'inline-block';
+                document.getElementById('scanAgainBtn').style.display = 'block';
             } catch (err) {
                 console.error("Save error:", err);
                 playBeep('error');
                 confirmBtn.disabled = false;
-                confirmBtn.textContent = 'Confirm Check-In';
+                confirmBtn.textContent = 'CONFIRM CHECK-IN';
                 const statusBox = document.getElementById('statusBox');
                 statusBox.style.display = 'block';
                 statusBox.className = 'status-box error';
                 statusBox.innerHTML = `
-                    <div class="status-icon">⚠️</div>
+                    <div class="status-icon">!</div>
                     <div class="status-name">SAVE FAILED</div>
                     <div class="status-detail">Could not update database</div>
                 `;
@@ -325,7 +555,7 @@
             document.getElementById('teamPanel').style.display = 'none';
             document.getElementById('confirmBtn').style.display = 'none';
             document.getElementById('confirmBtn').disabled = false;
-            document.getElementById('confirmBtn').textContent = 'Confirm Check-In';
+            document.getElementById('confirmBtn').textContent = 'CONFIRM CHECK-IN';
             document.getElementById('manualId').value = '';
             startScanner();
         });

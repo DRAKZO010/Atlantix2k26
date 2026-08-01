@@ -4,56 +4,202 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Robotron 2027 - Digital Pass</title>
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bricolage+Grotesque:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
-            --color-bg: #1f2121; --color-primary: #00d4ff; --color-surface: #262828;
-            --color-text: #fcfcf9; --color-muted: #777c7c;
-        }
-        body { background-color: #121212; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; margin: 0; font-family: 'Rajdhani', sans-serif; color: var(--color-text); padding: 20px; }
-        
-        .receipt-card { 
-            background: var(--color-bg); 
-            width: 100%; 
-            max-width: 380px; 
-            border-radius: 24px; 
-            border: 1px solid rgba(0, 212, 255, 0.2); 
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5); 
-            overflow: hidden; 
+            --bg: #f4ead5;
+            --red: #bb0013;
+            --yellow: #fddc00;
+            --dark: #1a1a1a;
+            --success: #00c853;
+            --card: #ffffff;
         }
 
-        .header { background: linear-gradient(135deg, #1f2121 0%, #13343b 100%); padding: 25px; text-align: center; border-bottom: 2px dashed #333; }
-        .header h1 { font-family: 'Orbitron'; font-size: 1.1rem; color: var(--color-primary); margin: 0; letter-spacing: 2px; text-transform: uppercase; }
-        
-        .content { padding: 25px; }
-        #disp-event { text-align:center; font-size: 1.4rem; font-weight:700; margin-bottom:15px; color: var(--color-text); }
-        
-        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
-        .detail-item label { display: block; font-size: 0.7rem; color: var(--color-muted); text-transform: uppercase; margin-bottom: 4px; }
-        .detail-item span { font-weight: 600; font-size: 1rem; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        .qr-section { background: var(--color-surface); padding: 20px; border-radius: 16px; text-align: center; }
-        .qr-wrapper { background: white; padding: 10px; display: inline-block; border-radius: 10px; line-height: 0; }
+        body {
+            font-family: 'Bricolage Grotesque', sans-serif;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--dark);
+            background-image: radial-gradient(#1a1a1a 0.75px, transparent 0.75px);
+            background-size: 16px 16px;
+        }
+
+        .receipt-card {
+            background: var(--card);
+            width: 100%;
+            max-width: 400px;
+            border: 4px solid var(--dark);
+            box-shadow: 8px 8px 0px var(--dark);
+            overflow: hidden;
+        }
+
+        .header {
+            background: var(--red);
+            padding: 20px 24px;
+            text-align: center;
+            border-bottom: 4px solid var(--dark);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header h1 {
+            font-family: 'Anton', sans-serif;
+            font-size: 1.3rem;
+            color: white;
+            margin: 0;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .header .pass-id {
+            background: var(--yellow);
+            color: var(--dark);
+            font-family: 'Anton', sans-serif;
+            font-size: 0.7rem;
+            padding: 4px 10px;
+            border: 2px solid var(--dark);
+            letter-spacing: 1px;
+        }
+
+        .content { padding: 24px; }
+
+        #disp-event {
+            text-align: center;
+            font-family: 'Anton', sans-serif;
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            color: var(--dark);
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin: 20px 0;
+        }
+
+        .detail-item label {
+            display: block;
+            font-size: 0.65rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+
+        .detail-item span {
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .qr-section {
+            background: var(--bg);
+            padding: 20px;
+            border: 3px solid var(--dark);
+            box-shadow: 4px 4px 0px var(--dark);
+            text-align: center;
+            margin-top: 16px;
+        }
+
+        .qr-wrapper {
+            background: white;
+            padding: 10px;
+            display: inline-block;
+            border: 3px solid var(--dark);
+            line-height: 0;
+        }
+
         .qr-wrapper img { width: 180px; height: 180px; }
 
-        .button-group { display: flex; gap: 10px; margin-top: 20px; }
-        .btn { padding: 12px 20px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: 'Rajdhani'; transition: 0.3s; }
-        .btn-download { background: var(--color-primary); color: #121212; }
-        .btn-print { background: transparent; color: var(--color-primary); border: 1px solid var(--color-primary); }
-        .btn:hover { opacity: 0.8; transform: translateY(-2px); }
+        .qr-label {
+            font-family: 'Anton', sans-serif;
+            font-size: 0.75rem;
+            color: var(--red);
+            margin-top: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .event-tag {
+            display: inline-block;
+            background: var(--yellow);
+            color: var(--dark);
+            font-family: 'Anton', sans-serif;
+            font-size: 0.75rem;
+            padding: 4px 12px;
+            border: 2px solid var(--dark);
+            margin-top: 12px;
+            letter-spacing: 1px;
+        }
+
+        .footer-strip {
+            background: var(--dark);
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-family: 'Anton', sans-serif;
+            font-size: 0.65rem;
+            letter-spacing: 2px;
+            border-top: 4px solid var(--dark);
+        }
+        .footer-strip span { color: var(--yellow); }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 14px 24px;
+            font-family: 'Anton', sans-serif;
+            font-size: 1rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border: 3px solid var(--dark);
+            box-shadow: 4px 4px 0px var(--dark);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--dark); }
+        .btn:active { transform: translate(4px, 4px); box-shadow: none; }
+
+        .btn-download {
+            background: var(--red);
+            color: white;
+        }
+        .btn-print {
+            background: white;
+            color: var(--dark);
+        }
 
         @media print {
             .button-group { display: none; }
-            body { background: #121212 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .receipt-card { box-shadow: none; border: 1px solid rgba(0,212,255,0.3); }
+            body { background: var(--bg) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .receipt-card { box-shadow: none; border: 4px solid var(--dark); }
+            .qr-section { box-shadow: none; }
         }
     </style>
 </head>
 <body>
 
     <div class="receipt-card" id="passContent">
-        <div class="header"><h1>Digital Pass Receipt</h1></div>
+        <div class="header">
+            <h1>ROBOTRON 2027</h1>
+            <div class="pass-id" id="passId">LOADING...</div>
+        </div>
         <div class="content">
             <div id="disp-event">Hackathon Access</div>
             
@@ -64,24 +210,28 @@
                 </div>
                 <div class="detail-item">
                     <label>Team ID</label>
-                    <span id="disp-id" style="color:var(--color-primary)">Loading...</span>
+                    <span id="disp-id" style="color:var(--red)">Loading...</span>
                 </div>
                 <div class="detail-item">
                     <label>Date</label>
-                    <span id="disp-date">Jan 15-16, 2026</span>
+                    <span>Jan 15-16, 2026</span>
                 </div>
                 <div class="detail-item">
                     <label>Status</label>
-                    <span>Verified ✓</span>
+                    <span style="color:var(--success)">VERIFIED</span>
                 </div>
             </div>
             
             <div class="qr-section">
                 <div class="qr-wrapper">
-                    <img id="disp-qr" src="" alt="QR">
+                    <img id="disp-qr" src="" alt="QR Code">
                 </div>
-                <p style="font-size: 0.7rem; color: var(--color-primary); margin-top: 10px; letter-spacing: 1px;">SCAN AT ENTRY GATE</p>
+                <div class="qr-label">Scan at Entry Gate</div>
+                <div class="event-tag" id="eventTag">HACKATHON PASS</div>
             </div>
+        </div>
+        <div class="footer-strip">
+            <span>ROBOTRON 2027</span> &mdash; PARK COLLEGE OF ENGINEERING, COIMBATORE
         </div>
     </div>
 
@@ -91,25 +241,24 @@
     </div>
 
     <script>
-        // Parse URL Parameters
         const params = new URLSearchParams(window.location.search);
-        const regId = params.get('id') || 'ATL-OFFLINE';
+        const regId = params.get('id') || 'ROBO-OFFLINE';
         const teamName = params.get('team') || 'Team';
         const eventName = params.get('event') || 'Robotron 2027';
 
-        // Set display values
         document.getElementById('disp-name').textContent = teamName;
         document.getElementById('disp-id').textContent = regId;
         document.getElementById('disp-event').textContent = eventName;
+        document.getElementById('passId').textContent = regId;
+        document.getElementById('eventTag').textContent = eventName.toUpperCase();
 
-        // Generate QR Code with Team ID
         const qrImg = document.getElementById('disp-qr');
         qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${regId}`;
 
         function downloadPass() {
             const pass = document.getElementById('passContent');
             html2canvas(pass, {
-                backgroundColor: '#121212',
+                backgroundColor: '#f4ead5',
                 scale: 3,
                 useCORS: true,
                 allowTaint: true,
