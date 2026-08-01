@@ -1,13 +1,22 @@
 import React from 'react';
-import { NavTab } from '../types';
-import { PODIUM_PRIZES, SPECIAL_AWARDS } from '../data/prizes';
-import { Trophy, Award, Crown, Sparkles, Lightbulb, Users, Palette, CheckCircle2, Zap } from 'lucide-react';
+import { NavTab, SiteContent } from '../types';
+import { Trophy, Crown, Lightbulb, Users, Palette, CheckCircle2 } from 'lucide-react';
 
 interface PrizesViewProps {
   setActiveTab: (tab: NavTab) => void;
+  siteContent: SiteContent;
 }
 
-export const PrizesView: React.FC<PrizesViewProps> = ({ setActiveTab }) => {
+const awardIconMap: Record<string, React.ReactNode> = {
+  Lightbulb: <Lightbulb className="w-7 h-7" />,
+  Users: <Users className="w-7 h-7 text-white" />,
+  Palette: <Palette className="w-7 h-7 text-white" />,
+};
+
+export const PrizesView: React.FC<PrizesViewProps> = ({ setActiveTab, siteContent }) => {
+  const { prizes, hero } = siteContent;
+  const { first, second, third, special, pool } = prizes;
+
   return (
     <div className="space-y-16 pb-16">
       
@@ -18,7 +27,7 @@ export const PrizesView: React.FC<PrizesViewProps> = ({ setActiveTab }) => {
         </div>
 
         <h1 className="font-anton text-6xl sm:text-8xl lg:text-9xl text-[#1a1a1a] drop-shadow-[4px_4px_0px_#fddc00]">
-          PRIZE POOL <span className="bg-[#fddc00] text-[#1a1a1a] px-4 py-1 inline-block transform -skew-x-3">₹50,000</span>
+          PRIZE POOL <span className="bg-[#fddc00] text-[#1a1a1a] px-4 py-1 inline-block transform -skew-x-3">{pool}</span>
         </h1>
 
         <p className="font-bricolage text-lg sm:text-xl font-bold text-[#1a1a1a] max-w-3xl mx-auto">
@@ -26,11 +35,11 @@ export const PrizesView: React.FC<PrizesViewProps> = ({ setActiveTab }) => {
         </p>
       </section>
 
-      {/* PODIUM PRIZES (3 COLUMNS) */}
+      {/* PODIUM PRIZES */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch pt-6">
           
-          {/* 2nd Place Card (Left) */}
+          {/* 2nd Place */}
           <div className="bg-white p-6 sm:p-8 comic-border-ultra shadow-comic-lg flex flex-col justify-between space-y-6 relative hover:-translate-y-1 transition-transform">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
@@ -41,26 +50,20 @@ export const PrizesView: React.FC<PrizesViewProps> = ({ setActiveTab }) => {
               </div>
 
               <div className="font-anton text-5xl sm:text-6xl text-[#1a1a1a]">
-                ₹15,000
+                {second.amount}
               </div>
 
               <div className="font-anton text-xl text-[#bb0013] border-b-2 border-[#1a1a1a] pb-2">
-                RUNNER UP CHAMPION
+                {second.title}
               </div>
 
               <ul className="space-y-3 font-bricolage text-sm text-zinc-800 font-semibold">
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-[#bb0013] shrink-0" />
-                  ⭐ Tech Workshop Access
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-[#bb0013] shrink-0" />
-                  👥 Exclusive Networking
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-[#bb0013] shrink-0" />
-                  🏅 Official Winner Certificate
-                </li>
+                {second.perks.map((perk, i) => (
+                  <li key={i} className="flex items-center gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-[#bb0013] shrink-0" />
+                    {perk}
+                  </li>
+                ))}
               </ul>
             </div>
 
@@ -72,10 +75,9 @@ export const PrizesView: React.FC<PrizesViewProps> = ({ setActiveTab }) => {
             </button>
           </div>
 
-          {/* 1st Place Card (CENTER CHAMPION HIGHLIGHT!) */}
+          {/* 1st Place */}
           <div className="bg-[#bb0013] text-white p-6 sm:p-8 comic-border-ultra shadow-comic-xl flex flex-col justify-between space-y-6 relative transform lg:-translate-y-4 hover:-translate-y-6 transition-transform">
             
-            {/* Winner Corner Sash */}
             <div className="absolute -top-4 -right-4 bg-[#fddc00] text-[#1a1a1a] font-anton text-sm px-4 py-1 comic-border-thick shadow-comic rotate-12">
               👑 WINNER
             </div>
@@ -89,23 +91,19 @@ export const PrizesView: React.FC<PrizesViewProps> = ({ setActiveTab }) => {
               </div>
 
               <div className="font-anton text-6xl sm:text-7xl text-[#fddc00]">
-                ₹25,000
+                {first.amount}
               </div>
 
               <div className="font-anton text-2xl text-white border-b-2 border-white pb-2 tracking-wide">
-                ROBOTRON KING
+                {first.title}
               </div>
 
               <ul className="space-y-3 font-bricolage text-sm sm:text-base font-bold text-white">
-                <li className="flex items-center gap-2 bg-black/20 p-2.5 comic-border-thick">
-                  🚀 STARTUP INCUBATION SUPPORT
-                </li>
-                <li className="flex items-center gap-2 bg-black/20 p-2.5 comic-border-thick">
-                  🎓 INDUSTRY MENTORSHIP
-                </li>
-                <li className="flex items-center gap-2 bg-black/20 p-2.5 comic-border-thick">
-                  🎯 PRIME SHOWCASE SLOT
-                </li>
+                {first.perks.map((perk, i) => (
+                  <li key={i} className="flex items-center gap-2 bg-black/20 p-2.5 comic-border-thick">
+                    🚀 {perk}
+                  </li>
+                ))}
               </ul>
             </div>
 
@@ -117,7 +115,7 @@ export const PrizesView: React.FC<PrizesViewProps> = ({ setActiveTab }) => {
             </button>
           </div>
 
-          {/* 3rd Place Card (Right) */}
+          {/* 3rd Place */}
           <div className="bg-white p-6 sm:p-8 comic-border-ultra shadow-comic-lg flex flex-col justify-between space-y-6 relative hover:-translate-y-1 transition-transform">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
@@ -128,26 +126,20 @@ export const PrizesView: React.FC<PrizesViewProps> = ({ setActiveTab }) => {
               </div>
 
               <div className="font-anton text-5xl sm:text-6xl text-[#1a1a1a]">
-                ₹10,000
+                {third.amount}
               </div>
 
               <div className="font-anton text-xl text-[#bb0013] border-b-2 border-[#1a1a1a] pb-2">
-                BRONZE CHAMPION
+                {third.title}
               </div>
 
               <ul className="space-y-3 font-bricolage text-sm text-zinc-800 font-semibold">
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-[#bb0013] shrink-0" />
-                  🎁 Sponsor Goodie Bag
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-[#bb0013] shrink-0" />
-                  📜 Merit Certificate
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-[#bb0013] shrink-0" />
-                  🛠️ Development Tools Access
-                </li>
+                {third.perks.map((perk, i) => (
+                  <li key={i} className="flex items-center gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-[#bb0013] shrink-0" />
+                    {perk}
+                  </li>
+                ))}
               </ul>
             </div>
 
@@ -162,7 +154,7 @@ export const PrizesView: React.FC<PrizesViewProps> = ({ setActiveTab }) => {
         </div>
       </section>
 
-      {/* SPECIAL AWARDS SECTION */}
+      {/* SPECIAL AWARDS */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-8">
         <div className="flex items-center gap-3">
           <div className="bg-[#fddc00] text-[#1a1a1a] font-anton text-2xl sm:text-3xl px-4 py-1.5 comic-border-thick shadow-comic transform -skew-x-6">
@@ -172,16 +164,14 @@ export const PrizesView: React.FC<PrizesViewProps> = ({ setActiveTab }) => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {SPECIAL_AWARDS.map((award, idx) => (
+          {special.map((award, idx) => (
             <div
               key={idx}
               className="bg-white p-6 comic-border-thick shadow-comic-md space-y-4 hover:-translate-y-1 transition-transform"
             >
               <div className="flex items-center justify-between">
                 <div className={`${award.iconBg} p-3 comic-border-thick text-[#1a1a1a]`}>
-                  {award.iconName === 'Lightbulb' && <Lightbulb className="w-7 h-7" />}
-                  {award.iconName === 'Users' && <Users className="w-7 h-7 text-white" />}
-                  {award.iconName === 'Palette' && <Palette className="w-7 h-7 text-white" />}
+                  {awardIconMap[award.iconName] || <Lightbulb className="w-7 h-7" />}
                 </div>
                 <span className="font-anton text-xl text-[#bb0013] bg-[#f4ead5] px-3 py-1 comic-border-thick">
                   {award.reward}
@@ -202,13 +192,13 @@ export const PrizesView: React.FC<PrizesViewProps> = ({ setActiveTab }) => {
         <div className="bg-[#fddc00] p-8 sm:p-12 comic-border-ultra shadow-comic-xl flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="space-y-2 text-center md:text-left">
             <span className="bg-[#bb0013] text-white font-anton text-xs px-3 py-1 comic-border-thick">
-              JANUARY 15-16, 2026 • COIMBATORE
+              {hero.date} • COIMBATORE
             </span>
             <h3 className="font-anton text-4xl sm:text-5xl text-[#1a1a1a]">
               READY TO COMPETE?
             </h3>
             <p className="font-bricolage text-sm font-bold text-zinc-800">
-              Gather your crew. The ₹50,000 prize pool awaits your code.
+              Gather your crew. The {prizes.pool} prize pool awaits your code.
             </p>
           </div>
 
