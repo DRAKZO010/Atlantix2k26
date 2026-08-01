@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { NavTab } from '../types';
-import { SCHEDULE_DAY_1, SCHEDULE_DAY_2 } from '../data/schedule';
-import { Clock, MapPin, Wifi, Zap, AlertCircle, ShieldAlert, Navigation, Calendar } from 'lucide-react';
+import { NavTab, SiteContent } from '../types';
+import { Clock, MapPin, Wifi, Zap, ShieldAlert, Navigation, Calendar } from 'lucide-react';
 
 interface ScheduleViewProps {
   setActiveTab: (tab: NavTab) => void;
+  siteContent: SiteContent;
 }
 
-export const ScheduleView: React.FC<ScheduleViewProps> = ({ setActiveTab }) => {
+export const ScheduleView: React.FC<ScheduleViewProps> = ({ setActiveTab, siteContent }) => {
   const [activeDay, setActiveDay] = useState<1 | 2>(1);
 
   // Live Countdown Timer state
@@ -29,7 +29,7 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ setActiveTab }) => {
     return () => clearInterval(timer);
   }, []);
 
-  const currentSchedule = activeDay === 1 ? SCHEDULE_DAY_1 : SCHEDULE_DAY_2;
+  const currentSchedule = activeDay === 1 ? (siteContent.schedule?.day1 || []) : (siteContent.schedule?.day2 || []);
 
   return (
     <div className="space-y-12 pb-16">
@@ -102,27 +102,10 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ setActiveTab }) => {
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b-2 border-current pb-3 mb-3">
                     <div className="flex items-center gap-3">
                       <span className={`font-anton text-2xl ${item.isHighlight ? 'text-[#fddc00]' : 'text-[#bb0013]'}`}>
-                        {item.time} {item.period}
+                        {item.time}
                       </span>
                       <h3 className="font-anton text-2xl tracking-wide">{item.title}</h3>
                     </div>
-
-                    {item.badges && item.badges.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5">
-                        {item.badges.map((b, bIdx) => (
-                          <span
-                            key={bIdx}
-                            className={`font-anton text-xs px-2 py-0.5 comic-border-thick ${
-                              item.isHighlight 
-                                ? 'bg-[#fddc00] text-[#1a1a1a]' 
-                                : 'bg-[#1a1a1a] text-white'
-                            }`}
-                          >
-                            {b}
-                          </span>
-                        ))}
-                      </div>
-                    )}
                   </div>
 
                   <p className={`font-bricolage text-sm ${item.isHighlight ? 'opacity-95 font-semibold' : 'text-zinc-700'}`}>
@@ -162,21 +145,11 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ setActiveTab }) => {
                 <Calendar className="w-5 h-5 text-[#bb0013]" />
               </div>
               <ul className="font-bricolage text-xs font-semibold space-y-2 text-zinc-800">
-                {activeDay === 1 ? (
-                  <>
-                    <li className="flex items-center gap-2">⚡ 08:00 AM - Breakfast & Refreshments</li>
-                    <li className="flex items-center gap-2 text-[#bb0013]">🚨 12:00 PM - SUBMISSION DEADLINE</li>
-                    <li className="flex items-center gap-2">🎤 02:00 PM - Project Presentations</li>
-                    <li className="flex items-center gap-2">🏆 05:00 PM - AWARDS CEREMONY</li>
-                  </>
-                ) : (
-                  <>
-                    <li className="flex items-center gap-2">📝 09:00 AM - Registration & Check-In</li>
-                    <li className="flex items-center gap-2">📢 10:00 AM - Opening Ceremony</li>
-                    <li className="flex items-center gap-2 text-[#bb0013]">⚡ 12:00 PM - HACKING BEGINS</li>
-                    <li className="flex items-center gap-2">🎯 03:00 PM - Mentor Guidance</li>
-                  </>
-                )}
+                {(activeDay === 1 ? (siteContent.schedule?.day2 || []) : (siteContent.schedule?.day1 || [])).slice(0, 4).map((item, i) => (
+                  <li key={i} className={`flex items-center gap-2 ${item.isHighlight ? 'text-[#bb0013]' : ''}`}>
+                    {item.isHighlight ? '🚨' : '⚡'} {item.time} - {item.title}
+                  </li>
+                ))}
               </ul>
               <button
                 onClick={() => setActiveDay(activeDay === 1 ? 2 : 1)}

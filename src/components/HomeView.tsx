@@ -1,14 +1,16 @@
 import React from 'react';
-import { NavTab } from '../types';
+import { NavTab, SiteContent } from '../types';
 import { TECHNICAL_EVENTS } from '../data/events';
-import { Zap, Trophy, Flame, Users, Lightbulb, Clock, Calendar, MapPin, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Zap, Trophy, Users, Lightbulb, Calendar, MapPin, ArrowRight } from 'lucide-react';
 
 interface HomeViewProps {
   setActiveTab: (tab: NavTab) => void;
   onSelectEvent: (eventId: string) => void;
+  siteContent: SiteContent;
 }
 
-export const HomeView: React.FC<HomeViewProps> = ({ setActiveTab, onSelectEvent }) => {
+export const HomeView: React.FC<HomeViewProps> = ({ setActiveTab, onSelectEvent, siteContent }) => {
+  const { hero, about, stats, schedule, events } = siteContent;
   return (
     <div className="space-y-16 pb-16">
       
@@ -20,29 +22,29 @@ export const HomeView: React.FC<HomeViewProps> = ({ setActiveTab, onSelectEvent 
             
             {/* Flash Badge */}
             <div className="inline-block bg-[#fddc00] text-[#1a1a1a] font-anton text-lg sm:text-xl px-5 py-1.5 comic-border-thick shadow-comic -rotate-1">
-              ⚡ MISSION CRITICAL: JANUARY 15-16, 2026 • COIMBATORE
+              ⚡ {hero.badge}
             </div>
 
             {/* Giant Title */}
             <div className="relative">
               <h1 className="font-anton text-6xl sm:text-8xl lg:text-9xl tracking-tight text-[#1a1a1a] drop-shadow-[4px_4px_0px_#bb0013]">
-                ROBOTRON <span className="text-[#bb0013]">2027</span>
+                {hero.title}
               </h1>
             </div>
 
             <p className="font-bricolage text-xl sm:text-2xl font-bold text-[#1a1a1a] max-w-2xl mx-auto leading-snug">
-              24 HOURS. INFINITE POSSIBILITIES. ASSEMBLE YOUR SQUAD AND EXECUTE THE PLAN.
+              {hero.subtitle}
             </p>
 
             {/* Event Info Strip */}
             <div className="flex flex-wrap items-center justify-center gap-4 text-sm font-bold pt-2">
               <div className="flex items-center gap-2 bg-white px-4 py-2 comic-border-thick shadow-comic-sm">
                 <Calendar className="w-5 h-5 text-[#bb0013]" />
-                JANUARY 15-16, 2026
+                {hero.date}
               </div>
               <div className="flex items-center gap-2 bg-white px-4 py-2 comic-border-thick shadow-comic-sm">
                 <MapPin className="w-5 h-5 text-[#bb0013]" />
-                PARK COLLEGE OF ENGINEERING, COIMBATORE
+                {hero.venue}
               </div>
             </div>
 
@@ -69,19 +71,19 @@ export const HomeView: React.FC<HomeViewProps> = ({ setActiveTab, onSelectEvent 
           <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             
             <div className="bg-[#bb0013] text-white p-6 comic-border-thick shadow-comic-md transform -rotate-1 text-center">
-              <div className="font-anton text-5xl sm:text-6xl text-[#fddc00]">24</div>
+              <div className="font-anton text-5xl sm:text-6xl text-[#fddc00]">{stats.hours}</div>
               <div className="font-anton text-xl tracking-wider mt-1">HOURS OF CODING</div>
               <p className="font-bricolage text-xs opacity-90 mt-1">Non-stop building & battle</p>
             </div>
 
             <div className="bg-[#fddc00] text-[#1a1a1a] p-6 comic-border-thick shadow-comic-md transform rotate-1 text-center">
-              <div className="font-anton text-5xl sm:text-6xl text-[#bb0013]">₹50K</div>
+              <div className="font-anton text-5xl sm:text-6xl text-[#bb0013]">{stats.prizePool}</div>
               <div className="font-anton text-xl tracking-wider mt-1">PRIZE POOL</div>
               <p className="font-bricolage text-xs font-semibold mt-1">Cash, Mentorship & Incubation</p>
             </div>
 
             <div className="bg-white text-[#1a1a1a] p-6 comic-border-thick shadow-comic-md transform -rotate-1 text-center">
-              <div className="font-anton text-5xl sm:text-6xl text-[#bb0013]">15+</div>
+              <div className="font-anton text-5xl sm:text-6xl text-[#bb0013]">{stats.events}+</div>
               <div className="font-anton text-xl tracking-wider mt-1">EVENTS</div>
               <p className="font-bricolage text-xs text-zinc-600 mt-1">Technical & Civilian Challenges</p>
             </div>
@@ -109,9 +111,9 @@ export const HomeView: React.FC<HomeViewProps> = ({ setActiveTab, onSelectEvent 
             <div className="bg-[#bb0013] text-white p-3 inline-block comic-border-thick mb-4">
               <Lightbulb className="w-8 h-8 text-[#fddc00]" />
             </div>
-            <h3 className="font-anton text-2xl mb-2 text-[#1a1a1a]">INNOVATION HUB</h3>
+            <h3 className="font-anton text-2xl mb-2 text-[#1a1a1a]">{about.cards[0]?.title}</h3>
             <p className="font-bricolage text-sm text-zinc-800 leading-relaxed">
-              Join the most exciting hackathon in South India where brilliant minds come together to solve real-world problems through technology and creativity.
+              {about.cards[0]?.description}
             </p>
           </div>
 
@@ -119,9 +121,9 @@ export const HomeView: React.FC<HomeViewProps> = ({ setActiveTab, onSelectEvent 
             <div className="bg-[#bb0013] text-white p-3 inline-block comic-border-thick mb-4">
               <Trophy className="w-8 h-8 text-[#fddc00]" />
             </div>
-            <h3 className="font-anton text-2xl mb-2 text-[#1a1a1a]">COMPETE & WIN</h3>
+            <h3 className="font-anton text-2xl mb-2 text-[#1a1a1a]">{about.cards[1]?.title}</h3>
             <p className="font-bricolage text-sm text-zinc-800 leading-relaxed">
-              Compete for amazing prizes worth ₹50,000 while showcasing your technical skills in various categories from AI/ML to cybersecurity.
+              {about.cards[1]?.description}
             </p>
           </div>
 
@@ -129,9 +131,9 @@ export const HomeView: React.FC<HomeViewProps> = ({ setActiveTab, onSelectEvent 
             <div className="bg-[#bb0013] text-white p-3 inline-block comic-border-thick mb-4">
               <Users className="w-8 h-8 text-[#fddc00]" />
             </div>
-            <h3 className="font-anton text-2xl mb-2 text-[#1a1a1a]">NETWORK & LEARN</h3>
+            <h3 className="font-anton text-2xl mb-2 text-[#1a1a1a]">{about.cards[2]?.title}</h3>
             <p className="font-bricolage text-sm text-zinc-800 leading-relaxed">
-              Connect with industry experts, developers, mentors. Participate in workshops, tech talks, and gain valuable insights.
+              {about.cards[2]?.description}
             </p>
           </div>
 
@@ -166,29 +168,15 @@ export const HomeView: React.FC<HomeViewProps> = ({ setActiveTab, onSelectEvent 
             </div>
             
             <div className="space-y-3 font-bricolage text-sm">
-              <div className="flex items-start gap-3 bg-white p-3 comic-border-thick">
-                <span className="font-anton text-base text-[#bb0013] w-20 shrink-0">09:00 AM</span>
-                <div>
-                  <div className="font-bold">REGISTRATION & CHECK-IN</div>
-                  <div className="text-xs text-zinc-600">Get your badges and welcome kit.</div>
+              {schedule.day1.map((item, idx) => (
+                <div key={idx} className={`flex items-start gap-3 p-3 comic-border-thick ${item.isHighlight ? 'bg-[#bb0013] text-white' : 'bg-white'}`}>
+                  <span className={`font-anton text-base w-20 shrink-0 ${item.isHighlight ? 'text-[#fddc00]' : 'text-[#bb0013]'}`}>{item.time}</span>
+                  <div>
+                    <div className={item.isHighlight ? 'font-anton text-lg tracking-wider' : 'font-bold'}>{item.title}</div>
+                    <div className={`text-xs ${item.isHighlight ? 'opacity-90' : 'text-zinc-600'}`}>{item.description}</div>
+                  </div>
                 </div>
-              </div>
-
-              <div className="flex items-start gap-3 bg-[#bb0013] text-white p-3 comic-border-thick">
-                <span className="font-anton text-base text-[#fddc00] w-20 shrink-0">12:00 PM</span>
-                <div>
-                  <div className="font-anton text-lg tracking-wider">HACKING BEGINS!</div>
-                  <div className="text-xs opacity-90">Start building your innovative solutions</div>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3 bg-white p-3 comic-border-thick">
-                <span className="font-anton text-base text-[#bb0013] w-20 shrink-0">03:00 PM</span>
-                <div>
-                  <div className="font-bold">MENTOR SESSIONS</div>
-                  <div className="text-xs text-zinc-600">Guidance from industry experts.</div>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
 
@@ -199,29 +187,15 @@ export const HomeView: React.FC<HomeViewProps> = ({ setActiveTab, onSelectEvent 
             </div>
             
             <div className="space-y-3 font-bricolage text-sm">
-              <div className="flex items-start gap-3 bg-white p-3 comic-border-thick">
-                <span className="font-anton text-base text-[#bb0013] w-20 shrink-0">08:00 AM</span>
-                <div>
-                  <div className="font-bold">BREAKFAST & REFRESHMENTS</div>
-                  <div className="text-xs text-zinc-600">Morning energizers and coffee.</div>
+              {schedule.day2.map((item, idx) => (
+                <div key={idx} className={`flex items-start gap-3 p-3 comic-border-thick ${item.isHighlight ? 'bg-[#fddc00] text-[#1a1a1a]' : 'bg-white'}`}>
+                  <span className="font-anton text-base text-[#bb0013] w-20 shrink-0">{item.time}</span>
+                  <div>
+                    <div className={item.isHighlight ? 'font-anton text-lg tracking-wider text-[#bb0013]' : 'font-bold'}>{item.title}</div>
+                    <div className={`text-xs ${item.isHighlight ? 'font-semibold' : 'text-zinc-600'}`}>{item.description}</div>
+                  </div>
                 </div>
-              </div>
-
-              <div className="flex items-start gap-3 bg-white p-3 comic-border-thick">
-                <span className="font-anton text-base text-[#bb0013] w-20 shrink-0">12:00 PM</span>
-                <div>
-                  <div className="font-bold text-[#bb0013]">SUBMISSION DEADLINE</div>
-                  <div className="text-xs text-zinc-600">Final project repository lock.</div>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3 bg-[#fddc00] text-[#1a1a1a] p-3 comic-border-thick">
-                <span className="font-anton text-base text-[#bb0013] w-20 shrink-0">05:00 PM</span>
-                <div>
-                  <div className="font-anton text-lg tracking-wider">AWARDS CEREMONY</div>
-                  <div className="text-xs font-semibold">Announcing winners and cash prizes!</div>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
 
@@ -243,12 +217,12 @@ export const HomeView: React.FC<HomeViewProps> = ({ setActiveTab, onSelectEvent 
             onClick={() => setActiveTab('events')}
             className="flex items-center gap-2 font-anton text-lg text-[#bb0013] hover:underline"
           >
-            SEE ALL 16 EVENTS <ArrowRight className="w-5 h-5" />
+            SEE ALL {events.technical.length + events.civilian.length} EVENTS <ArrowRight className="w-5 h-5" />
           </button>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {TECHNICAL_EVENTS.slice(0, 4).map((evt) => (
+          {events.technical.slice(0, 4).map((evt) => (
             <div
               key={evt.id}
               onClick={() => onSelectEvent(evt.id)}
