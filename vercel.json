@@ -1,6 +1,6 @@
 {
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/((?!scanner\\.html$|pass\\.html$|.*\\..*).*)", "destination": "/index.html" }
   ],
   "headers": [
     {
