@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { NavTab, EventItem } from '../types';
-import { TECHNICAL_EVENTS, CIVILIAN_EVENTS } from '../data/events';
-import { Search, Zap, Shield, Flame, Sparkles, Filter, ChevronRight, CheckCircle2 } from 'lucide-react';
+import { NavTab } from '../types';
+import { useContent } from '../ContentContext';
+import { Search, Zap } from 'lucide-react';
 
 interface EventsViewProps {
   setActiveTab: (tab: NavTab) => void;
@@ -11,6 +11,9 @@ interface EventsViewProps {
 export const EventsView: React.FC<EventsViewProps> = ({ setActiveTab, onSelectEvent }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<'all' | 'technical' | 'civilian'>('all');
+  const { events } = useContent();
+  const TECHNICAL_EVENTS = events?.technical || [];
+  const CIVILIAN_EVENTS = events?.civilian || [];
 
   const filteredTech = TECHNICAL_EVENTS.filter(e => 
     e.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
