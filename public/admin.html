@@ -320,10 +320,10 @@
         });
 
         // Prizes
-            setVal("prizes_pool", c.prizes?.pool);
+            setVal("prizes_pool", stripCurrency(c.prizes?.pool));
             ["first","second","third"].forEach(r => {
                 setVal(`prizes_${r}_title`, c.prizes?.[r]?.title);
-                setVal(`prizes_${r}_amount`, c.prizes?.[r]?.amount);
+                setVal(`prizes_${r}_amount`, stripCurrency(c.prizes?.[r]?.amount));
                 setVal(`prizes_${r}_perks`, (c.prizes?.[r]?.perks || []).join(", "));
             });
 
@@ -386,9 +386,9 @@
                 c.events.civilian.push({ id: `civilian-${String(parseInt(i)+1).padStart(2,'0')}`, code: g(`evt_civ_${i}_code`), title: g(`evt_civ_${i}_title`), category: "civilian", description: g(`evt_civ_${i}_desc`), fee: parseInt(g(`evt_civ_${i}_fee`))||0, feeText: (parseInt(g(`evt_civ_${i}_fee`))||0)>0?`FEE: ₹${g(`evt_civ_${i}_fee`)}`:'VERIFIED FEE: FREE', iconName: siteContent.events?.civilian?.[parseInt(i)]?.iconName||'Sparkles', teamSize: g(`evt_civ_${i}_team`), timing: g(`evt_civ_${i}_timing`), venue: g(`evt_civ_${i}_venue`), rules: siteContent.events?.civilian?.[parseInt(i)]?.rules||[] });
             });
 
-            c.prizes = { pool: g("prizes_pool") };
+            c.prizes = { pool: formatCurrency(g("prizes_pool")) };
             ["first","second","third"].forEach(r => {
-                c.prizes[r] = { title: g(`prizes_${r}_title`), amount: g(`prizes_${r}_amount`), perks: g(`prizes_${r}_perks`).split(",").map(s=>s.trim()).filter(Boolean) };
+                c.prizes[r] = { title: g(`prizes_${r}_title`), amount: formatCurrency(g(`prizes_${r}_amount`)), perks: g(`prizes_${r}_perks`).split(",").map(s=>s.trim()).filter(Boolean) };
             });
             c.prizes.special = [];
             [...new Set([...document.querySelectorAll("[id^=spec_")].map(el => el.id.match(/spec_(\d+)/)?.[1]).filter(Boolean))].sort().forEach(i => {
@@ -414,6 +414,19 @@
     function g(id) { return document.getElementById(id)?.value || ""; }
     function setVal(id, val) { const el = document.getElementById(id); if (el) el.value = val || ""; }
     function esc(s) { return (s||"").replace(/"/g, "&quot;"); }
+
+    // Auto-format currency: "20000" -> "₹20,000", "₹20000" -> "₹20,000", "₹20,000" -> "₹20,000"
+    function formatCurrency(raw) {
+        const stripped = (raw || "").replace(/[₹,\s]/g, "");
+        const num = parseInt(stripped, 10);
+        if (isNaN(num)) return raw || "";
+        return "₹" + num.toLocaleString("en-IN");
+    }
+
+    // Strip ₹ and commas for editing: "₹20,000" -> "20000"
+    function stripCurrency(formatted) {
+        return (formatted || "").replace(/[₹,\s]/g, "");
+    }
 
     window.toggle = (section, btn) => {
         const el = document.getElementById("sec-" + section);
