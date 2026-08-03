@@ -1,11 +1,15 @@
 import React from 'react';
 import { NavTab } from '../types';
+import { useContent } from '../ContentContext';
 
 interface FooterProps {
   setActiveTab: (tab: NavTab) => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({ setActiveTab }) => {
+  const { content } = useContent();
+  const { footer, hero } = content;
+
   return (
     <footer className="bg-[#1a1a1a] text-white border-t-4 border-[#1a1a1a] pt-12 pb-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
@@ -14,7 +18,7 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab }) => {
           {/* Brand Logo Box */}
           <div className="text-center md:text-left">
             <div className="inline-block bg-[#f4ead5] text-[#1a1a1a] px-5 py-2 font-anton text-3xl tracking-widest transform -skew-x-6 border-2 border-white shadow-[4px_4px_0px_#bb0013]">
-              ROBOTRON <span className="text-[#bb0013]">2027</span>
+              {footer?.brand || 'ROBOTRON 2027'}
             </div>
             <p className="mt-3 font-bricolage text-zinc-400 text-xs sm:text-sm tracking-wide">
               ORGANIZED BY PARK COLLEGE OF ENGINEERING AND TECHNOLOGY • COIMBATORE, INDIA
@@ -53,9 +57,9 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab }) => {
 
         {/* Bottom Tagline */}
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left text-xs font-bricolage text-zinc-400">
-          <p>© 2027 ROBOTRON HACKATHON. ASSEMBLE YOUR TEAM.</p>
+          <p>{footer?.copyright || '© 2027 ROBOTRON HACKATHON. ASSEMBLE YOUR TEAM.'}</p>
           <div className="flex items-center gap-4">
-            <p className="text-zinc-500">24 HOURS. INFINITE POSSIBILITIES.</p>
+            <p className="text-zinc-500">{footer?.tagline || '24 HOURS. INFINITE POSSIBILITIES.'}</p>
             <button
               onClick={() => setActiveTab('admin')}
               className="text-zinc-600 hover:text-zinc-400 text-[10px] tracking-widest uppercase"

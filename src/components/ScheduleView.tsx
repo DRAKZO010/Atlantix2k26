@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { NavTab } from '../types';
-import { SCHEDULE_DAY_1, SCHEDULE_DAY_2 } from '../data/schedule';
-import { Clock, MapPin, Wifi, Zap, AlertCircle, ShieldAlert, Navigation, Calendar } from 'lucide-react';
+import { useContent } from '../ContentContext';
+import { Clock, MapPin, Wifi, Zap, ShieldAlert, Navigation, Calendar } from 'lucide-react';
 
 interface ScheduleViewProps {
   setActiveTab: (tab: NavTab) => void;
 }
 
 export const ScheduleView: React.FC<ScheduleViewProps> = ({ setActiveTab }) => {
+  const { content } = useContent();
+  const { schedule } = content;
   const [activeDay, setActiveDay] = useState<1 | 2>(1);
 
-  // Live Countdown Timer state
   const [timeLeft, setTimeLeft] = useState({ hours: 23, minutes: 56, seconds: 57 });
 
   useEffect(() => {
@@ -29,7 +30,7 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ setActiveTab }) => {
     return () => clearInterval(timer);
   }, []);
 
-  const currentSchedule = activeDay === 1 ? SCHEDULE_DAY_1 : SCHEDULE_DAY_2;
+  const currentSchedule = activeDay === 1 ? (schedule?.day1 || []) : (schedule?.day2 || []);
 
   return (
     <div className="space-y-12 pb-16">
@@ -102,27 +103,10 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ setActiveTab }) => {
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b-2 border-current pb-3 mb-3">
                     <div className="flex items-center gap-3">
                       <span className={`font-anton text-2xl ${item.isHighlight ? 'text-[#fddc00]' : 'text-[#bb0013]'}`}>
-                        {item.time} {item.period}
+                        {item.time}
                       </span>
                       <h3 className="font-anton text-2xl tracking-wide">{item.title}</h3>
                     </div>
-
-                    {item.badges && item.badges.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5">
-                        {item.badges.map((b, bIdx) => (
-                          <span
-                            key={bIdx}
-                            className={`font-anton text-xs px-2 py-0.5 comic-border-thick ${
-                              item.isHighlight 
-                                ? 'bg-[#fddc00] text-[#1a1a1a]' 
-                                : 'bg-[#1a1a1a] text-white'
-                            }`}
-                          >
-                            {b}
-                          </span>
-                        ))}
-                      </div>
-                    )}
                   </div>
 
                   <p className={`font-bricolage text-sm ${item.isHighlight ? 'opacity-95 font-semibold' : 'text-zinc-700'}`}>
@@ -162,21 +146,11 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ setActiveTab }) => {
                 <Calendar className="w-5 h-5 text-[#bb0013]" />
               </div>
               <ul className="font-bricolage text-xs font-semibold space-y-2 text-zinc-800">
-                {activeDay === 1 ? (
-                  <>
-                    <li className="flex items-center gap-2">⚡ 08:00 AM - Breakfast & Refreshments</li>
-                    <li className="flex items-center gap-2 text-[#bb0013]">🚨 12:00 PM - SUBMISSION DEADLINE</li>
-                    <li className="flex items-center gap-2">🎤 02:00 PM - Project Presentations</li>
-                    <li className="flex items-center gap-2">🏆 05:00 PM - AWARDS CEREMONY</li>
-                  </>
-                ) : (
-                  <>
-                    <li className="flex items-center gap-2">📝 09:00 AM - Registration & Check-In</li>
-                    <li className="flex items-center gap-2">📢 10:00 AM - Opening Ceremony</li>
-                    <li className="flex items-center gap-2 text-[#bb0013]">⚡ 12:00 PM - HACKING BEGINS</li>
-                    <li className="flex items-center gap-2">🎯 03:00 PM - Mentor Guidance</li>
-                  </>
-                )}
+                {(activeDay === 1 ? (schedule?.day2 || []) : (schedule?.day1 || [])).slice(0, 4).map((item, i) => (
+                  <li key={i} className={`flex items-center gap-2 ${item.isHighlight ? 'text-[#bb0013]' : ''}`}>
+                    {item.isHighlight ? '🚨' : '⚡'} {item.time} - {item.title}
+                  </li>
+                ))}
               </ul>
               <button
                 onClick={() => setActiveDay(activeDay === 1 ? 2 : 1)}
@@ -223,7 +197,6 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ setActiveTab }) => {
             
             {/* Left Strategic Map Visualizer (8 Cols) */}
             <div className="lg:col-span-8 bg-[#1a1a1a] comic-border-ultra shadow-comic-lg p-3 relative min-h-[320px] flex flex-col justify-between overflow-hidden">
-              {/* Map background styling */}
               <div className="absolute inset-0 bg-[radial-gradient(#bb0013_1px,transparent_1px)] [background-size:16px_16px] opacity-20 pointer-events-none" />
               
               <div className="relative z-10 flex justify-between items-center bg-zinc-900 text-white p-3 comic-border-thick text-xs font-anton tracking-wider">
@@ -231,7 +204,6 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ setActiveTab }) => {
                 <span>LAT: 11.0827° N | LON: 77.1436° E</span>
               </div>
 
-              {/* Graphic Map Layout */}
               <div className="relative z-10 my-8 p-6 bg-[#2a2a2a] comic-border-thick text-center space-y-4 max-w-md mx-auto">
                 <div className="inline-block bg-[#bb0013] text-white p-3 comic-border-thick animate-bounce">
                   <MapPin className="w-8 h-8 text-[#fddc00]" />

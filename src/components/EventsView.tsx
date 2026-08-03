@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { NavTab, EventItem } from '../types';
-import { TECHNICAL_EVENTS, CIVILIAN_EVENTS } from '../data/events';
-import { Search, Zap, Shield, Flame, Sparkles, Filter, ChevronRight, CheckCircle2 } from 'lucide-react';
+import { NavTab } from '../types';
+import { useContent } from '../ContentContext';
+import { Search, Zap } from 'lucide-react';
 
 interface EventsViewProps {
   setActiveTab: (tab: NavTab) => void;
@@ -11,6 +11,9 @@ interface EventsViewProps {
 export const EventsView: React.FC<EventsViewProps> = ({ setActiveTab, onSelectEvent }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<'all' | 'technical' | 'civilian'>('all');
+  const { content } = useContent();
+  const TECHNICAL_EVENTS = content?.events?.technical || [];
+  const CIVILIAN_EVENTS = content?.events?.civilian || [];
 
   const filteredTech = TECHNICAL_EVENTS.filter(e => 
     e.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -89,7 +92,7 @@ export const EventsView: React.FC<EventsViewProps> = ({ setActiveTab, onSelectEv
               TECHNICAL OPERATIONS
             </h2>
             <span className="font-anton text-lg text-[#1a1a1a] bg-[#fddc00] px-3 py-1 comic-border-thick">
-              8 MISSIONS
+              {filteredTech.length} MISSIONS
             </span>
           </div>
 
@@ -107,7 +110,7 @@ export const EventsView: React.FC<EventsViewProps> = ({ setActiveTab, onSelectEv
                     </span>
                     <span className="bg-[#fddc00] text-[#1a1a1a] font-anton text-xs px-2.5 py-1 comic-border-thick flex items-center gap-1">
                       <Zap className="w-3 h-3 text-[#bb0013] fill-[#bb0013]" />
-                      FEE: ₹{item.fee}
+                      {item.feeText || `FEE: ₹${item.fee}`}
                     </span>
                   </div>
 
@@ -160,7 +163,7 @@ export const EventsView: React.FC<EventsViewProps> = ({ setActiveTab, onSelectEv
               CIVILIAN ENGAGEMENT
             </h2>
             <span className="font-anton text-lg text-[#1a1a1a] bg-[#fddc00] px-3 py-1 comic-border-thick">
-              8 EVENTS
+              {filteredCivilian.length} EVENTS
             </span>
           </div>
 
@@ -177,7 +180,7 @@ export const EventsView: React.FC<EventsViewProps> = ({ setActiveTab, onSelectEv
                       {item.code}
                     </span>
                     <span className="bg-[#00c853] text-white font-anton text-xs px-2.5 py-1 comic-border-thick">
-                      VERIFIED FEE: FREE
+                      {item.feeText || 'VERIFIED FEE: FREE'}
                     </span>
                   </div>
 
