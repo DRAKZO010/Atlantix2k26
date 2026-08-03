@@ -252,6 +252,16 @@
         } catch (e) {
             siteContent = getDefaultContent();
         }
+        // Self-heal: restore perks if they got wiped to empty arrays
+        const defaults = getDefaultContent();
+        ["first","second","third"].forEach(r => {
+            if (siteContent.prizes?.[r]?.perks?.length === 0 && defaults.prizes?.[r]?.perks?.length > 0) {
+                siteContent.prizes[r].perks = defaults.prizes[r].perks;
+            }
+        });
+        if (siteContent.prizes?.special?.length === 0 && defaults.prizes?.special?.length > 0) {
+            siteContent.prizes.special = defaults.prizes.special;
+        }
         populateUI();
     }
 
@@ -388,7 +398,9 @@
 
             c.prizes = { pool: formatCurrency(g("prizes_pool")) };
             ["first","second","third"].forEach(r => {
-                c.prizes[r] = { title: g(`prizes_${r}_title`), amount: formatCurrency(g(`prizes_${r}_amount`)), perks: g(`prizes_${r}_perks`).split(",").map(s=>s.trim()).filter(Boolean) };
+                const perksRaw = g(`prizes_${r}_perks`);
+                const perksArr = perksRaw ? perksRaw.split(",").map(s=>s.trim()).filter(Boolean) : (siteContent.prizes?.[r]?.perks || []);
+                c.prizes[r] = { title: g(`prizes_${r}_title`), amount: formatCurrency(g(`prizes_${r}_amount`)), perks: perksArr };
             });
             c.prizes.special = [];
             [...new Set([...document.querySelectorAll("[id^=spec_")].map(el => el.id.match(/spec_(\d+)/)?.[1]).filter(Boolean))].sort().forEach(i => {

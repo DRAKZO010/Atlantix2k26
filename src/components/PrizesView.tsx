@@ -52,7 +52,7 @@ export const PrizesView: React.FC<PrizesViewProps> = ({ setActiveTab }) => {
               </div>
 
               <ul className="space-y-3 font-bricolage text-sm text-zinc-800 font-semibold">
-                {(prizes?.second?.perks || ['Tech Workshop Access', 'Exclusive Networking', 'Official Certificate']).map((perk, i) => (
+                {(prizes?.second?.perks?.length ? prizes.second.perks : ['Tech Workshop Access', 'Exclusive Networking', 'Official Certificate']).map((perk, i) => (
                   <li key={i} className="flex items-center gap-2">
                     <CheckCircle2 className="w-5 h-5 text-[#bb0013] shrink-0" />
                     {perk}
@@ -94,7 +94,7 @@ export const PrizesView: React.FC<PrizesViewProps> = ({ setActiveTab }) => {
               </div>
 
               <ul className="space-y-3 font-bricolage text-sm sm:text-base font-bold text-white">
-                {(prizes?.first?.perks || ['STARTUP INCUBATION SUPPORT', 'INDUSTRY MENTORSHIP', 'PRIME SHOWCASE SLOT']).map((perk, i) => (
+                {(prizes?.first?.perks?.length ? prizes.first.perks : ['STARTUP INCUBATION SUPPORT', 'INDUSTRY MENTORSHIP', 'PRIME SHOWCASE SLOT']).map((perk, i) => (
                   <li key={i} className="flex items-center gap-2 bg-black/20 p-2.5 comic-border-thick">
                     {perk}
                   </li>
@@ -129,7 +129,7 @@ export const PrizesView: React.FC<PrizesViewProps> = ({ setActiveTab }) => {
               </div>
 
               <ul className="space-y-3 font-bricolage text-sm text-zinc-800 font-semibold">
-                {(prizes?.third?.perks || ['Sponsor Goodie Bag', 'Merit Certificate', 'Development Tools Access']).map((perk, i) => (
+                {(prizes?.third?.perks?.length ? prizes.third.perks : ['Sponsor Goodie Bag', 'Merit Certificate', 'Development Tools Access']).map((perk, i) => (
                   <li key={i} className="flex items-center gap-2">
                     <CheckCircle2 className="w-5 h-5 text-[#bb0013] shrink-0" />
                     {perk}
