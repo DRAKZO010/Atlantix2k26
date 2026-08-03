@@ -86,12 +86,41 @@ const defaultContent: SiteContent = {
   },
 };
 
+function deepMergeWithHealing(target: SiteContent, source: Partial<SiteContent>): SiteContent {
+  const result = { ...target, ...source } as SiteContent;
+
+  // Heal empty events arrays
+  if (!result.events?.technical?.length && target.events?.technical?.length) {
+    result.events = { ...result.events, technical: target.events.technical };
+  }
+  if (!result.events?.civilian?.length && target.events?.civilian?.length) {
+    result.events = { ...result.events, civilian: target.events.civilian };
+  }
+
+  // Heal empty schedule arrays
+  if (!result.schedule?.day1?.length && target.schedule?.day1?.length) {
+    result.schedule = { ...result.schedule, day1: target.schedule.day1, day2: target.schedule.day2 };
+  }
+
+  // Heal empty prize perks
+  (['first', 'second', 'third'] as const).forEach(r => {
+    if (!result.prizes?.[r]?.perks?.length && target.prizes?.[r]?.perks?.length) {
+      result.prizes = { ...result.prizes, [r]: { ...result.prizes![r], perks: target.prizes[r].perks } };
+    }
+  });
+  if (!result.prizes?.special?.length && target.prizes?.special?.length) {
+    result.prizes = { ...result.prizes, special: target.prizes.special };
+  }
+
+  return result;
+}
+
 export async function loadContent(): Promise<SiteContent> {
   try {
     const docRef = doc(db, CONTENT_DOC);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
-      return { ...defaultContent, ...docSnap.data() } as SiteContent;
+      return deepMergeWithHealing(defaultContent, docSnap.data() as Partial<SiteContent>);
     }
     return defaultContent;
   } catch (err) {

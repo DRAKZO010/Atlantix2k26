@@ -252,8 +252,9 @@
         } catch (e) {
             siteContent = getDefaultContent();
         }
-        // Self-heal: restore perks if they got wiped to empty arrays
+        // Self-heal: restore any data that got wiped to empty
         const defaults = getDefaultContent();
+        // Prizes perks
         ["first","second","third"].forEach(r => {
             if (siteContent.prizes?.[r]?.perks?.length === 0 && defaults.prizes?.[r]?.perks?.length > 0) {
                 siteContent.prizes[r].perks = defaults.prizes[r].perks;
@@ -261,6 +262,21 @@
         });
         if (siteContent.prizes?.special?.length === 0 && defaults.prizes?.special?.length > 0) {
             siteContent.prizes.special = defaults.prizes.special;
+        }
+        // Events
+        if (!siteContent.events?.technical?.length && defaults.events?.technical?.length) {
+            siteContent.events = siteContent.events || {};
+            siteContent.events.technical = defaults.events.technical;
+        }
+        if (!siteContent.events?.civilian?.length && defaults.events?.civilian?.length) {
+            siteContent.events = siteContent.events || {};
+            siteContent.events.civilian = defaults.events.civilian;
+        }
+        // Schedule
+        if (!siteContent.schedule?.day1?.length && defaults.schedule?.day1?.length) {
+            siteContent.schedule = siteContent.schedule || {};
+            siteContent.schedule.day1 = defaults.schedule.day1;
+            siteContent.schedule.day2 = defaults.schedule.day2;
         }
         populateUI();
     }
