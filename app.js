@@ -308,6 +308,20 @@ function initializeScheduleTabs() {
     });
 }
 
+function switchScheduleTab(day) {
+    const tabs = document.querySelectorAll('.schedule__tabs .schedule__tab');
+    const days = document.querySelectorAll('.timeline__day');
+
+    tabs.forEach(t => t.classList.remove('active'));
+    days.forEach(d => d.classList.remove('active'));
+
+    const targetTab = document.querySelector(`[data-day="${day}"]`);
+    const targetEl = document.getElementById(day);
+
+    if (targetTab) targetTab.classList.add('active');
+    if (targetEl) targetEl.classList.add('active');
+}
+
 // ==================== FAQ SYSTEM ====================
 function initializeFAQ() {
     window.toggleFaq = function(button) {
@@ -629,6 +643,7 @@ function makeGlobalFunctions() {
     window.registerForEvent = registerForEvent;
     window.downloadReceipt = downloadReceipt;
     window.getPassUrl = getPassUrl;
+    window.switchScheduleTab = switchScheduleTab;
 }
 
 function fixFormElements() {
