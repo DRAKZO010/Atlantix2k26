@@ -2,18 +2,21 @@ import React, { useState } from 'react';
 import { NavTab } from '../types';
 import { useContent } from '../ContentContext';
 import { Search, Zap } from 'lucide-react';
+import { EditableText } from './EditableText';
 
 interface EventsViewProps {
   setActiveTab: (tab: NavTab) => void;
   onSelectEvent: (eventId: string) => void;
+  editable?: boolean;
 }
 
-export const EventsView: React.FC<EventsViewProps> = ({ setActiveTab, onSelectEvent }) => {
+export const EventsView: React.FC<EventsViewProps> = ({ setActiveTab, onSelectEvent, editable }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<'all' | 'technical' | 'civilian'>('all');
   const { content } = useContent();
   const TECHNICAL_EVENTS = content?.events?.technical || [];
   const CIVILIAN_EVENTS = content?.events?.civilian || [];
+  const E = EditableText;
 
   const filteredTech = TECHNICAL_EVENTS.filter(e => 
     e.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -97,40 +100,43 @@ export const EventsView: React.FC<EventsViewProps> = ({ setActiveTab, onSelectEv
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {filteredTech.map((item) => (
-              <div
-                key={item.id}
-                onClick={() => onSelectEvent(item.id)}
-                className="bg-white comic-border-thick shadow-comic-md hover:-translate-y-1.5 transition-all cursor-pointer flex flex-col justify-between overflow-hidden group"
-              >
-                <div className="p-5 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="bg-[#1a1a1a] text-white font-anton text-xs px-2.5 py-1 comic-border-thick">
-                      {item.code}
-                    </span>
-                    <span className="bg-[#fddc00] text-[#1a1a1a] font-anton text-xs px-2.5 py-1 comic-border-thick flex items-center gap-1">
-                      <Zap className="w-3 h-3 text-[#bb0013] fill-[#bb0013]" />
-                      {item.feeText || `FEE: ₹${item.fee}`}
-                    </span>
+            {filteredTech.map((item) => {
+              const idx = TECHNICAL_EVENTS.indexOf(item);
+              return (
+                <div
+                  key={item.id}
+                  onClick={() => onSelectEvent(item.id)}
+                  className="bg-white comic-border-thick shadow-comic-md hover:-translate-y-1.5 transition-all cursor-pointer flex flex-col justify-between overflow-hidden group"
+                >
+                  <div className="p-5 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="bg-[#1a1a1a] text-white font-anton text-xs px-2.5 py-1 comic-border-thick">
+                        {editable ? <E value={item.code} path={`events.technical.${idx}.code`} as="span" /> : item.code}
+                      </span>
+                      <span className="bg-[#fddc00] text-[#1a1a1a] font-anton text-xs px-2.5 py-1 comic-border-thick flex items-center gap-1">
+                        <Zap className="w-3 h-3 text-[#bb0013] fill-[#bb0013]" />
+                        {item.feeText || `FEE: ₹${item.fee}`}
+                      </span>
+                    </div>
+
+                    <h3 className="font-anton text-2xl text-[#1a1a1a] group-hover:text-[#bb0013] transition-colors">
+                      {editable ? <E value={item.title} path={`events.technical.${idx}.title`} as="span" /> : item.title}
+                    </h3>
+
+                    <p className="font-bricolage text-xs text-zinc-700 leading-relaxed line-clamp-3">
+                      {editable ? <E value={item.description} path={`events.technical.${idx}.description`} as="span" /> : item.description}
+                    </p>
                   </div>
 
-                  <h3 className="font-anton text-2xl text-[#1a1a1a] group-hover:text-[#bb0013] transition-colors">
-                    {item.title}
-                  </h3>
-
-                  <p className="font-bricolage text-xs text-zinc-700 leading-relaxed line-clamp-3">
-                    {item.description}
-                  </p>
+                  <div className="p-4 bg-[#f4ead5] border-t-2 border-[#1a1a1a] flex items-center justify-between text-xs font-bold">
+                    <span className="text-zinc-700">{item.teamSize}</span>
+                    <span className="bg-[#bb0013] text-white px-2.5 py-1 comic-border-thick font-anton tracking-wider group-hover:bg-[#fddc00] group-hover:text-[#1a1a1a] transition-colors">
+                      VIEW RULES →
+                    </span>
+                  </div>
                 </div>
-
-                <div className="p-4 bg-[#f4ead5] border-t-2 border-[#1a1a1a] flex items-center justify-between text-xs font-bold">
-                  <span className="text-zinc-700">{item.teamSize}</span>
-                  <span className="bg-[#bb0013] text-white px-2.5 py-1 comic-border-thick font-anton tracking-wider group-hover:bg-[#fddc00] group-hover:text-[#1a1a1a] transition-colors">
-                    VIEW RULES →
-                  </span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
       )}
@@ -168,39 +174,42 @@ export const EventsView: React.FC<EventsViewProps> = ({ setActiveTab, onSelectEv
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {filteredCivilian.map((item) => (
-              <div
-                key={item.id}
-                onClick={() => onSelectEvent(item.id)}
-                className="bg-white comic-border-thick shadow-comic-md hover:-translate-y-1.5 transition-all cursor-pointer flex flex-col justify-between overflow-hidden group"
-              >
-                <div className="p-5 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="bg-[#1a1a1a] text-white font-anton text-xs px-2.5 py-1 comic-border-thick">
-                      {item.code}
-                    </span>
-                    <span className="bg-[#00c853] text-white font-anton text-xs px-2.5 py-1 comic-border-thick">
-                      {item.feeText || 'VERIFIED FEE: FREE'}
-                    </span>
+            {filteredCivilian.map((item) => {
+              const idx = CIVILIAN_EVENTS.indexOf(item);
+              return (
+                <div
+                  key={item.id}
+                  onClick={() => onSelectEvent(item.id)}
+                  className="bg-white comic-border-thick shadow-comic-md hover:-translate-y-1.5 transition-all cursor-pointer flex flex-col justify-between overflow-hidden group"
+                >
+                  <div className="p-5 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="bg-[#1a1a1a] text-white font-anton text-xs px-2.5 py-1 comic-border-thick">
+                        {editable ? <E value={item.code} path={`events.civilian.${idx}.code`} as="span" /> : item.code}
+                      </span>
+                      <span className="bg-[#00c853] text-white font-anton text-xs px-2.5 py-1 comic-border-thick">
+                        {item.feeText || 'VERIFIED FEE: FREE'}
+                      </span>
+                    </div>
+
+                    <h3 className="font-anton text-2xl text-[#1a1a1a] group-hover:text-[#bb0013] transition-colors">
+                      {editable ? <E value={item.title} path={`events.civilian.${idx}.title`} as="span" /> : item.title}
+                    </h3>
+
+                    <p className="font-bricolage text-xs text-zinc-700 leading-relaxed line-clamp-3">
+                      {editable ? <E value={item.description} path={`events.civilian.${idx}.description`} as="span" /> : item.description}
+                    </p>
                   </div>
 
-                  <h3 className="font-anton text-2xl text-[#1a1a1a] group-hover:text-[#bb0013] transition-colors">
-                    {item.title}
-                  </h3>
-
-                  <p className="font-bricolage text-xs text-zinc-700 leading-relaxed line-clamp-3">
-                    {item.description}
-                  </p>
+                  <div className="p-4 bg-[#efe1c5] border-t-2 border-[#1a1a1a] flex items-center justify-between text-xs font-bold">
+                    <span className="text-zinc-700">{item.teamSize}</span>
+                    <span className="bg-[#1a1a1a] text-white px-2.5 py-1 comic-border-thick font-anton tracking-wider group-hover:bg-[#bb0013] transition-colors">
+                      VIEW DETAILS →
+                    </span>
+                  </div>
                 </div>
-
-                <div className="p-4 bg-[#efe1c5] border-t-2 border-[#1a1a1a] flex items-center justify-between text-xs font-bold">
-                  <span className="text-zinc-700">{item.teamSize}</span>
-                  <span className="bg-[#1a1a1a] text-white px-2.5 py-1 comic-border-thick font-anton tracking-wider group-hover:bg-[#bb0013] transition-colors">
-                    VIEW DETAILS →
-                  </span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
       )}

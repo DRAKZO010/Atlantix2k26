@@ -2,14 +2,17 @@ import React from 'react';
 import { NavTab } from '../types';
 import { useContent } from '../ContentContext';
 import { Crown, Lightbulb, Users, Palette, CheckCircle2 } from 'lucide-react';
+import { EditableText } from './EditableText';
 
 interface PrizesViewProps {
   setActiveTab: (tab: NavTab) => void;
+  editable?: boolean;
 }
 
-export const PrizesView: React.FC<PrizesViewProps> = ({ setActiveTab }) => {
+export const PrizesView: React.FC<PrizesViewProps> = ({ setActiveTab, editable }) => {
   const { content } = useContent();
   const { prizes, hero } = content;
+  const E = EditableText;
 
   return (
     <div className="space-y-16 pb-16">
@@ -21,7 +24,9 @@ export const PrizesView: React.FC<PrizesViewProps> = ({ setActiveTab }) => {
         </div>
 
         <h1 className="font-anton text-6xl sm:text-8xl lg:text-9xl text-[#1a1a1a] drop-shadow-[4px_4px_0px_#fddc00]">
-          PRIZE POOL <span className="bg-[#fddc00] text-[#1a1a1a] px-4 py-1 inline-block transform -skew-x-3">{prizes?.pool || '₹50,000'}</span>
+          PRIZE POOL <span className="bg-[#fddc00] text-[#1a1a1a] px-4 py-1 inline-block transform -skew-x-3">
+            {editable ? <E value={prizes?.pool || ''} path="prizes.pool" as="span" /> : prizes?.pool || '₹50,000'}
+          </span>
         </h1>
 
         <p className="font-bricolage text-lg sm:text-xl font-bold text-[#1a1a1a] max-w-3xl mx-auto">
@@ -33,7 +38,7 @@ export const PrizesView: React.FC<PrizesViewProps> = ({ setActiveTab }) => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch pt-6">
           
-          {/* 2nd Place Card (Left) */}
+          {/* 2nd Place Card */}
           <div className="bg-white p-6 sm:p-8 comic-border-ultra shadow-comic-lg flex flex-col justify-between space-y-6 relative hover:-translate-y-1 transition-transform">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
@@ -44,11 +49,11 @@ export const PrizesView: React.FC<PrizesViewProps> = ({ setActiveTab }) => {
               </div>
 
               <div className="font-anton text-5xl sm:text-6xl text-[#1a1a1a]">
-                {prizes?.second?.amount || '₹15,000'}
+                {editable ? <E value={prizes?.second?.amount || ''} path="prizes.second.amount" as="span" /> : prizes?.second?.amount || '₹15,000'}
               </div>
 
               <div className="font-anton text-xl text-[#bb0013] border-b-2 border-[#1a1a1a] pb-2">
-                RUNNER UP CHAMPION
+                {editable ? <E value={prizes?.second?.title || ''} path="prizes.second.title" as="span" /> : 'RUNNER UP CHAMPION'}
               </div>
 
               <ul className="space-y-3 font-bricolage text-sm text-zinc-800 font-semibold">
@@ -69,10 +74,9 @@ export const PrizesView: React.FC<PrizesViewProps> = ({ setActiveTab }) => {
             </button>
           </div>
 
-          {/* 1st Place Card (CENTER CHAMPION HIGHLIGHT!) */}
+          {/* 1st Place Card */}
           <div className="bg-[#bb0013] text-white p-6 sm:p-8 comic-border-ultra shadow-comic-xl flex flex-col justify-between space-y-6 relative transform lg:-translate-y-4 hover:-translate-y-6 transition-transform">
             
-            {/* Winner Corner Sash */}
             <div className="absolute -top-4 -right-4 bg-[#fddc00] text-[#1a1a1a] font-anton text-sm px-4 py-1 comic-border-thick shadow-comic rotate-12">
               👑 WINNER
             </div>
@@ -86,11 +90,11 @@ export const PrizesView: React.FC<PrizesViewProps> = ({ setActiveTab }) => {
               </div>
 
               <div className="font-anton text-6xl sm:text-7xl text-[#fddc00]">
-                {prizes?.first?.amount || '₹25,000'}
+                {editable ? <E value={prizes?.first?.amount || ''} path="prizes.first.amount" as="span" /> : prizes?.first?.amount || '₹25,000'}
               </div>
 
               <div className="font-anton text-2xl text-white border-b-2 border-white pb-2 tracking-wide">
-                {prizes?.first?.title || 'ROBOTRON KING'}
+                {editable ? <E value={prizes?.first?.title || ''} path="prizes.first.title" as="span" /> : prizes?.first?.title || 'ROBOTRON KING'}
               </div>
 
               <ul className="space-y-3 font-bricolage text-sm sm:text-base font-bold text-white">
@@ -110,7 +114,7 @@ export const PrizesView: React.FC<PrizesViewProps> = ({ setActiveTab }) => {
             </button>
           </div>
 
-          {/* 3rd Place Card (Right) */}
+          {/* 3rd Place Card */}
           <div className="bg-white p-6 sm:p-8 comic-border-ultra shadow-comic-lg flex flex-col justify-between space-y-6 relative hover:-translate-y-1 transition-transform">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
@@ -121,11 +125,11 @@ export const PrizesView: React.FC<PrizesViewProps> = ({ setActiveTab }) => {
               </div>
 
               <div className="font-anton text-5xl sm:text-6xl text-[#1a1a1a]">
-                {prizes?.third?.amount || '₹10,000'}
+                {editable ? <E value={prizes?.third?.amount || ''} path="prizes.third.amount" as="span" /> : prizes?.third?.amount || '₹10,000'}
               </div>
 
               <div className="font-anton text-xl text-[#bb0013] border-b-2 border-[#1a1a1a] pb-2">
-                BRONZE CHAMPION
+                {editable ? <E value={prizes?.third?.title || ''} path="prizes.third.title" as="span" /> : 'BRONZE CHAMPION'}
               </div>
 
               <ul className="space-y-3 font-bricolage text-sm text-zinc-800 font-semibold">
@@ -172,13 +176,15 @@ export const PrizesView: React.FC<PrizesViewProps> = ({ setActiveTab }) => {
                   {!['Lightbulb', 'Users', 'Palette'].includes(award.iconName) && <Lightbulb className="w-7 h-7" />}
                 </div>
                 <span className="font-anton text-xl text-[#bb0013] bg-[#f4ead5] px-3 py-1 comic-border-thick">
-                  {award.reward}
+                  {editable ? <E value={award.reward} path={`prizes.special.${idx}.reward`} as="span" /> : award.reward}
                 </span>
               </div>
 
-              <h3 className="font-anton text-2xl text-[#1a1a1a]">{award.title}</h3>
+              <h3 className="font-anton text-2xl text-[#1a1a1a]">
+                {editable ? <E value={award.title} path={`prizes.special.${idx}.title`} as="span" /> : award.title}
+              </h3>
               <p className="font-bricolage text-sm text-zinc-700 leading-relaxed">
-                {award.description}
+                {editable ? <E value={award.description} path={`prizes.special.${idx}.description`} as="span" /> : award.description}
               </p>
             </div>
           ))}

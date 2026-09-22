@@ -2,28 +2,27 @@ import React, { useState, useEffect } from 'react';
 import { NavTab } from '../types';
 import { useContent } from '../ContentContext';
 import { Clock, MapPin, Wifi, Zap, ShieldAlert, Navigation, Calendar } from 'lucide-react';
+import { EditableText } from './EditableText';
 
 interface ScheduleViewProps {
   setActiveTab: (tab: NavTab) => void;
+  editable?: boolean;
 }
 
-export const ScheduleView: React.FC<ScheduleViewProps> = ({ setActiveTab }) => {
+export const ScheduleView: React.FC<ScheduleViewProps> = ({ setActiveTab, editable }) => {
   const { content } = useContent();
   const { schedule } = content;
   const [activeDay, setActiveDay] = useState<1 | 2>(1);
+  const E = EditableText;
 
   const [timeLeft, setTimeLeft] = useState({ hours: 23, minutes: 56, seconds: 57 });
 
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft(prev => {
-        if (prev.seconds > 0) {
-          return { ...prev, seconds: prev.seconds - 1 };
-        } else if (prev.minutes > 0) {
-          return { ...prev, minutes: 59, seconds: 59 };
-        } else if (prev.hours > 0) {
-          return { hours: prev.hours - 1, minutes: 59, seconds: 59 };
-        }
+        if (prev.seconds > 0) return { ...prev, seconds: prev.seconds - 1 };
+        else if (prev.minutes > 0) return { ...prev, minutes: 59, seconds: 59 };
+        else if (prev.hours > 0) return { hours: prev.hours - 1, minutes: 59, seconds: 59 };
         return prev;
       });
     }, 1000);
@@ -49,14 +48,11 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ setActiveTab }) => {
           24 HOURS. INFINITE POSSIBILITIES. ASSEMBLE YOUR SQUAD AND EXECUTE THE PLAN.
         </p>
 
-        {/* Day Selector Tabs */}
         <div className="flex justify-center gap-4 pt-4">
           <button
             onClick={() => setActiveDay(1)}
             className={`px-8 py-3.5 font-anton text-xl tracking-wider comic-border-ultra shadow-comic uppercase cursor-pointer transition-all ${
-              activeDay === 1 
-                ? 'bg-[#bb0013] text-white scale-105' 
-                : 'bg-white text-[#1a1a1a] hover:bg-[#efe1c5]'
+              activeDay === 1 ? 'bg-[#bb0013] text-white scale-105' : 'bg-white text-[#1a1a1a] hover:bg-[#efe1c5]'
             }`}
           >
             DAY 1 - JAN 15
@@ -64,9 +60,7 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ setActiveTab }) => {
           <button
             onClick={() => setActiveDay(2)}
             className={`px-8 py-3.5 font-anton text-xl tracking-wider comic-border-ultra shadow-comic uppercase cursor-pointer transition-all ${
-              activeDay === 2 
-                ? 'bg-[#bb0013] text-white scale-105' 
-                : 'bg-white text-[#1a1a1a] hover:bg-[#efe1c5]'
+              activeDay === 2 ? 'bg-[#bb0013] text-white scale-105' : 'bg-white text-[#1a1a1a] hover:bg-[#efe1c5]'
             }`}
           >
             DAY 2 - JAN 16
@@ -78,7 +72,7 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ setActiveTab }) => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          {/* Left Column: Timeline Schedule Items (8 Cols) */}
+          {/* Left Column: Timeline Schedule Items */}
           <div className="lg:col-span-8 space-y-6">
             
             <div className="bg-[#1a1a1a] text-white p-4 comic-border-thick flex items-center justify-between">
@@ -91,37 +85,40 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ setActiveTab }) => {
             </div>
 
             <div className="space-y-4">
-              {currentSchedule.map((item, idx) => (
-                <div
-                  key={idx}
-                  className={`p-5 comic-border-thick shadow-comic transition-transform hover:-translate-y-1 ${
-                    item.isHighlight 
-                      ? 'bg-[#bb0013] text-white' 
-                      : 'bg-white text-[#1a1a1a]'
-                  }`}
-                >
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b-2 border-current pb-3 mb-3">
-                    <div className="flex items-center gap-3">
-                      <span className={`font-anton text-2xl ${item.isHighlight ? 'text-[#fddc00]' : 'text-[#bb0013]'}`}>
-                        {item.time}
-                      </span>
-                      <h3 className="font-anton text-2xl tracking-wide">{item.title}</h3>
+              {currentSchedule.map((item, idx) => {
+                const dayKey = activeDay === 1 ? 'day1' : 'day2';
+                const pathPrefix = `schedule.${dayKey}.${idx}`;
+                return (
+                  <div
+                    key={idx}
+                    className={`p-5 comic-border-thick shadow-comic transition-transform hover:-translate-y-1 ${
+                      item.isHighlight ? 'bg-[#bb0013] text-white' : 'bg-white text-[#1a1a1a]'
+                    }`}
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b-2 border-current pb-3 mb-3">
+                      <div className="flex items-center gap-3">
+                        <span className={`font-anton text-2xl ${item.isHighlight ? 'text-[#fddc00]' : 'text-[#bb0013]'}`}>
+                          {editable ? <E value={item.time} path={`${pathPrefix}.time`} as="span" /> : item.time}
+                        </span>
+                        <h3 className="font-anton text-2xl tracking-wide">
+                          {editable ? <E value={item.title} path={`${pathPrefix}.title`} as="span" /> : item.title}
+                        </h3>
+                      </div>
                     </div>
-                  </div>
 
-                  <p className={`font-bricolage text-sm ${item.isHighlight ? 'opacity-95 font-semibold' : 'text-zinc-700'}`}>
-                    {item.description}
-                  </p>
-                </div>
-              ))}
+                    <p className={`font-bricolage text-sm ${item.isHighlight ? 'opacity-95 font-semibold' : 'text-zinc-700'}`}>
+                      {editable ? <E value={item.description} path={`${pathPrefix}.description`} as="span" /> : item.description}
+                    </p>
+                  </div>
+                );
+              })}
             </div>
 
           </div>
 
-          {/* Right Column: Widgets & Timer (4 Cols) */}
+          {/* Right Column: Widgets & Timer */}
           <div className="lg:col-span-4 space-y-6">
             
-            {/* Live Countdown Timer Widget */}
             <div className="bg-[#1a1a1a] text-white p-6 comic-border-ultra shadow-comic-lg text-center space-y-3">
               <div className="flex items-center justify-center gap-2 text-[#fddc00] font-anton text-lg">
                 <Clock className="w-5 h-5 animate-pulse" />
@@ -139,7 +136,6 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ setActiveTab }) => {
               </p>
             </div>
 
-            {/* Other Day Teaser Box */}
             <div className="bg-[#efe1c5] p-5 comic-border-thick shadow-comic space-y-3">
               <div className="font-anton text-xl text-[#1a1a1a] flex items-center justify-between">
                 <span>{activeDay === 1 ? 'DAY 2 AT A GLANCE' : 'DAY 1 HIGHLIGHTS'}</span>
@@ -160,7 +156,6 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ setActiveTab }) => {
               </button>
             </div>
 
-            {/* Comic Graphic Code Poster */}
             <div className="bg-[#fddc00] p-6 comic-border-thick shadow-comic text-center space-y-2">
               <div className="font-anton text-3xl text-[#1a1a1a]">CODE THE FUTURE</div>
               <p className="font-bricolage text-xs font-bold text-zinc-800">
@@ -168,7 +163,6 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ setActiveTab }) => {
               </p>
             </div>
 
-            {/* Protocol Notice */}
             <div className="bg-white p-4 comic-border-thick shadow-comic flex items-start gap-3">
               <ShieldAlert className="w-6 h-6 text-[#bb0013] shrink-0" />
               <div className="font-bricolage text-xs text-zinc-800">
@@ -195,7 +189,6 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ setActiveTab }) => {
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
             
-            {/* Left Strategic Map Visualizer (8 Cols) */}
             <div className="lg:col-span-8 bg-[#1a1a1a] comic-border-ultra shadow-comic-lg p-3 relative min-h-[320px] flex flex-col justify-between overflow-hidden">
               <div className="absolute inset-0 bg-[radial-gradient(#bb0013_1px,transparent_1px)] [background-size:16px_16px] opacity-20 pointer-events-none" />
               
@@ -233,7 +226,6 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ setActiveTab }) => {
               </div>
             </div>
 
-            {/* Right Venue Details Card (4 Cols) */}
             <div className="lg:col-span-4 bg-white p-6 comic-border-ultra shadow-comic-lg flex flex-col justify-between space-y-6">
               <div className="space-y-4">
                 <div className="bg-[#fddc00] font-anton text-xl px-3 py-1 inline-block comic-border-thick">
