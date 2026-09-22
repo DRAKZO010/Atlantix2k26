@@ -114,7 +114,7 @@ export function App() {
 
         {activeTab === 'admin' && (
           adminUnlocked ? (
-            <AdminView setActiveTab={setActiveTab} />
+            <AdminView setActiveTab={setActiveTab} onSelectEvent={handleSelectEventModal} />
           ) : (
             <div className="flex items-center justify-center min-h-[60vh] px-4">
               <div className="bg-white p-8 comic-border-ultra shadow-comic-lg max-w-md w-full text-center space-y-6">
