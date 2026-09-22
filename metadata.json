@@ -1,0 +1,6 @@
+{
+  "name": "ROBOTRON 2027",
+  "description": "South India's Premier 24-Hour Hackathon - Pop-Art Brutalist Comic Book Web Portal",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
