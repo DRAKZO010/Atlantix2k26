@@ -4,7 +4,7 @@ import { TECHNICAL_EVENTS, CIVILIAN_EVENTS } from '../data/events';
 import { TicketModal } from './TicketModal';
 import { generateRegistrationId, saveRegistration } from '../services/registration';
 import { initEmailJS, sendReceiptEmail } from '../services/email';
-import { Zap, AlertTriangle, ShieldCheck, CheckCircle2, UserPlus, UserCheck } from 'lucide-react';
+import { Zap, AlertTriangle, ShieldCheck, CheckCircle2, UserPlus, UserCheck, Users } from 'lucide-react';
 
 interface RegisterViewProps {
   setActiveTab: (tab: NavTab) => void;
@@ -136,6 +136,71 @@ export const RegisterView: React.FC<RegisterViewProps> = ({
           {/* Main Form Area (8 Cols) */}
           <div className="lg:col-span-8 space-y-6">
             
+            {/* ===== TEAM EVENT SELECTION (Team-Level) ===== */}
+            <div className="bg-white p-6 sm:p-8 comic-border-ultra shadow-comic-lg space-y-4">
+              <div className="flex items-center gap-3 border-b-4 border-[#1a1a1a] pb-3">
+                <div className="bg-[#fddc00] text-[#1a1a1a] font-anton text-xl px-4 py-1.5 comic-border-thick">
+                  <Users className="w-5 h-5 inline mr-2" />
+                  TEAM EVENTS
+                </div>
+                <span className="font-bricolage text-xs text-zinc-500 font-semibold">
+                  Applies to all team members
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 font-bricolage">
+                
+                {/* Technical Event Selector */}
+                <div className="space-y-1.5">
+                  <label className="block font-anton text-sm text-[#1a1a1a] uppercase">
+                    TECHNICAL EVENT (TEAM)
+                  </label>
+                  <select
+                    value={registration.selectedTechEventId}
+                    onChange={(e) => setRegistration(prev => ({ ...prev, selectedTechEventId: e.target.value }))}
+                    className="w-full px-4 py-3 bg-[#f4ead5] comic-border-thick font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-[#bb0013] cursor-pointer"
+                  >
+                    <option value="">-- NONE (HACKATHON ONLY) --</option>
+                    {TECHNICAL_EVENTS.map((evt) => (
+                      <option key={evt.id} value={evt.id}>
+                        {evt.code} - {evt.title} (₹{evt.fee})
+                      </option>
+                    ))}
+                  </select>
+                  {selectedTechEvent && (
+                    <p className="text-xs text-zinc-500 font-semibold mt-1">
+                      {selectedTechEvent.teamSize} • {selectedTechEvent.timing} • {selectedTechEvent.venue}
+                    </p>
+                  )}
+                </div>
+
+                {/* Non-Technical Event Selector */}
+                <div className="space-y-1.5">
+                  <label className="block font-anton text-sm text-[#1a1a1a] uppercase">
+                    NON-TECHNICAL EVENT (TEAM)
+                  </label>
+                  <select
+                    value={registration.selectedNonTechEventId}
+                    onChange={(e) => setRegistration(prev => ({ ...prev, selectedNonTechEventId: e.target.value }))}
+                    className="w-full px-4 py-3 bg-[#f4ead5] comic-border-thick font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-[#bb0013] cursor-pointer"
+                  >
+                    <option value="">-- NONE --</option>
+                    {CIVILIAN_EVENTS.map((evt) => (
+                      <option key={evt.id} value={evt.id}>
+                        {evt.code} - {evt.title} (FREE)
+                      </option>
+                    ))}
+                  </select>
+                  {selectedNonTechEvent && (
+                    <p className="text-xs text-zinc-500 font-semibold mt-1">
+                      {selectedNonTechEvent.teamSize} • {selectedNonTechEvent.timing} • {selectedNonTechEvent.venue}
+                    </p>
+                  )}
+                </div>
+
+              </div>
+            </div>
+
             {/* Team Member Tabs Bar */}
             <div className="flex flex-wrap gap-2">
               {[0, 1, 2, 3].map((idx) => {
@@ -264,55 +329,6 @@ export const RegisterView: React.FC<RegisterViewProps> = ({
                   />
                 </div>
 
-              </div>
-
-              {/* Dashed Line Separator */}
-              <div className="border-t-4 border-dashed border-[#1a1a1a] pt-6 space-y-4">
-                <div className="bg-[#fddc00] text-[#1a1a1a] font-anton text-xl px-4 py-1.5 inline-block comic-border-thick">
-                  EVENT SELECTION
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 font-bricolage">
-                  
-                  {/* Technical Event Selector */}
-                  <div className="space-y-1.5">
-                    <label className="block font-anton text-sm text-[#1a1a1a] uppercase">
-                      TECHNICAL EVENTS (OPTIONAL)
-                    </label>
-                    <select
-                      value={registration.selectedTechEventId}
-                      onChange={(e) => setRegistration(prev => ({ ...prev, selectedTechEventId: e.target.value }))}
-                      className="w-full px-4 py-3 bg-[#f4ead5] comic-border-thick font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-[#bb0013] cursor-pointer"
-                    >
-                      <option value="">-- NONE (HACKATHON ONLY) --</option>
-                      {TECHNICAL_EVENTS.map((evt) => (
-                        <option key={evt.id} value={evt.id}>
-                          {evt.code} - {evt.title} (₹{evt.fee})
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Non-Technical Event Selector */}
-                  <div className="space-y-1.5">
-                    <label className="block font-anton text-sm text-[#1a1a1a] uppercase">
-                      NON-TECHNICAL EVENTS (OPTIONAL)
-                    </label>
-                    <select
-                      value={registration.selectedNonTechEventId}
-                      onChange={(e) => setRegistration(prev => ({ ...prev, selectedNonTechEventId: e.target.value }))}
-                      className="w-full px-4 py-3 bg-[#f4ead5] comic-border-thick font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-[#bb0013] cursor-pointer"
-                    >
-                      <option value="">-- NONE --</option>
-                      {CIVILIAN_EVENTS.map((evt) => (
-                        <option key={evt.id} value={evt.id}>
-                          {evt.code} - {evt.title} (FREE)
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                </div>
               </div>
 
               {/* Submit Trigger inside form */}
