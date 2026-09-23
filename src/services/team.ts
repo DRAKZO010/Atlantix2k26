@@ -58,7 +58,7 @@ export async function createTeam(
     branch,
     college,
     role: 'leader',
-    joinedAt: serverTimestamp() as any,
+    joinedAt: new Date().toISOString(),
   };
 
   const teamData = {
@@ -126,7 +126,7 @@ export async function joinTeamByCode(
       branch,
       college,
       role: 'member',
-      joinedAt: serverTimestamp() as any,
+      joinedAt: new Date().toISOString(),
     };
 
     const updatedMembers = [...teamData.members, newMember];

@@ -117,7 +117,7 @@ export interface TeamMemberProfile {
   branch: string;
   college: string;
   role: 'leader' | 'member';
-  joinedAt: Timestamp;
+  joinedAt: string;
 }
 
 export interface Team {
