@@ -15,6 +15,8 @@ interface RegistrationPayload {
   technicalEvent: string;
   nonTechnicalEvent: string;
   totalFee: number;
+  teamId?: string;
+  teamCode?: string;
 }
 
 export function generateRegistrationId(): string {
@@ -30,12 +32,17 @@ export async function saveRegistration(
     .map((m, i) => ({
       name: m.fullName,
       email: m.email,
+      phone: m.phone,
+      branch: m.branch,
+      college: m.college,
       memberId: `${regId}-M${i + 1}`,
       checkedIn: false,
     }));
 
   await setDoc(doc(db, 'registrations', regId), {
     registrationId: regId,
+    teamId: data.teamId || null,
+    teamCode: data.teamCode || null,
     teamLead: data.members[0].fullName,
     leadEmail: data.members[0].email,
     members: activeMembers,

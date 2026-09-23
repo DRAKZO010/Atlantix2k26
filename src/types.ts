@@ -1,3 +1,5 @@
+import { Timestamp } from 'firebase/firestore';
+
 export type NavTab = 'home' | 'about' | 'schedule' | 'events' | 'prizes' | 'register' | 'admin';
 
 export interface SiteContent {
@@ -46,12 +48,12 @@ export interface SiteContent {
 
 export interface EventItem {
   id: string;
-  code: string; // e.g. 'TECH-01', 'NON-01'
+  code: string;
   title: string;
   category: 'technical' | 'civilian';
   description: string;
-  fee: number; // in INR
-  feeText: string; // e.g. 'FEE: ₹30', 'VERIFIED FEE: FREE'
+  fee: number;
+  feeText: string;
   iconName: string;
   teamSize?: string;
   rules?: string[];
@@ -106,3 +108,48 @@ export interface RegistrationState {
   selectedNonTechEventId: string;
   baseFee: number;
 }
+
+export interface TeamMemberProfile {
+  uid: string;
+  displayName: string;
+  email: string;
+  phone: string;
+  branch: string;
+  college: string;
+  role: 'leader' | 'member';
+  joinedAt: Timestamp;
+}
+
+export interface Team {
+  id: string;
+  teamCode: string;
+  teamName: string;
+  leader: {
+    uid: string;
+    displayName: string;
+    email: string;
+  };
+  members: TeamMemberProfile[];
+  selectedTechEventId: string;
+  selectedNonTechEventId: string;
+  status: 'forming' | 'registered';
+  registrationId: string | null;
+  maxMembers: number;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+
+export interface UserProfile {
+  uid: string;
+  email: string;
+  displayName: string;
+  photoURL: string | null;
+  phone: string;
+  branch: string;
+  college: string;
+  teamId: string | null;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+
+export type AuthMode = 'login' | 'signup';

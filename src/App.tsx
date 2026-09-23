@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { NavTab } from './types';
 import { ALL_EVENTS } from './data/events';
+import { useAuth } from './hooks/useAuth';
+import { useTeam } from './hooks/useTeam';
+import { signOut } from './services/auth';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { HomeView } from './components/HomeView';
@@ -8,12 +11,15 @@ import { AboutView } from './components/AboutView';
 import { EventsView } from './components/EventsView';
 import { ScheduleView } from './components/ScheduleView';
 import { PrizesView } from './components/PrizesView';
-import { RegisterView } from './components/RegisterView';
+import { AuthView } from './components/AuthView';
+import { TeamDashboard } from './components/TeamDashboard';
 import { AdminView } from './components/AdminView';
 import { EventDetailModal } from './components/EventDetailModal';
 import { Save, Loader2, CheckCircle2, Eye, Undo2, Redo2 } from 'lucide-react';
 
 export function App() {
+  const { user, userProfile, loading: authLoading } = useAuth();
+  const { team, loading: teamLoading, refresh: refreshTeam } = useTeam(user, userProfile);
   const [activeTab, setActiveTab] = useState<NavTab>('home');
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const [preselectedTechId, setPreselectedTechId] = useState<string>('');
@@ -54,6 +60,12 @@ export function App() {
     setActiveTab('admin');
   };
 
+  const handleSignOut = async () => {
+    await signOut();
+    setAdminUnlocked(false);
+    setActiveTab('home');
+  };
+
   const verifyAdminPassword = async () => {
     if (!adminPassInput.trim()) return;
     setAdminLoading(true);
@@ -76,6 +88,36 @@ export function App() {
     }
   };
 
+  const renderRegister = () => {
+    if (authLoading) {
+      return (
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <Loader2 className="w-8 h-8 animate-spin text-[#bb0013]" />
+        </div>
+      );
+    }
+    if (!user) {
+      return <AuthView />;
+    }
+    if (teamLoading) {
+      return (
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <Loader2 className="w-8 h-8 animate-spin text-[#bb0013]" />
+        </div>
+      );
+    }
+    return (
+      <TeamDashboard
+        user={user}
+        team={team}
+        onTeamChange={refreshTeam}
+        setActiveTab={setActiveTab}
+        preselectedTechId={preselectedTechId}
+        preselectedNonTechId={preselectedNonTechId}
+      />
+    );
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-[#f4ead5] text-[#1a1a1a] selection:bg-[#e71620] selection:text-white">
       
@@ -89,9 +131,13 @@ export function App() {
       }} editable={activeTab === 'admin'} activeSection={activeTab === 'admin' ? adminSection : undefined} onNavClick={activeTab === 'admin' ? (tab) => {
         setAdminSection(tab);
         window.scrollTo({ top: 0, behavior: 'smooth' });
-      } : undefined} rightContent={activeTab === 'admin' && adminControls ? (
+      } : undefined}
+      user={user}
+      userProfile={userProfile}
+      team={team}
+      onSignOut={handleSignOut}
+      rightContent={activeTab === 'admin' && adminControls ? (
         <div className="flex items-center gap-2">
-          {/* Undo / Redo */}
           <div className="flex items-center bg-zinc-800 rounded overflow-hidden">
             <button onClick={adminControls.onUndo} disabled={!adminControls.canUndo}
               title="Undo (Ctrl+Z)"
@@ -151,13 +197,7 @@ export function App() {
           <PrizesView setActiveTab={setActiveTab} />
         )}
 
-        {activeTab === 'register' && (
-          <RegisterView 
-            setActiveTab={setActiveTab} 
-            preselectedTechId={preselectedTechId}
-            preselectedNonTechId={preselectedNonTechId}
-          />
-        )}
+        {activeTab === 'register' && renderRegister()}
 
         {activeTab === 'admin' && (
           adminUnlocked ? (
