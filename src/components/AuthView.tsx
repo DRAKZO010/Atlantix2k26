@@ -16,11 +16,47 @@ export const AuthView: React.FC<AuthViewProps> = ({ onAuthSuccess }) => {
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  const touch = (field: string) => setTouched(prev => ({ ...prev, [field]: true }));
+
+  const validateField = (field: string, value: string) => {
+    let msg = '';
+    if (field === 'displayName' && mode === 'signup' && !value.trim()) msg = 'Name is required';
+    if (field === 'email') {
+      if (!value.trim()) msg = 'Email is required';
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) msg = 'Enter a valid email';
+    }
+    if (field === 'password') {
+      if (!value) msg = 'Password is required';
+      else if (value.length < 6) msg = 'Min 6 characters';
+    }
+    setFieldErrors(prev => ({ ...prev, [field]: msg }));
+    return msg;
+  };
+
+  const handleChange = (field: string, value: string) => {
+    if (field === 'displayName') setDisplayName(value);
+    else if (field === 'email') setEmail(value);
+    else if (field === 'password') setPassword(value);
+    if (touched[field]) validateField(field, value);
+    setError('');
+  };
+
+  const handleBlur = (field: string) => {
+    touch(field);
+    const value = field === 'displayName' ? displayName : field === 'email' ? email : password;
+    validateField(field, value);
+  };
+
   const resetForm = () => {
     setEmail('');
     setPassword('');
     setDisplayName('');
     setError('');
+    setTouched({});
+    setFieldErrors({});
   };
 
   const switchMode = (newMode: AuthMode) => {
@@ -31,10 +67,24 @@ export const AuthView: React.FC<AuthViewProps> = ({ onAuthSuccess }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    const fields = mode === 'signup' ? ['displayName', 'email', 'password'] : ['email', 'password'];
+    const newTouched: Record<string, boolean> = {};
+    const newErrors: Record<string, string> = {};
+    let hasError = false;
+    for (const f of fields) {
+      newTouched[f] = true;
+      const val = f === 'displayName' ? displayName : f === 'email' ? email : password;
+      const msg = validateField(f, val);
+      if (msg) hasError = true;
+      newErrors[f] = msg;
+    }
+    setTouched(newTouched);
+    setFieldErrors(newErrors);
+    if (hasError) return;
+
     setLoading(true);
     try {
       if (mode === 'signup') {
-        if (!displayName.trim()) { setError('Name is required'); setLoading(false); return; }
         await signUpWithEmail(email, password, displayName.trim());
       } else {
         await signInWithEmail(email, password);
@@ -68,6 +118,13 @@ export const AuthView: React.FC<AuthViewProps> = ({ onAuthSuccess }) => {
     }
     setLoading(false);
   };
+
+  const inputClass = (field: string) =>
+    `w-full pl-10 pr-4 py-3 bg-[#f4ead5] comic-border-thick font-semibold text-sm focus:outline-none focus:ring-2 ${
+      touched[field] && fieldErrors[field]
+        ? 'border-[#bb0013] ring-[#bb0013]'
+        : 'focus:ring-[#bb0013]'
+    }`;
 
   return (
     <div className="min-h-[70vh] flex items-center justify-center px-4 py-12">
@@ -105,57 +162,74 @@ export const AuthView: React.FC<AuthViewProps> = ({ onAuthSuccess }) => {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4 font-bricolage">
+        <form onSubmit={handleSubmit} className="space-y-4 font-bricolage" noValidate>
           {mode === 'signup' && (
-            <div className="space-y-1.5">
-              <label className="block font-anton text-sm text-[#1a1a1a] uppercase">FULL NAME</label>
+            <div className="space-y-1">
+              <label className="block font-anton text-sm text-[#1a1a1a] uppercase">FULL NAME *</label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
                 <input
                   type="text"
-                  required
                   value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
+                  onChange={(e) => handleChange('displayName', e.target.value)}
+                  onBlur={() => handleBlur('displayName')}
                   placeholder="Tony Stark"
-                  className="w-full pl-10 pr-4 py-3 bg-[#f4ead5] comic-border-thick font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-[#bb0013]"
+                  className={inputClass('displayName')}
                 />
               </div>
+              {touched['displayName'] && fieldErrors['displayName'] && (
+                <p className="text-[#bb0013] text-xs font-bold flex items-center gap-1">
+                  <span className="inline-block w-1.5 h-1.5 bg-[#bb0013] rounded-full" />
+                  {fieldErrors['displayName']}
+                </p>
+              )}
             </div>
           )}
 
-          <div className="space-y-1.5">
-            <label className="block font-anton text-sm text-[#1a1a1a] uppercase">EMAIL</label>
+          <div className="space-y-1">
+            <label className="block font-anton text-sm text-[#1a1a1a] uppercase">EMAIL *</label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
               <input
                 type="email"
-                required
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => handleChange('email', e.target.value)}
+                onBlur={() => handleBlur('email')}
                 placeholder="you@example.com"
-                className="w-full pl-10 pr-4 py-3 bg-[#f4ead5] comic-border-thick font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-[#bb0013]"
+                className={inputClass('email')}
               />
             </div>
+            {touched['email'] && fieldErrors['email'] && (
+              <p className="text-[#bb0013] text-xs font-bold flex items-center gap-1">
+                <span className="inline-block w-1.5 h-1.5 bg-[#bb0013] rounded-full" />
+                {fieldErrors['email']}
+              </p>
+            )}
           </div>
 
-          <div className="space-y-1.5">
-            <label className="block font-anton text-sm text-[#1a1a1a] uppercase">PASSWORD</label>
+          <div className="space-y-1">
+            <label className="block font-anton text-sm text-[#1a1a1a] uppercase">PASSWORD *</label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
               <input
                 type={showPassword ? 'text' : 'password'}
-                required
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => handleChange('password', e.target.value)}
+                onBlur={() => handleBlur('password')}
                 placeholder="Min 6 characters"
-                minLength={6}
-                className="w-full pl-10 pr-10 py-3 bg-[#f4ead5] comic-border-thick font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-[#bb0013]"
+                className={`${inputClass('password')} pr-10`}
               />
               <button type="button" onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 cursor-pointer">
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
+            {touched['password'] && fieldErrors['password'] && (
+              <p className="text-[#bb0013] text-xs font-bold flex items-center gap-1">
+                <span className="inline-block w-1.5 h-1.5 bg-[#bb0013] rounded-full" />
+                {fieldErrors['password']}
+              </p>
+            )}
           </div>
 
           {error && (
