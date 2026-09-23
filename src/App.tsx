@@ -11,6 +11,7 @@ import { PrizesView } from './components/PrizesView';
 import { RegisterView } from './components/RegisterView';
 import { AdminView } from './components/AdminView';
 import { EventDetailModal } from './components/EventDetailModal';
+import { Save, Loader2, CheckCircle2, Eye, Undo2, Redo2 } from 'lucide-react';
 
 export function App() {
   const [activeTab, setActiveTab] = useState<NavTab>('home');
@@ -21,6 +22,16 @@ export function App() {
   const [adminPassInput, setAdminPassInput] = useState('');
   const [adminLoading, setAdminLoading] = useState(false);
   const [adminError, setAdminError] = useState('');
+  const [adminControls, setAdminControls] = useState<{
+    onUndo: () => void;
+    onRedo: () => void;
+    canUndo: boolean;
+    canRedo: boolean;
+    historyLabel: string;
+    onSave: () => void;
+    saving: boolean;
+    saved: boolean;
+  } | null>(null);
 
   const selectedEvent = ALL_EVENTS.find(e => e.id === selectedEventId);
 
@@ -74,7 +85,39 @@ export function App() {
         } else {
           setActiveTab(tab);
         }
-      }} />
+      }} editable={activeTab === 'admin'} rightContent={activeTab === 'admin' && adminControls ? (
+        <div className="flex items-center gap-2">
+          {/* Undo / Redo */}
+          <div className="flex items-center bg-zinc-800 rounded overflow-hidden">
+            <button onClick={adminControls.onUndo} disabled={!adminControls.canUndo}
+              title="Undo (Ctrl+Z)"
+              className="flex items-center gap-1 px-3 py-1.5 text-white font-anton text-xs uppercase cursor-pointer hover:bg-zinc-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors border-r border-zinc-700"
+            >
+              <Undo2 className="w-3.5 h-3.5" /> UNDO
+            </button>
+            <button onClick={adminControls.onRedo} disabled={!adminControls.canRedo}
+              title="Redo (Ctrl+Y)"
+              className="flex items-center gap-1 px-3 py-1.5 text-white font-anton text-xs uppercase cursor-pointer hover:bg-zinc-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            >
+              <Redo2 className="w-3.5 h-3.5" /> REDO
+            </button>
+          </div>
+          <span className="text-zinc-500 font-bricolage text-xs hidden lg:inline">
+            {adminControls.historyLabel}
+          </span>
+          <button onClick={() => setActiveTab('home')}
+            className="flex items-center gap-1 bg-transparent hover:bg-zinc-800 text-white font-anton text-xs px-3 py-1.5 border border-zinc-600 uppercase cursor-pointer transition-colors"
+          >
+            <Eye className="w-3.5 h-3.5" /> VIEW SITE
+          </button>
+          <button onClick={adminControls.onSave} disabled={adminControls.saving}
+            className="flex items-center gap-1.5 bg-[#bb0013] hover:bg-[#d90017] text-white font-anton text-xs px-4 py-1.5 comic-border-thick shadow-comic uppercase cursor-pointer disabled:opacity-50 transition-colors"
+          >
+            {adminControls.saving ? <Loader2 className="w-3 h-3 animate-spin" /> : adminControls.saved ? <CheckCircle2 className="w-3 h-3" /> : <Save className="w-3 h-3" />}
+            {adminControls.saving ? 'SAVING...' : adminControls.saved ? 'SAVED!' : 'SAVE'}
+          </button>
+        </div>
+      ) : undefined} />
 
       {/* Main View Screen Content */}
       <main className="flex-grow">
@@ -114,7 +157,7 @@ export function App() {
 
         {activeTab === 'admin' && (
           adminUnlocked ? (
-            <AdminView setActiveTab={setActiveTab} onSelectEvent={handleSelectEventModal} />
+            <AdminView setActiveTab={setActiveTab} onSelectEvent={handleSelectEventModal} onControlsReady={setAdminControls} />
           ) : (
             <div className="flex items-center justify-center min-h-[60vh] px-4">
               <div className="bg-white p-8 comic-border-ultra shadow-comic-lg max-w-md w-full text-center space-y-6">
@@ -154,8 +197,8 @@ export function App() {
         )}
       </main>
 
-      {/* Pop-Art Footer */}
-      <Footer setActiveTab={setActiveTab} />
+      {/* Pop-Art Footer (hidden in admin mode — AdminEditView renders its own inside ContentOverrideProvider) */}
+      {activeTab !== 'admin' && <Footer setActiveTab={setActiveTab} />}
 
       {/* Event Details Popup Modal */}
       {selectedEvent && (

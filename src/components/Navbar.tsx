@@ -7,9 +7,10 @@ interface NavbarProps {
   activeTab: NavTab;
   setActiveTab: (tab: NavTab) => void;
   editable?: boolean;
+  rightContent?: React.ReactNode;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, editable }) => {
+export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, editable, rightContent }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems: { id: NavTab; label: string }[] = [
@@ -66,9 +67,11 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, editabl
             })}
           </nav>
 
-          {/* Action Button: REGISTER NOW */}
-          <div className="hidden md:block">
-            {!editable && (
+          {/* Action Button: REGISTER NOW (or admin controls) */}
+          <div className="hidden md:flex items-center gap-3">
+            {rightContent ? (
+              rightContent
+            ) : (
               <button
                 onClick={() => handleNavClick('register')}
                 className={`flex items-center gap-2 bg-[#bb0013] hover:bg-[#d90017] text-white font-anton text-lg tracking-wider px-5 py-2.5 comic-border-thick shadow-comic transition-all active:translate-x-1 active:translate-y-1 active:shadow-none uppercase cursor-pointer ${
@@ -83,7 +86,9 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, editabl
 
           {/* Mobile Hamburger Toggle */}
           <div className="md:hidden flex items-center gap-3">
-            {!editable && (
+            {rightContent ? (
+              rightContent
+            ) : (
               <>
                 <button
                   onClick={() => handleNavClick('register')}
