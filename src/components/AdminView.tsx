@@ -16,9 +16,10 @@ interface AdminControls {
 interface AdminViewProps {
   setActiveTab: (tab: NavTab) => void;
   onSelectEvent: (eventId: string) => void;
+  activeSection: NavTab;
   onControlsReady?: (controls: AdminControls | null) => void;
 }
 
-export const AdminView: React.FC<AdminViewProps> = ({ setActiveTab, onSelectEvent, onControlsReady }) => {
-  return <AdminEditView setActiveTab={setActiveTab} onSelectEvent={onSelectEvent} onControlsReady={onControlsReady} />;
+export const AdminView: React.FC<AdminViewProps> = ({ setActiveTab, onSelectEvent, activeSection, onControlsReady }) => {
+  return <AdminEditView setActiveTab={setActiveTab} onSelectEvent={onSelectEvent} activeSection={activeSection} onControlsReady={onControlsReady} />;
 };

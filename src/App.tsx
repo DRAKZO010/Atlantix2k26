@@ -22,6 +22,7 @@ export function App() {
   const [adminPassInput, setAdminPassInput] = useState('');
   const [adminLoading, setAdminLoading] = useState(false);
   const [adminError, setAdminError] = useState('');
+  const [adminSection, setAdminSection] = useState<NavTab>('home');
   const [adminControls, setAdminControls] = useState<{
     onUndo: () => void;
     onRedo: () => void;
@@ -85,7 +86,10 @@ export function App() {
         } else {
           setActiveTab(tab);
         }
-      }} editable={activeTab === 'admin'} rightContent={activeTab === 'admin' && adminControls ? (
+      }} editable={activeTab === 'admin'} activeSection={activeTab === 'admin' ? adminSection : undefined} onNavClick={activeTab === 'admin' ? (tab) => {
+        setAdminSection(tab);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } : undefined} rightContent={activeTab === 'admin' && adminControls ? (
         <div className="flex items-center gap-2">
           {/* Undo / Redo */}
           <div className="flex items-center bg-zinc-800 rounded overflow-hidden">
@@ -157,7 +161,7 @@ export function App() {
 
         {activeTab === 'admin' && (
           adminUnlocked ? (
-            <AdminView setActiveTab={setActiveTab} onSelectEvent={handleSelectEventModal} onControlsReady={setAdminControls} />
+            <AdminView setActiveTab={setActiveTab} onSelectEvent={handleSelectEventModal} activeSection={adminSection} onControlsReady={setAdminControls} />
           ) : (
             <div className="flex items-center justify-center min-h-[60vh] px-4">
               <div className="bg-white p-8 comic-border-ultra shadow-comic-lg max-w-md w-full text-center space-y-6">

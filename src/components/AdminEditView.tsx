@@ -26,10 +26,11 @@ interface AdminControls {
 interface AdminEditViewProps {
   setActiveTab: (tab: NavTab) => void;
   onSelectEvent: (id: string) => void;
+  activeSection: NavTab;
   onControlsReady?: (controls: AdminControls | null) => void;
 }
 
-export const AdminEditView: React.FC<AdminEditViewProps> = ({ setActiveTab, onSelectEvent, onControlsReady }) => {
+export const AdminEditView: React.FC<AdminEditViewProps> = ({ setActiveTab, onSelectEvent, activeSection, onControlsReady }) => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -57,7 +58,6 @@ export const AdminEditView: React.FC<AdminEditViewProps> = ({ setActiveTab, onSe
     setSaving(false);
   }, [siteContent]);
 
-  // Expose controls to parent (App.tsx) for Navbar integration
   useEffect(() => {
     if (!onControlsReady) return;
     onControlsReady({
@@ -73,7 +73,6 @@ export const AdminEditView: React.FC<AdminEditViewProps> = ({ setActiveTab, onSe
     return () => onControlsReady(null);
   }, [undoRedo.canUndo, undoRedo.canRedo, undoRedo.currentIndex, undoRedo.historyLength, saving, saved, handleSave]);
 
-  // Keyboard shortcuts
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       const isMod = e.metaKey || e.ctrlKey;
@@ -106,16 +105,22 @@ export const AdminEditView: React.FC<AdminEditViewProps> = ({ setActiveTab, onSe
 
   if (!siteContent) return <div className="text-center py-20 font-anton text-xl">Failed to load content</div>;
 
+  const renderSection = () => {
+    switch (activeSection) {
+      case 'home':    return <HomeView setActiveTab={() => {}} onSelectEvent={() => {}} editable />;
+      case 'about':   return <AboutView setActiveTab={() => {}} editable />;
+      case 'schedule': return <ScheduleView setActiveTab={() => {}} editable />;
+      case 'events':  return <EventsView setActiveTab={() => {}} onSelectEvent={() => {}} editable />;
+      case 'prizes':  return <PrizesView setActiveTab={() => {}} editable />;
+      default:        return <HomeView setActiveTab={() => {}} onSelectEvent={() => {}} editable />;
+    }
+  };
+
   return (
     <ContentOverrideProvider value={siteContent}>
       <ContentChangeProvider value={handleContentChange}>
         <div className="min-h-screen bg-[#f4ead5]">
-          {/* Full Website - Editable (no duplicate Navbar, no admin bar) */}
-          <HomeView setActiveTab={() => {}} onSelectEvent={() => {}} editable />
-          <AboutView setActiveTab={() => {}} editable />
-          <ScheduleView setActiveTab={() => {}} editable />
-          <EventsView setActiveTab={() => {}} onSelectEvent={() => {}} editable />
-          <PrizesView setActiveTab={() => {}} editable />
+          {renderSection()}
           <Footer setActiveTab={() => {}} editable />
         </div>
       </ContentChangeProvider>

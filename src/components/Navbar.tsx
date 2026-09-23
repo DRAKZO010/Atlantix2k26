@@ -7,10 +7,12 @@ interface NavbarProps {
   activeTab: NavTab;
   setActiveTab: (tab: NavTab) => void;
   editable?: boolean;
+  activeSection?: string;
+  onNavClick?: (tab: NavTab) => void;
   rightContent?: React.ReactNode;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, editable, rightContent }) => {
+export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, editable, activeSection, onNavClick, rightContent }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems: { id: NavTab; label: string }[] = [
@@ -22,10 +24,18 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, editabl
   ];
 
   const handleNavClick = (tab: NavTab) => {
-    if (editable) return;
-    setActiveTab(tab);
     setMobileMenuOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (onNavClick) {
+      onNavClick(tab);
+    } else if (!editable) {
+      setActiveTab(tab);
+    }
+  };
+
+  const isSectionActive = (tab: NavTab) => {
+    if (activeSection) return activeSection === tab;
+    return activeTab === tab;
   };
 
   return (
@@ -47,12 +57,12 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, editabl
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-6 lg:gap-8 font-bricolage font-bold text-sm tracking-wider">
             {navItems.map((item) => {
-              const isActive = activeTab === item.id;
+              const isActive = isSectionActive(item.id);
               return (
                 <button
                   key={item.id}
                   onClick={() => handleNavClick(item.id)}
-                  className={`relative py-1 transition-colors uppercase ${
+                  className={`relative py-1 transition-colors uppercase cursor-pointer ${
                     isActive 
                       ? 'text-[#bb0013] font-extrabold' 
                       : 'text-[#1a1a1a] hover:text-[#bb0013]'
@@ -111,14 +121,14 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, editabl
       </div>
 
       {/* Mobile Drawer */}
-      {mobileMenuOpen && !editable && (
+      {mobileMenuOpen && (
         <div className="md:hidden bg-[#efe1c5] border-t-4 border-[#1a1a1a] px-4 pt-4 pb-6 space-y-3">
           {navItems.map((item) => (
             <button
               key={item.id}
               onClick={() => handleNavClick(item.id)}
-              className={`block w-full text-left py-2.5 px-4 font-anton text-xl tracking-wider comic-border-thick uppercase transition-colors ${
-                activeTab === item.id 
+              className={`block w-full text-left py-2.5 px-4 font-anton text-xl tracking-wider comic-border-thick uppercase transition-colors cursor-pointer ${
+                isSectionActive(item.id)
                   ? 'bg-[#bb0013] text-white shadow-comic-sm' 
                   : 'bg-white text-[#1a1a1a] hover:bg-[#fddc00]'
               }`}
@@ -126,12 +136,14 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, editabl
               {item.label}
             </button>
           ))}
-          <button
-            onClick={() => handleNavClick('register')}
-            className="block w-full text-center py-3 px-4 font-anton text-xl tracking-wider bg-[#bb0013] text-white comic-border-thick shadow-comic uppercase mt-4"
-          >
-            ⚡ REGISTER NOW
-          </button>
+          {!editable && (
+            <button
+              onClick={() => handleNavClick('register')}
+              className="block w-full text-center py-3 px-4 font-anton text-xl tracking-wider bg-[#bb0013] text-white comic-border-thick shadow-comic uppercase mt-4"
+            >
+              REGISTER NOW
+            </button>
+          )}
         </div>
       )}
     </header>
