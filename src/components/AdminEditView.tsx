@@ -3,6 +3,8 @@ import { NavTab, SiteContent } from '../types';
 import { loadContent, saveContent } from '../services/content';
 import { ContentOverrideProvider } from '../ContentOverride';
 import { ContentChangeProvider } from '../ContentChange';
+import { Navbar } from './Navbar';
+import { Footer } from './Footer';
 import { HomeView } from './HomeView';
 import { AboutView } from './AboutView';
 import { ScheduleView } from './ScheduleView';
@@ -60,9 +62,9 @@ export const AdminEditView: React.FC<AdminEditViewProps> = ({ setActiveTab, onSe
   return (
     <ContentOverrideProvider value={siteContent}>
       <ContentChangeProvider value={handleContentChange}>
-        <div className="min-h-screen bg-[#f4ead5] pb-20">
+        <div className="min-h-screen bg-[#f4ead5] pb-0">
           {/* Sticky Admin Bar */}
-          <div className="sticky top-0 z-50 bg-[#1a1a1a] border-b-4 border-[#bb0013] px-4 py-2.5 flex items-center justify-between flex-wrap gap-2">
+          <div className="sticky top-0 z-[60] bg-[#1a1a1a] border-b-4 border-[#bb0013] px-4 py-2.5 flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center gap-3">
               <div className="bg-[#bb0013] text-white p-1.5 comic-border-thick">
                 <Eye className="w-4 h-4" />
@@ -84,12 +86,18 @@ export const AdminEditView: React.FC<AdminEditViewProps> = ({ setActiveTab, onSe
             </div>
           </div>
 
+          {/* Editable Navbar */}
+          <Navbar activeTab="home" setActiveTab={() => {}} editable />
+
           {/* Full Website - Editable */}
           <HomeView setActiveTab={() => {}} onSelectEvent={() => {}} editable />
           <AboutView setActiveTab={() => {}} editable />
           <ScheduleView setActiveTab={() => {}} editable />
           <EventsView setActiveTab={() => {}} onSelectEvent={() => {}} editable />
           <PrizesView setActiveTab={() => {}} editable />
+
+          {/* Editable Footer */}
+          <Footer setActiveTab={() => {}} editable />
         </div>
       </ContentChangeProvider>
     </ContentOverrideProvider>

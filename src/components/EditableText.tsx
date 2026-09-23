@@ -9,19 +9,25 @@ interface EditableTextProps {
   className?: string;
 }
 
+const isMultilineField = (path: string) => path.includes('description');
+
 export const EditableText: React.FC<EditableTextProps> = ({
   value, path, as: Tag = 'span', className = '',
 }) => {
   const ref = useRef<HTMLElement>(null);
   const [editing, setEditing] = useState(false);
   const onChange = useContentChange();
+  const multiline = isMultilineField(path);
 
   useEffect(() => {
-    if (ref.current && !editing) ref.current.textContent = value;
+    if (ref.current && !editing) {
+      ref.current.innerHTML = value || '';
+    }
   }, [value, editing]);
 
   const startEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
+    e.preventDefault();
     setEditing(true);
     setTimeout(() => {
       if (ref.current) {
@@ -38,13 +44,21 @@ export const EditableText: React.FC<EditableTextProps> = ({
 
   const finishEdit = () => {
     setEditing(false);
+    const html = ref.current?.innerHTML || '';
     const text = ref.current?.textContent || '';
-    if (text !== value) onChange(path, text);
+    const newValue = multiline ? html : text;
+    if (newValue !== value) onChange(path, newValue);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !path.includes('description')) { e.preventDefault(); finishEdit(); }
-    if (e.key === 'Escape') { if (ref.current) ref.current.textContent = value; setEditing(false); }
+    if (e.key === 'Escape') {
+      if (ref.current) ref.current.innerHTML = value || '';
+      setEditing(false);
+    }
+    if (e.key === 'Enter' && !multiline) {
+      e.preventDefault();
+      finishEdit();
+    }
   };
 
   return (
@@ -57,7 +71,7 @@ export const EditableText: React.FC<EditableTextProps> = ({
         onClick={startEdit}
         onBlur={finishEdit}
         onKeyDown={handleKeyDown}
-        dangerouslySetInnerHTML={!editing ? { __html: value } : undefined}
+        dangerouslySetInnerHTML={!editing ? { __html: value || '' } : undefined}
       />
       {!editing && (
         <span className="absolute -top-2 -right-2 bg-[#bb0013] text-white p-0.5 opacity-0 group-hover/et:opacity-100 transition-opacity pointer-events-none">

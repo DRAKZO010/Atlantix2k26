@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { NavTab } from '../types';
 import { Menu, X, Zap } from 'lucide-react';
+import { EditableText } from './EditableText';
 
 interface NavbarProps {
   activeTab: NavTab;
   setActiveTab: (tab: NavTab) => void;
+  editable?: boolean;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
+export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, editable }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems: { id: NavTab; label: string }[] = [
@@ -19,6 +21,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
   ];
 
   const handleNavClick = (tab: NavTab) => {
+    if (editable) return;
     setActiveTab(tab);
     setMobileMenuOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -35,7 +38,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
             className="flex items-center gap-2 text-left group focus:outline-none"
           >
             <div className="bg-[#bb0013] text-white px-3 py-1 font-anton text-2xl tracking-wider transform -skew-x-6 border-2 border-[#1a1a1a] shadow-comic-sm group-hover:scale-105 transition-transform">
-              ROBOTRON <span className="text-[#fddc00]">2027</span>
+              {editable ? <EditableText value="ROBOTRON" path="footer.brand" as="span" className="inline" /> : 'ROBOTRON'}{' '}
+              <span className="text-[#fddc00]">2027</span>
             </div>
           </button>
 
@@ -64,40 +68,45 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
 
           {/* Action Button: REGISTER NOW */}
           <div className="hidden md:block">
-            <button
-              onClick={() => handleNavClick('register')}
-              className={`flex items-center gap-2 bg-[#bb0013] hover:bg-[#d90017] text-white font-anton text-lg tracking-wider px-5 py-2.5 comic-border-thick shadow-comic transition-all active:translate-x-1 active:translate-y-1 active:shadow-none uppercase cursor-pointer ${
-                activeTab === 'register' ? 'ring-4 ring-[#fddc00]' : ''
-              }`}
-            >
-              <Zap className="w-5 h-5 text-[#fddc00] fill-[#fddc00]" />
-              REGISTER NOW
-            </button>
+            {!editable && (
+              <button
+                onClick={() => handleNavClick('register')}
+                className={`flex items-center gap-2 bg-[#bb0013] hover:bg-[#d90017] text-white font-anton text-lg tracking-wider px-5 py-2.5 comic-border-thick shadow-comic transition-all active:translate-x-1 active:translate-y-1 active:shadow-none uppercase cursor-pointer ${
+                  activeTab === 'register' ? 'ring-4 ring-[#fddc00]' : ''
+                }`}
+              >
+                <Zap className="w-5 h-5 text-[#fddc00] fill-[#fddc00]" />
+                REGISTER NOW
+              </button>
+            )}
           </div>
 
           {/* Mobile Hamburger Toggle */}
           <div className="md:hidden flex items-center gap-3">
-            <button
-              onClick={() => handleNavClick('register')}
-              className="bg-[#bb0013] text-white font-anton text-xs px-3 py-2 comic-border-thick shadow-comic-sm active:translate-x-0.5 active:translate-y-0.5 uppercase"
-            >
-              REGISTER
-            </button>
-
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 bg-white comic-border-thick shadow-comic-sm text-[#1a1a1a]"
-              aria-label="Toggle menu"
-            >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
+            {!editable && (
+              <>
+                <button
+                  onClick={() => handleNavClick('register')}
+                  className="bg-[#bb0013] text-white font-anton text-xs px-3 py-2 comic-border-thick shadow-comic-sm active:translate-x-0.5 active:translate-y-0.5 uppercase"
+                >
+                  REGISTER
+                </button>
+                <button
+                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                  className="p-2 bg-white comic-border-thick shadow-comic-sm text-[#1a1a1a]"
+                  aria-label="Toggle menu"
+                >
+                  {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                </button>
+              </>
+            )}
           </div>
 
         </div>
       </div>
 
       {/* Mobile Drawer */}
-      {mobileMenuOpen && (
+      {mobileMenuOpen && !editable && (
         <div className="md:hidden bg-[#efe1c5] border-t-4 border-[#1a1a1a] px-4 pt-4 pb-6 space-y-3">
           {navItems.map((item) => (
             <button

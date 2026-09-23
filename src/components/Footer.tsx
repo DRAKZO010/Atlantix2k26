@@ -1,14 +1,17 @@
 import React from 'react';
 import { NavTab } from '../types';
 import { useContent } from '../ContentContext';
+import { EditableText } from './EditableText';
 
 interface FooterProps {
   setActiveTab: (tab: NavTab) => void;
+  editable?: boolean;
 }
 
-export const Footer: React.FC<FooterProps> = ({ setActiveTab }) => {
+export const Footer: React.FC<FooterProps> = ({ setActiveTab, editable }) => {
   const { content } = useContent();
   const { footer, hero } = content;
+  const E = EditableText;
 
   return (
     <footer className="bg-[#1a1a1a] text-white border-t-4 border-[#1a1a1a] pt-12 pb-8 px-4 sm:px-6 lg:px-8">
@@ -18,7 +21,7 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab }) => {
           {/* Brand Logo Box */}
           <div className="text-center md:text-left">
             <div className="inline-block bg-[#f4ead5] text-[#1a1a1a] px-5 py-2 font-anton text-3xl tracking-widest transform -skew-x-6 border-2 border-white shadow-[4px_4px_0px_#bb0013]">
-              {footer?.brand || 'ROBOTRON 2027'}
+              {editable ? <E value={footer?.brand || ''} path="footer.brand" as="span" /> : footer?.brand || 'ROBOTRON 2027'}
             </div>
             <p className="mt-3 font-bricolage text-zinc-400 text-xs sm:text-sm tracking-wide">
               ORGANIZED BY PARK COLLEGE OF ENGINEERING AND TECHNOLOGY • COIMBATORE, INDIA
@@ -26,46 +29,50 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab }) => {
           </div>
 
           {/* Nav Footer Links */}
-          <div className="flex flex-wrap justify-center gap-6 font-bricolage text-xs sm:text-sm font-bold tracking-wider uppercase">
-            <button 
-              onClick={() => setActiveTab('about')} 
-              className="text-zinc-300 hover:text-[#fddc00] underline underline-offset-4 decoration-2 decoration-[#bb0013]"
-            >
-              PRIVACY POLICY
-            </button>
-            <button 
-              onClick={() => setActiveTab('about')} 
-              className="text-zinc-300 hover:text-[#fddc00] underline underline-offset-4 decoration-2 decoration-[#bb0013]"
-            >
-              CODE OF CONDUCT
-            </button>
-            <button 
-              onClick={() => setActiveTab('register')} 
-              className="text-zinc-300 hover:text-[#fddc00] underline underline-offset-4 decoration-2 decoration-[#bb0013]"
-            >
-              SPONSOR US
-            </button>
-            <button 
-              onClick={() => setActiveTab('schedule')} 
-              className="text-zinc-300 hover:text-[#fddc00] underline underline-offset-4 decoration-2 decoration-[#bb0013]"
-            >
-              CONTACT
-            </button>
-          </div>
+          {!editable && (
+            <div className="flex flex-wrap justify-center gap-6 font-bricolage text-xs sm:text-sm font-bold tracking-wider uppercase">
+              <button 
+                onClick={() => setActiveTab('about')} 
+                className="text-zinc-300 hover:text-[#fddc00] underline underline-offset-4 decoration-2 decoration-[#bb0013]"
+              >
+                PRIVACY POLICY
+              </button>
+              <button 
+                onClick={() => setActiveTab('about')} 
+                className="text-zinc-300 hover:text-[#fddc00] underline underline-offset-4 decoration-2 decoration-[#bb0013]"
+              >
+                CODE OF CONDUCT
+              </button>
+              <button 
+                onClick={() => setActiveTab('register')} 
+                className="text-zinc-300 hover:text-[#fddc00] underline underline-offset-4 decoration-2 decoration-[#bb0013]"
+              >
+                SPONSOR US
+              </button>
+              <button 
+                onClick={() => setActiveTab('schedule')} 
+                className="text-zinc-300 hover:text-[#fddc00] underline underline-offset-4 decoration-2 decoration-[#bb0013]"
+              >
+                CONTACT
+              </button>
+            </div>
+          )}
 
         </div>
 
         {/* Bottom Tagline */}
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left text-xs font-bricolage text-zinc-400">
-          <p>{footer?.copyright || '© 2027 ROBOTRON HACKATHON. ASSEMBLE YOUR TEAM.'}</p>
+          <p>{editable ? <E value={footer?.copyright || ''} path="footer.copyright" as="span" /> : footer?.copyright || '© 2027 ROBOTRON HACKATHON. ASSEMBLE YOUR TEAM.'}</p>
           <div className="flex items-center gap-4">
-            <p className="text-zinc-500">{footer?.tagline || '24 HOURS. INFINITE POSSIBILITIES.'}</p>
-            <button
-              onClick={() => setActiveTab('admin')}
-              className="text-zinc-600 hover:text-zinc-400 text-[10px] tracking-widest uppercase"
-            >
-              ADMIN
-            </button>
+            <p className="text-zinc-500">{editable ? <E value={footer?.tagline || ''} path="footer.tagline" as="span" /> : footer?.tagline || '24 HOURS. INFINITE POSSIBILITIES.'}</p>
+            {!editable && (
+              <button
+                onClick={() => setActiveTab('admin')}
+                className="text-zinc-600 hover:text-zinc-400 text-[10px] tracking-widest uppercase"
+              >
+                ADMIN
+              </button>
+            )}
           </div>
         </div>
       </div>
